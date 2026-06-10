@@ -1,10 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { BrnSheetImports } from '@spartan-ng/brain/sheet';
+import {
+  LucideAngularModule,
+  LucideIconProvider,
+  LUCIDE_ICONS,
+  Menu,
+  Home,
+  User,
+} from 'lucide-angular';
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, BrnSheetImports],
+  imports: [RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
+  providers: [
+    {
+      provide: LUCIDE_ICONS,
+      useValue: new LucideIconProvider({ Menu, Home, User }),
+      multi: true,
+    },
+  ],
 })
-export class Navbar {}
+export class Navbar {
+  isMenuOpen = signal(false);
+  toggleMenu() {
+    this.isMenuOpen.update((open) => !open);
+  }
+  closeMenu() {
+    this.isMenuOpen.set(false);
+  }
+}

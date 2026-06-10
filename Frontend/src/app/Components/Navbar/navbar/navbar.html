@@ -1,7 +1,66 @@
-<nav class="md:flex items-center justify-between">
-  <a routerLink="/home" class="text-2xl"> HOME </a>
-  <div class="flex items-center gap-8">
-    <a routerLink="/home" routerLinkActive="text-primary-main font-semibold"> MAKE AN ACCOUNT </a>
-    <p class="text-primary-light">AA</p>
+<nav class="relative w-full p-4 bg-background border-b border-border">
+  <div class="flex justify-center items-center md:hidden">
+    <a routerLink="/home" (click)="closeMenu()">
+      <img src="/Images/R3_Love.png" alt="R3 Love" class="h-10 w-auto" />
+    </a>
+  </div>
+
+  <button
+    (click)="toggleMenu()"
+    class="absolute top-1/2 left-4 -translate-y-1/2 md:hidden p-1.5 rounded-lg hover:bg-primary-light transition-colors"
+  >
+    <lucide-icon name="menu" class="w-5 h-5 text-primary-dark"></lucide-icon>
+  </button>
+
+  @if (isMenuOpen()) {
+    <div
+      class="md:hidden absolute top-full left-0 w-full bg-neutral-bg border-b border-border shadow-lg z-50"
+    >
+      <div class="flex flex-col p-4 gap-2">
+        <a
+          routerLink="/home"
+          routerLinkActive="text-primary-main font-semibold"
+          (click)="closeMenu()"
+          class="flex items-center gap-2 text-base py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
+        >
+          <lucide-icon name="home" class="w-4 h-4"></lucide-icon>
+          HOME
+        </a>
+        <a
+          routerLink="/account"
+          routerLinkActive="text-primary-main font-semibold"
+          (click)="closeMenu()"
+          class="flex items-center gap-2 text-base py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
+        >
+          <lucide-icon name="user" class="w-4 h-4"></lucide-icon>
+          MAKE AN ACCOUNT
+        </a>
+      </div>
+    </div>
+  }
+
+  <div class="hidden md:flex md:items-center md:justify-between w-full">
+    <a routerLink="/home" class="flex items-center">
+      <img src="/Images/R3_Love.png" alt="R3 Love" class="h-10 w-auto" />
+    </a>
+
+    <div class="flex items-center gap-6">
+      <a
+        routerLink="/home"
+        routerLinkActive="text-primary-main font-semibold"
+        class="flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
+      >
+        <lucide-icon name="home" class="w-4 h-4"></lucide-icon>
+        HOME
+      </a>
+      <a
+        routerLink="/account"
+        routerLinkActive="text-primary-main font-semibold"
+        class="flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
+      >
+        <lucide-icon name="user" class="w-4 h-4"></lucide-icon>
+        MAKE AN ACCOUNT
+      </a>
+    </div>
   </div>
 </nav>
