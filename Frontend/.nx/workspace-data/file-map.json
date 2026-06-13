@@ -1,0 +1,161 @@
+{
+  "version": "6.0",
+  "nxVersion": "22.7.5",
+  "pathMappings": {
+    "@spartan-ng/helm/button": [
+      "./src/app/ui/button/src/index.ts"
+    ],
+    "@spartan-ng/helm/utils": [
+      "./src/app/ui/utils/src/index.ts"
+    ]
+  },
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "R_3_Love": [
+        {
+          "file": ".editorconfig",
+          "hash": "4165385352547808172"
+        },
+        {
+          "file": ".gitignore",
+          "hash": "1185044922878210959"
+        },
+        {
+          "file": ".prettierrc",
+          "hash": "11411277661116404690"
+        },
+        {
+          "file": "README.md",
+          "hash": "12914785978114015888"
+        },
+        {
+          "file": "angular.json",
+          "hash": "10888058510500536979"
+        },
+        {
+          "file": "components.json",
+          "hash": "778626180585596034"
+        },
+        {
+          "file": "package-lock.json",
+          "hash": "4594437895016567637"
+        },
+        {
+          "file": "package.json",
+          "hash": "4314182998610440459"
+        },
+        {
+          "file": "public/Images/R3_Love.png",
+          "hash": "15311251085216575819"
+        },
+        {
+          "file": "src/app/Components/Navbar/navbar/navbar.html",
+          "hash": "7976186590871437980"
+        },
+        {
+          "file": "src/app/Components/Navbar/navbar/navbar.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/Components/Navbar/navbar/navbar.spec.ts",
+          "hash": "16249252024063199664"
+        },
+        {
+          "file": "src/app/Components/Navbar/navbar/navbar.ts",
+          "hash": "12233105457690856969"
+        },
+        {
+          "file": "src/app/Pages/home/home.html",
+          "hash": "8980251380215388944"
+        },
+        {
+          "file": "src/app/Pages/home/home.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/Pages/home/home.spec.ts",
+          "hash": "16290196516328157248"
+        },
+        {
+          "file": "src/app/Pages/home/home.ts",
+          "hash": "16253665858643755910"
+        },
+        {
+          "file": "src/app/app.config.ts",
+          "hash": "5623252623767920934"
+        },
+        {
+          "file": "src/app/app.html",
+          "hash": "4419683888100521251"
+        },
+        {
+          "file": "src/app/app.routes.ts",
+          "hash": "2585912934897155134"
+        },
+        {
+          "file": "src/app/app.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/app.spec.ts",
+          "hash": "7742812886822705384"
+        },
+        {
+          "file": "src/app/app.ts",
+          "hash": "5037321829956657756"
+        },
+        {
+          "file": "src/app/ui/button/src/index.ts",
+          "hash": "5168917203269790378"
+        },
+        {
+          "file": "src/app/ui/button/src/lib/hlm-button.token.ts",
+          "hash": "12913095847118528801"
+        },
+        {
+          "file": "src/app/ui/button/src/lib/hlm-button.ts",
+          "hash": "7209189040936597501"
+        },
+        {
+          "file": "src/app/ui/utils/src/index.ts",
+          "hash": "1762895332825194971"
+        },
+        {
+          "file": "src/app/ui/utils/src/lib/hlm.ts",
+          "hash": "3943643842782176706"
+        },
+        {
+          "file": "src/index.html",
+          "hash": "3414878356145416718"
+        },
+        {
+          "file": "src/main.ts",
+          "hash": "15944248449879998907"
+        },
+        {
+          "file": "src/styles.scss",
+          "hash": "9550951838877497734"
+        },
+        {
+          "file": "src/tailwind.css",
+          "hash": "16341668114528803539"
+        },
+        {
+          "file": "tsconfig.app.json",
+          "hash": "13967967911244000710"
+        },
+        {
+          "file": "tsconfig.json",
+          "hash": "15815332818693556474"
+        },
+        {
+          "file": "tsconfig.spec.json",
+          "hash": "18000251417540963725"
+        }
+      ]
+    },
+    "nonProjectFiles": []
+  },
+  "externalNodesHash": "10087824696589372982"
+}
