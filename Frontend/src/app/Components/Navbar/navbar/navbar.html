@@ -9,7 +9,7 @@
     (click)="toggleMenu()"
     class="absolute top-1/2 left-4 -translate-y-1/2 md:hidden p-1.5 rounded-lg hover:bg-primary-light transition-colors"
   >
-    <lucide-icon name="menu" class="w-5 h-5 text-primary-dark"></lucide-icon>
+    <lucide-icon name="menu" class="w-5 h-5 text-primary-dark cursor-pointer"></lucide-icon>
   </button>
 
   @if (isMenuOpen()) {
@@ -39,7 +39,9 @@
     </div>
   }
 
-  <div class="hidden md:flex md:items-center md:justify-between w-full">
+  <div
+    class="invisible md:visible md:flex justify-between md:items-center md:justify-between w-full"
+  >
     <a routerLink="/home" class="flex items-center">
       <img src="/Images/R3_Love.png" alt="R3 Love" class="h-10 w-auto" />
     </a>
@@ -64,3 +66,5 @@
     </div>
   </div>
 </nav>
+
+<button hlmBtn variant="outline" size="sm">aaaaaa</button>

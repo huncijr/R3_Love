@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { HlmButton } from '@spartan-ng/helm/button';
 import {
   LucideAngularModule,
   LucideIconProvider,
@@ -10,7 +11,7 @@ import {
 } from 'lucide-angular';
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [RouterLink, RouterLinkActive, LucideAngularModule, HlmButton],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
   providers: [
