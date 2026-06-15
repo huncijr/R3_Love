@@ -21,18 +21,18 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  --background: #f4c9f5; /* ← neutral-bg */
-  --foreground: #1f2937; /* ← neutral-text */
-  --primary: #ec4899; /* ← primary-main */
+  --background: #f4c9f5;
+  --foreground: #1f2937;
+  --primary: #ec4899;
   --primary-foreground: #ffffff;
-  --secondary: #fbcfe8; /* ← primary-light */
+  --secondary: #fbcfe8;
   --secondary-foreground: #be185d;
-  --muted: #4b5563; /* ← neutral-muted */
+  --muted: #4b5563;
   --muted-foreground: #9ca3af;
-  --accent: #f472b6; /* ← border */
-  --border: #f472b6; /* ← border */
-  --input: #f472b6;
-  --ring: #ec4899; /* ← primary-main */
+  --accent: #f472b6;
+  --border: #c1578e;
+  --input: #ee7bb6;
+  --ring: #ec4899;
   --destructive: #ef4444;
 }
 

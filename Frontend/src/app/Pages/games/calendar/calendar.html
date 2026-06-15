@@ -1,0 +1,27 @@
+<div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-[#f4c9f5]">
+  <div class="max-w-4xl w-full mx-auto">
+    <!-- Calendar Card -->
+    <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden">
+      <!-- Custom header with spartan-ng buttons and Lucide icons -->
+      <div class="bg-[#fbcfe8] p-4 md:p-6 flex items-center justify-between">
+        <button hlmBtn variant="secondary" size="icon-sm" (click)="prevMonth()">
+          <lucide-icon name="chevron-left" class="w-5 h-5"></lucide-icon>
+        </button>
+
+        <h2 class="text-xl md:text-2xl font-bold text-[#be185d]">
+          {{ viewDate | date: 'MMMM yyyy' }}
+        </h2>
+
+        <button hlmBtn variant="secondary" size="icon-sm" (click)="nextMonth()">
+          <lucide-icon name="chevron-right" class="w-5 h-5"></lucide-icon>
+        </button>
+      </div>
+
+      <!-- angular-calendar component -->
+      <div class="p-4">
+        <mwl-calendar-month-view [viewDate]="viewDate" [events]="events" [activeDayIsOpen]="false">
+        </mwl-calendar-month-view>
+      </div>
+    </div>
+  </div>
+</div>

@@ -59,7 +59,9 @@ export class Navbar {
   }
   closeMenu() {
     this.isMenuOpen.set(false);
+    this.isGamesOpen.set(false);
     localStorage.setItem('menuOpen', 'false');
+    localStorage.setItem('gamesOpen', 'false');
   }
   toggleGames() {
     const newValue = !this.isGamesOpen();
