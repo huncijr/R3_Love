@@ -1,6 +1,6 @@
-<nav class="relative w-full p-4 bg-background border-b border-border">
+<nav class="relative w-full p-4 bg-background">
   <div class="flex justify-center items-center md:hidden">
-    <a routerLink="/home" (click)="closeMenu()">
+    <a routerLink="/home" (click)="closeMenu()" class="logo-entrance">
       <img src="/Images/R3_Love.png" alt="R3 Love" class="h-10 w-auto" />
     </a>
   </div>
@@ -9,7 +9,10 @@
     (click)="toggleMenu()"
     class="absolute top-1/2 left-4 -translate-y-1/2 md:hidden p-1.5 rounded-lg hover:bg-primary-light transition-colors"
   >
-    <lucide-icon name="menu" class="w-5 h-5 text-primary-dark cursor-pointer"></lucide-icon>
+    <lucide-icon
+      name="menu"
+      class="w-5 h-5 text-primary-dark cursor-pointer menu-item-entrance menu-item-delay-2"
+    ></lucide-icon>
   </button>
   @if (isMenuOpen()) {
     <div
@@ -24,7 +27,7 @@
           routerLink="/home"
           routerLinkActive="text-primary-main font-semibold"
           (click)="closeMenu()"
-          class="flex items-center gap-2 py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
+          class="menu-item-entrance menu-item-delay flex items-center gap-2 py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
         >
           <lucide-icon name="home" class="w-5 h-5 sm:w-4 sm:h-4"></lucide-icon>
           HOME
@@ -32,7 +35,7 @@
         <div class="flex flex-col relative">
           <button
             (click)="toggleGames()"
-            class="flex items-center gap-2 py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
+            class="menu-item-entrance menu-item-delay-2 flex items-center gap-2 py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
           >
             <lucide-icon name="gamepad-directional" class="w-5 h-5 sm:w-4 sm:h-4"></lucide-icon
             >GAMES
@@ -76,7 +79,7 @@
           routerLink="/account"
           routerLinkActive="text-primary-main font-semibold"
           (click)="closeMenu()"
-          class="flex items-center gap-2 py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
+          class="menu-item-entrance menu-item-delay-3 flex items-center gap-2 py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
         >
           <lucide-icon name="user" class="w-5 h-5 sm:w-4 h-4"></lucide-icon>
           MAKE AN ACCOUNT
@@ -87,7 +90,7 @@
   <div
     class="absolute invisible md:relative md:visible md:flex md:justify-between md:items-center md:justify-between md:w-full"
   >
-    <a routerLink="/home" class="flex items-center">
+    <a routerLink="/home" class="flex items-center logo-entrance">
       <img src="/Images/R3_Love.png" alt="R3 Love" class="h-1 w-1 md:h-10 md:w-auto" />
     </a>
 
@@ -95,7 +98,7 @@
       <a
         routerLink="/home"
         routerLinkActive="text-primary-main font-semibold"
-        class="flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
+        class="menu-item-entrance menu-item-delay-1 flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
       >
         <lucide-icon name="home" class="w-4 h-4"></lucide-icon>
         HOME
@@ -103,7 +106,7 @@
       <div class="relative">
         <button
           (click)="toggleGames()"
-          class="flex items-center cursor-pointer gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
+          class="menu-item-entrance menu-item-delay-2 flex items-center cursor-pointer gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
         >
           <lucide-icon name="gamepad-directional" class="w-4 h-4"></lucide-icon>
           GAMES
@@ -148,12 +151,45 @@
       <a
         routerLink="/account"
         routerLinkActive="text-primary-main font-semibold"
-        class="flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
+        class="menu-item-entrance menu-item-delay-3 flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
       >
         <lucide-icon name="user" class="w-4 h-4"></lucide-icon>
         MAKE AN ACCOUNT
       </a>
     </div>
+  </div>
+  <div
+    class="absolute -bottom-4 left-0 right-0 h-6 overflow-visible pointer-events-none wave-entrance"
+  >
+    <svg viewBox="0 0 1440 48" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+      <defs>
+        <linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#fbcfe8" stop-opacity="0.2" />
+          <stop offset="25%" stop-color="#ec4899" stop-opacity="0.9" />
+          <stop offset="50%" stop-color="#be185d" stop-opacity="1" />
+          <stop offset="75%" stop-color="#ec4899" stop-opacity="0.9" />
+          <stop offset="100%" stop-color="#fbcfe8" stop-opacity="0.6" />
+        </linearGradient>
+        <linearGradient id="waveGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ec4899" stop-opacity="0.4" />
+          <stop offset="30%" stop-color="#be185d" stop-opacity="0.6" />
+          <stop offset="70%" stop-color="#be185d" stop-opacity="0.6" />
+          <stop offset="100%" stop-color="#ec4899" stop-opacity="0.7" />
+        </linearGradient>
+      </defs>
+
+      <!-- Back wave layer -->
+      <path
+        fill="url(#waveGrad2)"
+        d="M0,24 C120,36 240,12 360,24 C480,36 600,12 720,24 C840,36 960,12 1080,24 C1200,36 1320,12 1440,24 L1440,48 L0,48 Z"
+      />
+
+      <!-- Front wave layer -->
+      <path
+        fill="url(#waveGrad1)"
+        d="M0,24 C120,12 240,36 360,24 C480,12 600,36 720,24 C840,12 960,36 1080,24 C1200,12 1320,36 1440,24 L1440,48 L0,48 Z"
+      />
+    </svg>
   </div>
 </nav>
 

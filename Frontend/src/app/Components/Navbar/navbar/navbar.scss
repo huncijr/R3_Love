@@ -1,6 +1,66 @@
 .popup-enter {
   animation: popupIn 0.4s ease-out forwards;
 }
+.wave-entrance {
+  animation: waveEntrance 1.2s ease-in-out forwards;
+}
+
+.logo-entrance {
+  animation: logoFadeIn 0.8s ease-out forwards;
+}
+
+.menu-item-entrance {
+  animation: menuSlideIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.menu-item-delay-1 {
+  animation-delay: 0.15s;
+}
+
+.menu-item-delay-2 {
+  animation-delay: 0.35s;
+}
+.menu-item-delay-3 {
+  animation-delay: 0.55s;
+}
+
+@keyframes logoFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes menuSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes waveEntrance {
+  0% {
+    opacity: 0;
+    transform: scaleY(0) translateY(10px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1) translateY(1);
+  }
+}
 
 @keyframes popupIn {
   from {
