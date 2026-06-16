@@ -1,0 +1,103 @@
+:host ::ng-deep .cal-month-view {
+  min-height: 230px;
+}
+
+/* Cellák fix magassága, hogy minden hónapban egyforma legyen */
+:host ::ng-deep .cal-month-view .cal-day-cell {
+  min-height: 80px;
+  height: 80px; /* Fix magasság! */
+}
+
+:host ::ng-deep .cal-month-view {
+  background-color: transparent;
+}
+
+:host ::ng-deep .cal-month-view .cal-day-number {
+  color: #1f2937 !important;
+  font-weight: 500;
+  opacity: 1 !important;
+}
+
+:host ::ng-deep .cal-month-view .cal-out-month .cal-day-number {
+  color: #921b1b !important;
+  opacity: 0.3 !important;
+  font-weight: 700;
+}
+
+:host ::ng-deep .cal-month-view .cal-day-cell.cal-today {
+  background-color: #e3c0d4 !important;
+  font-size: 90%;
+}
+
+:host ::ng-deep .cal-month-view .cal-day-cell.cal-today .cal-day-number {
+  color: #b60750 !important;
+  font-weight: 700;
+}
+
+:host ::ng-deep .cal-month-view .cal-day-cell:hover {
+  background-color: #f9a8d4 !important;
+}
+
+:host ::ng-deep .cal-month-view .cal-header .cal-cell {
+  color: #1e0510;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .cal-month-view .cal-header {
+  background-color: transparent;
+  border-bottom: 2px solid #f472b6;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+:host ::ng-deep .cal-month-view .cal-day-cell {
+  border: 1px solid #fbcfe8;
+}
+
+:host ::ng-deep .cal-month-view .cal-event-badge {
+  background-color: #9b4570;
+}
+
+:host ::ng-deep .cal-month-view .cal-day-cell {
+  min-height: 80px;
+}
+@media (max-width: 768px) {
+  :host ::ng-deep .cal-month-view .cal-day-cell {
+    min-height: 20px;
+  }
+  :host ::ng-deep .cal-month-view .cal-header .cal-cell {
+    font-size: 0.75rem;
+  }
+  :host ::ng-deep .cal-month-view .cal-day-number {
+    font-size: 1rem;
+  }
+  :host ::ng-deep .cal-month-view .cal-day-cell {
+    min-height: 60px;
+    height: 60px;
+  }
+}
+@media (max-width: 640px) {
+  :host ::ng-deep .cal-month-view .cal-day-cell {
+    min-height: 30px;
+    padding: 1px !important;
+  }
+
+  :host ::ng-deep .cal-month-view .cal-header .cal-cell {
+    font-size: 0.5rem;
+    padding: 1px !important;
+  }
+
+  :host ::ng-deep .cal-month-view .cal-day-number {
+    font-size: 0.625rem;
+  }
+
+  :host ::ng-deep .cal-month-view .cal-day-cell.cal-today .cal-day-number {
+    font-size: 0.75rem;
+  }
+  :host ::ng-deep .cal-month-view .cal-day-cell {
+    min-height: 45px;
+    height: 45px;
+  }
+}

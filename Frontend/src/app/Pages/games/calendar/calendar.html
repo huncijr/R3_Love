@@ -1,10 +1,14 @@
 <div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-[#f4c9f5]">
-  <div class="max-w-4xl w-full mx-auto">
-    <!-- Calendar Card -->
-    <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden">
-      <!-- Custom header with spartan-ng buttons and Lucide icons -->
-      <div class="bg-[#fbcfe8] p-4 md:p-6 flex items-center justify-between">
-        <button hlmBtn variant="secondary" size="icon-sm" (click)="prevMonth()">
+  <div class="max-w-7xl w-full mx-auto">
+    <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden mb-4">
+      <div class="bg-[#ce85ae] p-4 md:p-6 flex items-center justify-between">
+        <button
+          hlmBtn
+          variant="secondary"
+          size="icon-sm"
+          (click)="prevMonth()"
+          class="cursor-pointer"
+        >
           <lucide-icon name="chevron-left" class="w-5 h-5"></lucide-icon>
         </button>
 
@@ -12,16 +16,79 @@
           {{ viewDate | date: 'MMMM yyyy' }}
         </h2>
 
-        <button hlmBtn variant="secondary" size="icon-sm" (click)="nextMonth()">
+        <button
+          hlmBtn
+          variant="secondary"
+          class="cursor-pointer"
+          size="icon-sm"
+          (click)="nextMonth()"
+        >
           <lucide-icon name="chevron-right" class="w-5 h-5"></lucide-icon>
         </button>
       </div>
+    </div>
 
-      <!-- angular-calendar component -->
-      <div class="p-4">
-        <mwl-calendar-month-view [viewDate]="viewDate" [events]="events" [activeDayIsOpen]="false">
-        </mwl-calendar-month-view>
+    <div class="flex flex-col md:flex-row gap-4">
+      <!-- Naptár (bal oldal / felső rész) -->
+      <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden flex-1">
+        <div class="p-4" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+          <mwl-calendar-month-view
+            [viewDate]="viewDate"
+            [events]="events"
+            [activeDayIsOpen]="false"
+            [cellTemplate]="customCellTemplate"
+          >
+          </mwl-calendar-month-view>
+        </div>
       </div>
+
+      @if (getMonthEvents.length > 0) {
+        <div class="md:w-64 lg:w-72 flex-shrink-0">
+          <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden p-4">
+            <h3 class="text-lg font-bold text-[#be185d] mb-3 flex items-center gap-2">
+              <lucide-icon name="calendar-heart" class="w-5 h-5"></lucide-icon>
+              Upcoming Events
+            </h3>
+            <div class="flex flex-col gap-2">
+              @for (event of getMonthEvents; track event.title) {
+                <div class="bg-pink-50 border border-pink-200 rounded-lg p-3">
+                  <div class="text-pink-800 text-sm font-semibold">
+                    {{ event.title }}
+                  </div>
+                  <div class="text-pink-600 text-xs mt-1">
+                    {{ event.start | date: 'MMMM d, yyyy' }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
     </div>
   </div>
 </div>
+
+<ng-template #customCellTemplate let-day="day" let-locale="locale">
+  <div
+    class="cal-cell-top h-full flex flex-col relative"
+    [class.bg-pink-100]="day.events.length > 0 && day.inMonth"
+    [class.bg-pink-50]="day.events.length > 0 && !day.inMonth"
+  >
+    <span
+      class="cal-day-number self-end"
+      [class.cal-day-number--has-events]="day.events.length > 0"
+    >
+      {{ day.date | date: 'd' : locale }}
+    </span>
+    <div class="flex flex-col gap-0.5 mt-1 px-1">
+      <div
+        *ngFor="let event of day.events"
+        class="text-[10px] leading-tight truncate px-1 py-0.5 rounded"
+        [style.background-color]="'#fbcfe8'"
+        [style.color]="'#be185d'"
+      >
+        {{ event.title }}
+      </div>
+    </div>
+  </div>
+</ng-template>

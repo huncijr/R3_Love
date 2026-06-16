@@ -1,18 +1,20 @@
 import { Component } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { CalendarMonthViewComponent } from 'angular-calendar';
+import { DatePipe, NgFor } from '@angular/common';
+import { CalendarMonthViewComponent, CalendarEvent } from 'angular-calendar';
 import { HlmButton } from '@spartan-ng/helm/button';
+
 import {
   LucideAngularModule,
   LUCIDE_ICONS,
   LucideIconProvider,
   ChevronLeft,
   ChevronRight,
+  CalendarHeart,
 } from 'lucide-angular';
 
 @Component({
   selector: 'app-calendar',
-  imports: [CalendarMonthViewComponent, DatePipe, LucideAngularModule, HlmButton],
+  imports: [CalendarMonthViewComponent, DatePipe, LucideAngularModule, HlmButton, NgFor],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
   providers: [
@@ -21,6 +23,7 @@ import {
       useValue: new LucideIconProvider({
         ChevronLeft,
         ChevronRight,
+        CalendarHeart,
       }),
       multi: true,
     },
@@ -28,62 +31,65 @@ import {
 })
 export class Calendar {
   viewDate: Date = new Date();
-  events = [];
-  // const date
-  //   currentDate = signal(new Date());
-  //   weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  //   monthYearLabel = computed(() => {
-  //     return this.currentDate().toLocaleDateString('en-US', {
-  //       month: 'long',
-  //       year: 'numeric',
-  //     });
-  //   });
-  //   calendarDays = computed(() => {
-  //     const date = this.currentDate();
-  //     const year = date.getFullYear();
-  //     const month = date.getMonth();
+  get events(): CalendarEvent[] {
+    const year = this.viewDate.getFullYear();
+    return [
+      {
+        start: new Date(year, 1, 14),
+        title: "Valentine's Day",
+        allDay: true,
+        color: {
+          primary: '#ec4899',
+          secondary: '#fbcfe8',
+        },
+      },
+    ];
+  }
 
-  //     const firstDayOfMonth = new Date(year, month, 1);
-  //     const lastDayOfMonth = new Date(year, month + 1, 0);
-  //     const startDay = firstDayOfMonth.getDay();
-  //     const daysInMonth = lastDayOfMonth.getDate();
+  get getMonthEvents(): CalendarEvent[] {
+    const year = this.viewDate.getFullYear();
+    const month = this.viewDate.getMonth();
+    return this.events.filter((event) => {
+      const eventMonth = event.start.getMonth();
+      const eventYear = event.start.getFullYear();
+      return eventMonth === month && eventYear === year;
+    });
+  }
 
-  //     const offset = startDay === 0 ? 6 : startDay - 1;
-  //     const days: {
-  //       day: number | null;
-  //       isCurrentMonth: boolean;
-  //       isToday: boolean;
-  //     }[] = [];
-
-  //     for (let i = 0; i < offset; i++) {
-  //       days.push({ day: null, isCurrentMonth: false, isToday: false });
-  //     }
-
-  //     const today = new Date();
-  //     for (let i = 1; i <= daysInMonth; i++) {
-  //       const isToday =
-  //         i === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-  //       days.push({ day: i, isCurrentMonth: true, isToday });
-  //     }
-
-  //     const remaining = 42 - days.length;
-  //     for (let i = 0; i < remaining; i++) {
-  //       days.push({ day: null, isCurrentMonth: false, isToday: false });
-  //     }
-  //     return days;
-  //   });
+  private StartX = 0;
+  private EndX = 0;
+  private swipeX = 50;
 
   prevMonth() {
     const newDate = new Date(this.viewDate);
     newDate.setMonth(newDate.getMonth() - 1);
     this.viewDate = newDate;
-    // const current = this.currentDate();
-    // this.currentDate.set(new Date(current.getFullYear(), current.getMonth() - 1, 1));
   }
 
   nextMonth() {
     const newDate = new Date(this.viewDate);
     newDate.setMonth(newDate.getMonth() + 1);
     this.viewDate = newDate;
+  }
+
+  onTouchStart(event: TouchEvent) {
+    this.StartX = event.changedTouches[0].screenX;
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    this.EndX = event.changedTouches[0].screenX;
+    this.handleSwipe();
+  }
+
+  private handleSwipe() {
+    const swipeDistance = this.EndX - this.StartX;
+
+    if (Math.abs(swipeDistance) > this.swipeX) {
+      if (swipeDistance < 0) {
+        this.nextMonth();
+      } else {
+        this.prevMonth();
+      }
+    }
   }
 }

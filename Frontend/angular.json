@@ -29,7 +29,11 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/tailwind-output.css", "src/styles.scss"]
+            "styles": [
+              "node_modules/angular-calendar/css/angular-calendar.css",
+              "src/tailwind-output.css",
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {
