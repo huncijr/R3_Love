@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, HostListener, ElementRef } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';
 
@@ -43,15 +43,24 @@ export class Navbar {
   isMenuOpen = signal(false);
   isGamesOpen = signal(false);
 
-  constructor() {
+  constructor(private elementRef: ElementRef) {
     const menuSaved = localStorage.getItem('menuOpen');
     const gameSaved = localStorage.getItem('gamesOpen');
-    console.log('menuOpen from storage:', menuSaved);
-    console.log('gamesOpen from storage:', gameSaved);
-
+    // console.log('menuOpen from storage:', menuSaved);
+    // console.log('gamesOpen from storage:', gameSaved);
     this.isGamesOpen.set(menuSaved === 'true');
     this.isGamesOpen.set(gameSaved === 'true');
   }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const clickedInside = this.elementRef.nativeElement.contains(event?.target);
+    if (!clickedInside && this.isGamesOpen()) {
+      this.isGamesOpen.set(false);
+      localStorage.setItem('gamesOpen', 'false');
+    }
+  }
+
   toggleMenu() {
     const newValue = !this.isMenuOpen();
     this.isMenuOpen.set(newValue);

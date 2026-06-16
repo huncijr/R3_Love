@@ -101,3 +101,24 @@
     height: 45px;
   }
 }
+
+@keyframes slideDownBlur {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.95);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(4px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDownBlur 1.2s cubic-bezier(1, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}

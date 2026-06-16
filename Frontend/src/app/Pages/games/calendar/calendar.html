@@ -1,6 +1,8 @@
 <div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-[#f4c9f5]">
   <div class="max-w-7xl w-full mx-auto">
-    <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden mb-4">
+    <div
+      class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden mb-4 animate-slide-down"
+    >
       <div class="bg-[#ce85ae] p-4 md:p-6 flex items-center justify-between">
         <button
           hlmBtn
@@ -28,8 +30,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col md:flex-row gap-4">
-      <!-- Naptár (bal oldal / felső rész) -->
+    <div class="flex flex-col md:flex-row gap-4 animate-slide-down">
       <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden flex-1">
         <div class="p-4" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
           <mwl-calendar-month-view
@@ -42,28 +43,46 @@
         </div>
       </div>
 
-      @if (getMonthEvents.length > 0) {
-        <div class="md:w-64 lg:w-72 flex-shrink-0">
-          <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden p-4">
-            <h3 class="text-lg font-bold text-[#be185d] mb-3 flex items-center gap-2">
-              <lucide-icon name="calendar-heart" class="w-5 h-5"></lucide-icon>
-              Upcoming Events
-            </h3>
+      <div class="md:w-64 lg:w-72 shrink-0">
+        <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden p-4">
+          <h3 class="text-lg font-bold text-[#be185d] mb-3 flex items-center gap-2">
+            <lucide-icon name="calendar-heart" class="w-5 h-5"></lucide-icon>
+            Upcoming Events
+          </h3>
+          @if (getMonthEvents.length > 0) {
             <div class="flex flex-col gap-2">
               @for (event of getMonthEvents; track event.title) {
                 <div class="bg-pink-50 border border-pink-200 rounded-lg p-3">
                   <div class="text-pink-800 text-sm font-semibold">
                     {{ event.title }}
                   </div>
-                  <div class="text-pink-600 text-xs mt-1">
+                  <span class="text-pink-600 text-sm font-bold mt-1">
                     {{ event.start | date: 'MMMM d, yyyy' }}
-                  </div>
+                  </span>
+                  @if (event.allDay) {
+                    <span
+                      class="bg-pink-200 text-pink-700 text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                      >All day</span
+                    >
+                  }
+                  @if (event.meta?.description) {
+                    <p class="text-pink-500 text-xs mt-2 leading-relaxed">
+                      {{ event.meta.description }}
+                    </p>
+                  }
                 </div>
               }
             </div>
-          </div>
+          } @else {
+            <div class="flex flex-col">
+              <div class="flex gap-3 items-center bg-pink-50 border border-pink-200 rounded-lg p-3">
+                <lucide-icon name="calendar-off" class="w-7 h-7 text-pink-300 mb-2"> </lucide-icon>
+                <p class="text-pink-400 pb-2 text-sm font-bold">No upcoming events</p>
+              </div>
+            </div>
+          }
         </div>
-      }
+      </div>
     </div>
   </div>
 </div>

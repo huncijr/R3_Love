@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CalendarHeart,
+  CalendarOff,
 } from 'lucide-angular';
 
 @Component({
@@ -24,13 +25,28 @@ import {
         ChevronLeft,
         ChevronRight,
         CalendarHeart,
+        CalendarOff,
       }),
       multi: true,
     },
   ],
 })
 export class Calendar {
-  viewDate: Date = new Date();
+  private loadSavedDate(): Date {
+    const saved = localStorage.getItem('calendar-view-date');
+    if (saved) {
+      const parsed = new Date(saved);
+      if (!isNaN(parsed.getTime())) {
+        return parsed;
+      }
+    }
+    return new Date();
+  }
+  viewDate: Date = this.loadSavedDate();
+
+  private savedDate = () => {
+    localStorage.setItem('calendar-view-date', this.viewDate.toISOString());
+  };
   get events(): CalendarEvent[] {
     const year = this.viewDate.getFullYear();
     return [
@@ -41,6 +57,74 @@ export class Calendar {
         color: {
           primary: '#ec4899',
           secondary: '#fbcfe8',
+        },
+        meta: {
+          description:
+            "A special day to celebrate love, romance, and affection with your partner. Don't forget the flowers!",
+        },
+      },
+      {
+        start: new Date(year, 2, 14),
+        title: 'White Day',
+        allDay: true,
+        color: {
+          primary: '#ec4899',
+          secondary: '#fbcfe8',
+        },
+        meta: {
+          description:
+            "On Valentine's Day, women typically give gifts to men. On White Day, it is the men's turn to return the favor by gifting white chocolates, jewelry, or sweets",
+        },
+      },
+      {
+        start: new Date(year, 3, 23),
+        title: 'Lovers Day',
+        allDay: true,
+        color: {
+          primary: '#ec4899',
+          secondary: '#fbcfe8',
+        },
+        meta: {
+          description:
+            'Couples use this day to escape the daily hustle, spend quality time together, and celebrate the simple joy of being a couple',
+        },
+      },
+      {
+        start: new Date(year, 7, 1),
+        title: 'Girlfriend Day',
+        allDay: true,
+        color: {
+          primary: '#ec4899',
+          secondary: '#fbcfe8',
+        },
+        meta: {
+          description:
+            'A massive social media trend where men take the spotlight to pamper, appreciate, and praise their girlfriends',
+        },
+      },
+      {
+        start: new Date(year, 7, 8),
+        title: 'Couples Day',
+        allDay: true,
+        color: {
+          primary: '#ec4899',
+          secondary: '#fbcfe8',
+        },
+        meta: {
+          description: 'This day is a celebration of teamwork, partnership, and togetherness',
+        },
+      },
+      {
+        start: new Date(year, 9, 3),
+        title: 'Boyfriend Day',
+        allDay: true,
+        color: {
+          primary: '#ec4899',
+          secondary: '#fbcfe8',
+        },
+        meta: {
+          description:
+            'This is the day when women return the energy and show appreciation for their boyfriends. It’s all about making the men feel special, loved, and noticed',
         },
       },
     ];
@@ -64,12 +148,14 @@ export class Calendar {
     const newDate = new Date(this.viewDate);
     newDate.setMonth(newDate.getMonth() - 1);
     this.viewDate = newDate;
+    this.savedDate();
   }
 
   nextMonth() {
     const newDate = new Date(this.viewDate);
     newDate.setMonth(newDate.getMonth() + 1);
     this.viewDate = newDate;
+    this.savedDate();
   }
 
   onTouchStart(event: TouchEvent) {
