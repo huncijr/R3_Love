@@ -17,6 +17,7 @@ import {
   Plus,
   X,
   CalendarClock,
+  CheckCheck,
 } from 'lucide-angular';
 
 interface EventColor {
@@ -50,6 +51,7 @@ interface EventColor {
         CalendarClock,
         ChevronDown,
         ChevronUp,
+        CheckCheck,
       }),
       multi: true,
     },
@@ -80,6 +82,10 @@ export class Calendar {
   newEventTitle = signal('');
   newEventDescription = signal('');
   newEventColor = signal('#ec4899');
+  titleError = signal(false);
+
+  toastMessage = signal<string | null>(null);
+  toastVisible = signal(false);
 
   isShowing = signal(false);
 
@@ -203,6 +209,9 @@ export class Calendar {
     this.showAddForm.set(true);
     this.newEventTitle.set('');
     this.newEventDescription.set('');
+    this.newEventColor.set('#ec4899');
+    this.titleError.set(false);
+    this.isShowing.set(false);
   }
 
   ShowColor() {
@@ -222,25 +231,45 @@ export class Calendar {
     const date = this.selectedDate();
     const title = this.newEventTitle();
 
-    if (!date || !title.trim()) return;
+    if (!title.trim()) {
+      this.titleError.set(true);
+      return;
+    }
+
+    if (!date) return;
+
     const newEvent: CalendarEvent = {
       start: date,
       title: title.trim(),
       allDay: true,
       color: {
-        primary: '#ec4899',
-        secondary: '#fbcfe8',
+        primary: this.newEventColor(),
+        secondary: this.newEventColor() + '20',
+      },
+      meta: {
+        description: this.newEventDescription().trim(),
       },
     };
 
     this.eventsSignal.update((events) => [...events, newEvent]);
     this.showAddForm.set(false);
     this.selectedDate.set(null);
+    this.newEventTitle.set('');
+    this.newEventDescription.set('');
+    this.newEventColor.set('#ec4899');
+    this.isShowing.set(false);
+
+    this.ShowToast('Event added succesfully');
   }
 
   cancelAdd() {
     this.showAddForm.set(false);
     this.selectedDate.set(null);
+    this.newEventTitle.set('');
+    this.newEventDescription.set('');
+    this.newEventColor.set('#ec4899');
+    this.titleError.set(false);
+    this.isShowing.set(false);
   }
 
   private handleSwipe() {
@@ -253,5 +282,16 @@ export class Calendar {
         this.prevMonth();
       }
     }
+  }
+  private ShowToast(message: string) {
+    this.toastMessage.set(message);
+    this.toastVisible.set(true);
+
+    setTimeout(() => {
+      this.toastVisible.set(false);
+      setTimeout(() => {
+        this.toastMessage.set(null);
+      }, 300);
+    }, 3000);
   }
 }

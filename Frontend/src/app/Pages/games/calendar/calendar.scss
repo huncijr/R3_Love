@@ -122,3 +122,37 @@
   animation: slideDownBlur 1.2s cubic-bezier(1, 1.56, 0.64, 1) forwards;
   opacity: 0;
 }
+
+.toast-enter {
+  animation: toastSlideIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.color-picker-enter {
+  animation: colorPickerReveal 0.3s ease-out forwards;
+}
+
+@keyframes toastSlideIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes colorPickerReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
