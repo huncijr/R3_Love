@@ -18,7 +18,7 @@ import {
 } from 'lucide-angular';
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, LucideAngularModule, HlmButton],
+  imports: [RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
   providers: [

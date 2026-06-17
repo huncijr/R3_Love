@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { DatePipe, NgFor } from '@angular/common';
 import { CalendarMonthViewComponent, CalendarEvent } from 'angular-calendar';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { FormsModule } from '@angular/forms';
 
 import {
   LucideAngularModule,
@@ -9,13 +10,31 @@ import {
   LucideIconProvider,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   CalendarHeart,
   CalendarOff,
+  ChevronUp,
+  Plus,
+  X,
+  CalendarClock,
 } from 'lucide-angular';
+
+interface EventColor {
+  name: string;
+  primary: string;
+  secondary: string;
+}
 
 @Component({
   selector: 'app-calendar',
-  imports: [CalendarMonthViewComponent, DatePipe, LucideAngularModule, HlmButton, NgFor],
+  imports: [
+    CalendarMonthViewComponent,
+    DatePipe,
+    LucideAngularModule,
+    HlmButton,
+    NgFor,
+    FormsModule,
+  ],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
   providers: [
@@ -26,6 +45,11 @@ import {
         ChevronRight,
         CalendarHeart,
         CalendarOff,
+        Plus,
+        X,
+        CalendarClock,
+        ChevronDown,
+        ChevronUp,
       }),
       multi: true,
     },
@@ -47,7 +71,19 @@ export class Calendar {
   private savedDate = () => {
     localStorage.setItem('calendar-view-date', this.viewDate.toISOString());
   };
-  get events(): CalendarEvent[] {
+
+  eventsSignal = signal<CalendarEvent[]>(this.getDefaultEvents());
+
+  selectedDate = signal<Date | null>(null);
+  showAddForm = signal(false);
+
+  newEventTitle = signal('');
+  newEventDescription = signal('');
+  newEventColor = signal('#ec4899');
+
+  isShowing = signal(false);
+
+  getDefaultEvents(): CalendarEvent[] {
     const year = this.viewDate.getFullYear();
     return [
       {
@@ -130,6 +166,10 @@ export class Calendar {
     ];
   }
 
+  get events(): CalendarEvent[] {
+    return this.eventsSignal();
+  }
+
   get getMonthEvents(): CalendarEvent[] {
     const year = this.viewDate.getFullYear();
     const month = this.viewDate.getMonth();
@@ -158,6 +198,17 @@ export class Calendar {
     this.savedDate();
   }
 
+  onDayClicked(day: any) {
+    this.selectedDate.set(day.date);
+    this.showAddForm.set(true);
+    this.newEventTitle.set('');
+    this.newEventDescription.set('');
+  }
+
+  ShowColor() {
+    this.isShowing.set(!this.isShowing());
+  }
+
   onTouchStart(event: TouchEvent) {
     this.StartX = event.changedTouches[0].screenX;
   }
@@ -165,6 +216,31 @@ export class Calendar {
   onTouchEnd(event: TouchEvent) {
     this.EndX = event.changedTouches[0].screenX;
     this.handleSwipe();
+  }
+
+  addEvent() {
+    const date = this.selectedDate();
+    const title = this.newEventTitle();
+
+    if (!date || !title.trim()) return;
+    const newEvent: CalendarEvent = {
+      start: date,
+      title: title.trim(),
+      allDay: true,
+      color: {
+        primary: '#ec4899',
+        secondary: '#fbcfe8',
+      },
+    };
+
+    this.eventsSignal.update((events) => [...events, newEvent]);
+    this.showAddForm.set(false);
+    this.selectedDate.set(null);
+  }
+
+  cancelAdd() {
+    this.showAddForm.set(false);
+    this.selectedDate.set(null);
   }
 
   private handleSwipe() {
