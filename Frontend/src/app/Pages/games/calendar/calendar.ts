@@ -89,6 +89,42 @@ export class Calendar {
 
   isShowing = signal(false);
 
+  quizStep = signal(1);
+  quizGender = signal<string>('');
+  quizDatingDate = signal<string>('');
+  quizPartnerBirthday = signal<string>('');
+  quizCompleted = signal(false);
+
+  daysTogether = signal(0);
+
+  constructor() {
+    const savedQuiz = localStorage.getItem('calendar-quiz');
+    if (savedQuiz) {
+      const data = JSON.parse(savedQuiz);
+      this.quizGender.set(data.gender || '');
+      this.quizDatingDate.set(data.datingDate || '');
+      this.quizPartnerBirthday.set(data.partnerBirthday);
+      this.quizCompleted.set(data.completed || false);
+
+      if (this.quizCompleted()) {
+        this.calculateDaysTogether();
+        this.generateQuizEvents();
+      }
+    }
+  }
+
+  nextStep() {
+    if (this.quizStep() < 3) {
+      this.quizStep.update((s) => s + 1);
+    }
+  }
+
+  prevStep() {
+    if (this.quizStep() > 1) {
+      this.quizStep.update((s) => s - 1);
+    }
+  }
+
   getDefaultEvents(): CalendarEvent[] {
     const year = this.viewDate.getFullYear();
     return [
@@ -243,8 +279,8 @@ export class Calendar {
       title: title.trim(),
       allDay: true,
       color: {
-        primary: this.newEventColor(),
-        secondary: this.newEventColor() + '20',
+        primary: this.newEventColor() + '35',
+        secondary: this.newEventColor() + '34',
       },
       meta: {
         description: this.newEventDescription().trim(),
@@ -293,5 +329,66 @@ export class Calendar {
         this.toastMessage.set(null);
       }, 300);
     }, 3000);
+  }
+
+  private calculateDaysTogether() {
+    const datingDate = new Date(this.quizDatingDate());
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - datingDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 24));
+    this.daysTogether.set(diffDays);
+  }
+
+  completeQuiz() {
+    const data = {
+      gender: this.quizGender(),
+      datingDate: this.quizDatingDate(),
+      partnerBirthday: this.quizPartnerBirthday(),
+      completed: true,
+    };
+    localStorage.setItem('calendar-quiz', JSON.stringify(data));
+
+    this.quizCompleted.set(true);
+    this.calculateDaysTogether();
+    this.generateQuizEvents();
+  }
+
+  private generateQuizEvents() {
+    const currentYear = new Date().getFullYear();
+    const events: CalendarEvent[] = [];
+
+    const bday = new Date(this.quizPartnerBirthday());
+    for (let year = currentYear - 1; year <= currentYear + 2; year++) {}
+    events.push({
+      start: new Date(currentYear, bday.getMonth(), bday.getDay()),
+      title: "Partner's Birthday",
+      allDay: true,
+      color: {
+        primary: '#f59e0b',
+        secondary: '#fef3c7',
+      },
+      meta: {
+        description: "Don't forget to celebrate!",
+      },
+    });
+
+    const dating = new Date(this.quizDatingDate());
+    for (let year = currentYear - 1; year <= currentYear + 2; year++) {
+      const anniversaryYear = year - dating.getFullYear();
+      events.push({
+        start: new Date(year, dating.getMonth(), dating.getDate()),
+        title:
+          anniversaryYear > 0
+            ? `${anniversaryYear} Year${anniversaryYear > 1 ? 's' : ''} Together`
+            : 'Together Anniversary',
+        allDay: true,
+        color: {
+          primary: '#ec4899',
+          secondary: '#fbcfe8',
+        },
+        meta: { description: 'Happy Anniversary' },
+      });
+      this.eventsSignal.update((existing) => [...existing, ...events]);
+    }
   }
 }
