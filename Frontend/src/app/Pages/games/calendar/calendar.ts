@@ -2,6 +2,10 @@ import { Component, signal } from '@angular/core';
 import { DatePipe, NgFor } from '@angular/common';
 import { CalendarMonthViewComponent, CalendarEvent } from 'angular-calendar';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmCardImports } from '../../../ui/card/src';
+import { HlmRadioGroupImports } from '../../../ui/radio-group/src';
+import { HlmProgressImports } from '../../../ui/progress/src';
+import { HlmBadgeImports } from '../../../ui/badge/src';
 import { FormsModule } from '@angular/forms';
 
 import {
@@ -18,7 +22,15 @@ import {
   X,
   CalendarClock,
   CheckCheck,
+  Heart,
+  Undo2,
+  Venus,
+  Mars,
+  Shirt,
+  ArrowRight,
 } from 'lucide-angular';
+import { HlmSheetDescription } from '@spartan-ng/helm/sheet';
+import { HlmLabel } from '@spartan-ng/helm/label';
 
 interface EventColor {
   name: string;
@@ -35,6 +47,10 @@ interface EventColor {
     HlmButton,
     NgFor,
     FormsModule,
+    HlmCardImports,
+    HlmRadioGroupImports,
+    HlmBadgeImports,
+    HlmProgressImports,
   ],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
@@ -52,6 +68,12 @@ interface EventColor {
         ChevronDown,
         ChevronUp,
         CheckCheck,
+        Heart,
+        Undo2,
+        Venus,
+        Mars,
+        Shirt,
+        ArrowRight,
       }),
       multi: true,
     },
@@ -89,7 +111,7 @@ export class Calendar {
 
   isShowing = signal(false);
 
-  quizStep = signal(1);
+  quizStep = signal(0);
   quizGender = signal<string>('');
   quizDatingDate = signal<string>('');
   quizPartnerBirthday = signal<string>('');
@@ -123,6 +145,9 @@ export class Calendar {
     if (this.quizStep() > 1) {
       this.quizStep.update((s) => s - 1);
     }
+  }
+  setQuizGender(value: string | undefined) {
+    this.quizGender.set(value ?? '');
   }
 
   getDefaultEvents(): CalendarEvent[] {

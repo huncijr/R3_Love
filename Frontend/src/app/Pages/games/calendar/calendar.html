@@ -1,5 +1,177 @@
-<div></div>
+@if (!quizCompleted()) {
+  <div
+    class="fixed inset-0 z-100 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4"
+  >
+    <div hlmCard class="w-full max-w-lg bg-white p-2">
+      <div hlmCardHeader class="text-center pb-2">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4">
+          <lucide-icon name="heart" class="w-8 h-8 text-accent"></lucide-icon>
+        </div>
+      </div>
+      <div hlmCardContent class="space-y-6">
+        @if (quizStep() > 0) {
+          <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+            <div
+              class="bg-pink-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+              [style.width.%]="(quizStep() / 3) * 100"
+            ></div>
+          </div>
+          <p class="text-xs text-center text-gray-400">Step {{ quizStep() }} of 3</p>
+        }
 
+        <div htmlCardContent class="p-0">
+          @if (quizStep() === 0) {
+            <div class="grid md:grid-cols-2 min-h-[320px]">
+              <div class="relative bg-pink-100 flex items-center justify-center p-8">
+                <div class="text-center">
+                  <div
+                    class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white shadow-lg mb-4"
+                  >
+                    <lucide-icon name="heart"></lucide-icon>
+                  </div>
+                  <img />
+                </div>
+              </div>
+              <div class="flex flex-col justify-between p-8">
+                <div>
+                  <h2 class="text-4xl mb-2 font-bold text-[#be185d]">Welcome!</h2>
+                  <p class="text-gray-600 text-center text-lg leading-relaxed font-bold mb-3">
+                    Answer a few questions to personalize your calendar.
+                  </p>
+                  <p class="text-gray-500 text-sm leading-relaxed">
+                    This helps us create a better experience for you by adding important dates like
+                    your partner's birthday and your anniversary to your calendar.
+                  </p>
+                </div>
+                <div class="flex justify-end mt-8">
+                  <button
+                    hlmBtn
+                    (click)="nextStep()"
+                    class="bg-green-700 hover:bg-green-600 text-white border-none"
+                  >
+                    Continue
+                    <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (quizStep() === 1) {
+          <div class="space-y-4">
+            <h3 class="text-xl font-semibold text-center text-gray-800 mb-6">
+              What is your gender?
+            </h3>
+            <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+              <button
+                (click)="quizGender.set('male')"
+                class="flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all"
+                [class.border-pink-500]="quizGender() === 'male'"
+                [class.bg-pink-50]="quizGender() === 'male'"
+                [class.shadow-md]="quizGender() === 'male'"
+                [class.border-gray-200]="quizGender() !== 'male'"
+                [class.hover:border-pink-300]="quizGender() !== 'male'"
+              >
+                <lucide-icon
+                  name="mars"
+                  [class.text-pink-500]="quizGender() === 'male'"
+                  [class.text-gray-600]="quizGender() !== 'male'"
+                  class="w-6 h-6"
+                ></lucide-icon>
+                <span class="text-sm font-medium">Male</span>
+              </button>
+
+              <button
+                (click)="quizGender.set('female')"
+                class="flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all"
+                [class.border-pink-500]="quizGender() === 'female'"
+                [class.bg-pink-50]="quizGender() === 'female'"
+                [class.shadow-md]="quizGender() === 'female'"
+                [class.border-gray-200]="quizGender() !== 'female'"
+                [class.hover:border-pink-300]="quizGender() !== 'female'"
+              >
+                <lucide-icon
+                  name="venus"
+                  [class.text-pink-500]="quizGender() === 'female'"
+                  [class.text-gray-600]="quizGender() !== 'female'"
+                  class="w-6 h-6"
+                ></lucide-icon>
+                <span class="text-sm font-medium">Female</span>
+              </button>
+
+              <button
+                (click)="quizGender.set('other')"
+                class="flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all"
+                [class.border-pink-500]="quizGender() === 'other'"
+                [class.bg-pink-50]="quizGender() === 'other'"
+                [class.shadow-md]="quizGender() === 'other'"
+                [class.border-gray-200]="quizGender() !== 'other'"
+                [class.hover:border-pink-300]="quizGender() !== 'other'"
+              >
+                <lucide-icon
+                  name="shirt"
+                  [class.text-pink-500]="quizGender() === 'other'"
+                  [class.text-gray-600]="quizGender() !== 'other'"
+                  class="w-6 h-6"
+                ></lucide-icon>
+                <span class="text-sm font-medium">Other</span>
+              </button>
+            </div>
+          </div>
+        }
+        @if (quizStep() === 2) {
+          <div class="space-y-4">
+            <label class="text-lg font-semibold text-center block text-gray-800 mb-4"
+              >When did you start dating with your partner?</label
+            >
+            <div class="flex justify-center">
+              <input
+                type="date"
+                [ngModel]="quizDatingDate()"
+                (ngModelChange)="quizDatingDate.set($event)"
+                class="w-full nax-w-xs text-center text-lg px-4 py-3 rounded-lg border border-pink-300 focus:outline focus:ring-2 focus:ring-pink-400 focus:border-transparent bg-white"
+              />
+            </div>
+          </div>
+        }
+        @if (quizStep() === 3) {
+          <div class="space-y-4">
+            <label class="text-lg font-semibold text-center block text-gray-800 mb-4">
+              When is your partner's birthday?
+            </label>
+            <div class="flex justify-center">
+              <input
+                type="date"
+                [ngModel]="quizPartnerBirthday()"
+                (ngModelChange)="quizPartnerBirthday.set($event)"
+                class="w-full max-w-xs text-center text-lg px-4 py-3 rounded-lg border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent bg-white"
+              />
+            </div>
+          </div>
+        }
+        <div hlmCardFooter class="flex gap-3 pt-2">
+          @if (quizStep() > 1) {
+            <button hlmBtn variant="outline" (click)="prevStep()" class="flex-1">
+              <lucide-icon name="undo-2" class="w-4 h-4 mr-1"></lucide-icon>
+              Back
+            </button>
+          }
+          @if (quizStep() < 3 && quizStep() > 0) {
+            <button
+              hlmBtn
+              (click)="nextStep()"
+              class="flex-1"
+              [disabled]="quizStep() === 1 && !quizGender()"
+            >
+              Next
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
 <div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-[#f4c9f5]">
   <div class="max-w-7xl w-full mx-auto">
     <div
