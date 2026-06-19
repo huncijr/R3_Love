@@ -135,6 +135,10 @@ export class Calendar {
     }
   }
 
+  get todayDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
   nextStep() {
     if (this.quizStep() < 3) {
       this.quizStep.update((s) => s + 1);
@@ -385,7 +389,7 @@ export class Calendar {
     const bday = new Date(this.quizPartnerBirthday());
     for (let year = currentYear - 1; year <= currentYear + 2; year++) {}
     events.push({
-      start: new Date(currentYear, bday.getMonth(), bday.getDay()),
+      start: new Date(currentYear, bday.getMonth(), bday.getDate()),
       title: "Partner's Birthday",
       allDay: true,
       color: {
@@ -408,12 +412,12 @@ export class Calendar {
             : 'Together Anniversary',
         allDay: true,
         color: {
-          primary: '#ec4899',
-          secondary: '#fbcfe8',
+          primary: '#8c81b6',
+          secondary: '#7559d9',
         },
         meta: { description: 'Happy Anniversary' },
       });
-      this.eventsSignal.update((existing) => [...existing, ...events]);
     }
+    this.eventsSignal.update((existing) => [...existing, ...events]);
   }
 }

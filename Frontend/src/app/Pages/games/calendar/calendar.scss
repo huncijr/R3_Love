@@ -1,3 +1,11 @@
+.font-handwriting {
+  font-family: 'Homemade Apple', cursive;
+}
+
+.font-display {
+  font-family: 'Freeman', sans-serif;
+}
+
 :host ::ng-deep .cal-month-view {
   min-height: 230px;
 }

@@ -32,13 +32,17 @@
                   <img />
                 </div>
               </div>
-              <div class="flex flex-col justify-between p-8">
+              <div class="flex flex-col justify-between px-5 py-2">
                 <div>
-                  <h2 class="text-4xl mb-2 font-bold text-[#be185d]">Welcome!</h2>
-                  <p class="text-gray-600 text-center text-lg leading-relaxed font-bold mb-3">
+                  <h2 class="text-4xl items-center font-bold text-[#be185d] font-display">
+                    Welcome!
+                  </h2>
+                  <p
+                    class="text-gray-600 text-left text-lg leading-relaxed font-bold mb-3 font-display tracking-wider"
+                  >
                     Answer a few questions to personalize your calendar.
                   </p>
-                  <p class="text-gray-500 text-sm leading-relaxed">
+                  <p class="text-gray-500 text-sm leading-relaxed font-display">
                     This helps us create a better experience for you by adding important dates like
                     your partner's birthday and your anniversary to your calendar.
                   </p>
@@ -130,6 +134,7 @@
                 type="date"
                 [ngModel]="quizDatingDate()"
                 (ngModelChange)="quizDatingDate.set($event)"
+                [max]="todayDate"
                 class="w-full nax-w-xs text-center text-lg px-4 py-3 rounded-lg border border-pink-300 focus:outline focus:ring-2 focus:ring-pink-400 focus:border-transparent bg-white"
               />
             </div>
@@ -145,6 +150,7 @@
                 type="date"
                 [ngModel]="quizPartnerBirthday()"
                 (ngModelChange)="quizPartnerBirthday.set($event)"
+                [max]="todayDate"
                 class="w-full max-w-xs text-center text-lg px-4 py-3 rounded-lg border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent bg-white"
               />
             </div>
@@ -152,17 +158,32 @@
         }
         <div hlmCardFooter class="flex gap-3 pt-2">
           @if (quizStep() > 1) {
-            <button hlmBtn variant="outline" (click)="prevStep()" class="flex-1">
-              <lucide-icon name="undo-2" class="w-4 h-4 mr-1"></lucide-icon>
+            <button
+              hlmBtn
+              (click)="prevStep()"
+              class="flex-1"
+              [disabled]="quizStep() === 1 && !quizGender()"
+            >
               Back
             </button>
           }
-          @if (quizStep() < 3 && quizStep() > 0) {
+          @if (quizStep() === 3) {
+            <button
+              hlmBtn
+              (click)="completeQuiz()"
+              class="flex-1"
+              [disabled]="!quizPartnerBirthday()"
+            >
+              Finish
+            </button>
+          } @else if (quizStep() > 0) {
             <button
               hlmBtn
               (click)="nextStep()"
               class="flex-1"
-              [disabled]="quizStep() === 1 && !quizGender()"
+              [disabled]="
+                (quizStep() === 1 && !quizGender()) || (quizStep() == 2 && !quizDatingDate())
+              "
             >
               Next
             </button>
@@ -188,7 +209,7 @@
           <lucide-icon name="chevron-left" class="w-5 h-5"></lucide-icon>
         </button>
 
-        <h2 class="text-xl md:text-2xl font-bold text-[#be185d]">
+        <h2 class="text-xl md:text-2xl font-bold text-[#be185d] font-handwriting">
           {{ viewDate | date: 'MMMM yyyy' }}
         </h2>
 
@@ -220,7 +241,9 @@
 
       <div class="md:w-64 lg:w-72 shrink-0">
         <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden p-4">
-          <h3 class="text-lg font-bold text-[#be185d] mb-3 flex items-center gap-2">
+          <h3
+            class="text-lg font-bold text-[#be185d] mb-3 flex items-center gap-2 font-handwriting"
+          >
             <lucide-icon name="calendar-heart" class="w-5 h-5"></lucide-icon>
             Upcoming Events
           </h3>
