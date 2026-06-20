@@ -10,6 +10,7 @@ import { Client } from "pg";
 import { userSchema } from "./graphql/user/user.schema";
 import { userResolver } from "./graphql/user/user.resolver";
 import { connectDatabase } from "./db";
+import { AppError } from "./middleware/ErrorHandler";
 
 dotenv.config();
 
@@ -33,6 +34,22 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   introspection: isDevelopment,
+  formatError: (formattedError, error) => {
+    if (!isDevelopment) {
+      delete formattedError.extensions?.stacktrace;
+    }
+    if (error instanceof AppError) {
+      return {
+        ...formattedError,
+        extensions: {
+          ...formattedError.extensions,
+          code: "OPERATIONAL_ERROR",
+          statusCode: error.statusCode,
+        },
+      };
+    }
+    return formattedError;
+  },
 });
 
 async function startServer(): Promise<void> {

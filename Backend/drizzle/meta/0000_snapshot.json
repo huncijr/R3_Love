@@ -1,5 +1,5 @@
 {
-  "id": "25de44f7-4d4c-4d82-a838-946445a113e2",
+  "id": "b6b17e97-1b78-4dc4-9699-39ce1c709caf",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -43,8 +43,7 @@
           "name": "is_single",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

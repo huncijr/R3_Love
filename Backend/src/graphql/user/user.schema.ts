@@ -17,9 +17,7 @@ export const userSchema = `
     createUser(
       name: String!
       password: String!
-      partnerName: String
       gender: String
-      isSingle: Boolean
     ): User
   }
 `;

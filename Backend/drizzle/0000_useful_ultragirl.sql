@@ -4,6 +4,6 @@ CREATE TABLE "Users" (
 	"password" varchar(255),
 	"partner_name" varchar(255),
 	"gender" varchar(50),
-	"is_single" boolean DEFAULT false,
+	"is_single" boolean,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );

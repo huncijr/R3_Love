@@ -15,7 +15,7 @@ export const user = pgTable("Users", {
   password: varchar("password", { length: 255 }),
   partnerName: varchar("partner_name", { length: 255 }),
   gender: varchar("gender", { length: 50 }),
-  isSingle: boolean("is_single").default(false),
+  isSingle: boolean("is_single"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
