@@ -11,9 +11,17 @@ const CREATE_USER = gql`
   }
 `;
 
-export interface CreateUserResponse {
+export interface User {
   id: string;
   name: string;
+  partnerName: string | null;
+  gender: string | null;
+  isSingle: boolean | null;
+}
+
+export interface CreateUserResponse {
+  user: User;
+  token: string;
 }
 
 @Injectable({

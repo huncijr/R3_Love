@@ -325,9 +325,6 @@
   .mr-1 {
     margin-right: calc(var(--spacing) * 1);
   }
-  .mr-2 {
-    margin-right: calc(var(--spacing) * 2);
-  }
   .mb-1 {
     margin-bottom: calc(var(--spacing) * 1);
   }
@@ -1063,9 +1060,6 @@
   .text-ring {
     color: var(--ring);
   }
-  .text-secondary {
-    color: var(--secondary);
-  }
   .text-secondary-foreground {
     color: var(--secondary-foreground);
   }
@@ -1348,13 +1342,6 @@
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in oklab, var(--primary) 80%, transparent);
         }
-      }
-    }
-  }
-  .hover\:bg-secondary {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--secondary);
       }
     }
   }

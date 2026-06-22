@@ -18,6 +18,16 @@ const Node_env = process.env.NODE_ENV || "development";
 const PORT = Number(process.env.PORT) || 4000;
 const isDevelopment = Node_env === "development";
 
+function parseCookies(cookieHeader: string): Record<string, string> {
+  const cookies: Record<string, string> = {};
+  if (!cookieHeader) return cookies;
+  cookieHeader.split(";").forEach((cookie) => {
+    const [name, ...rest] = cookie.trim().split("=");
+    if (name) cookies[name] = rest.join("=");
+  });
+  return cookies;
+}
+
 const corsOption = {
   origin: isDevelopment ? ["http://localhost:4200", "*"] : ["https://..."],
   credentials: true,
@@ -56,7 +66,6 @@ async function startServer(): Promise<void> {
   await connectDatabase();
   const { url }: { url: string } = await startStandaloneServer(server, {
     listen: { port: PORT },
-    // Context function típusosítva – nincs többé 'implicitly any' hiba!
     context: async (
       contextArgs: StandaloneServerContextFunctionArgument,
     ): Promise<MyContext> => {

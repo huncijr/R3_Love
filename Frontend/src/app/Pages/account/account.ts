@@ -8,19 +8,12 @@ import { ToastrService } from 'ngx-toastr';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { Mars, Venus, User, CircleCheck } from 'lucide-angular';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import { UserService } from '../../Services/user.service';
+import { UserService } from '../../services/user.service';
+import { UserContext } from '../../services/UserContext/user-context';
 
 @Component({
   selector: 'app-account',
-  imports: [
-    FormsModule,
-    HlmButton,
-    HlmCardImports,
-    HlmLabel,
-    LucideAngularModule,
-    HlmInput,
-    HlmBadge,
-  ],
+  imports: [FormsModule, HlmButton, HlmCardImports, HlmLabel, LucideAngularModule, HlmInput],
   templateUrl: './account.html',
   providers: [
     { provide: LUCIDE_ICONS, useValue: new LucideIconProvider({ Mars, Venus, User, CircleCheck }) },
@@ -30,6 +23,7 @@ import { UserService } from '../../Services/user.service';
 export class Account {
   private toastr = inject(ToastrService);
   private userService = inject(UserService);
+  private userContext = inject(UserContext);
 
   username = signal('');
   password = signal('');
@@ -93,8 +87,8 @@ export class Account {
         next: (response) => {
           this.isLoading.set(false);
           this.isSubmited.set(true);
+          this.userContext.login(response.user, response.token);
           this.toastr.success('Account created successfully!', 'Success');
-          console.log('User created with ID:', response.id);
         },
         error: (err) => {
           this.isLoading.set(false);
@@ -112,5 +106,10 @@ export class Account {
         gender: this.gender(),
       });
     }
+  }
+
+  logout(user: string) {
+    this.userContext.logout();
+    this.toastr.info('You have been logged out', 'Logout');
   }
 }

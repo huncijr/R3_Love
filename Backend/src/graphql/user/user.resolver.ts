@@ -2,6 +2,8 @@ import { db } from "../../db/index.js";
 import { user } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
+import bcrypt from "bcrypt";
+import { generateToken } from "../../middleware/Auth.js";
 
 export const userResolver = {
   Query: {
@@ -37,15 +39,22 @@ export const userResolver = {
       },
     ) => {
       try {
+        const hashedPassword = await bcrypt.hash(args.password, 10);
         const newUser = {
           name: args.name,
-          password: args.password,
+          password: hashedPassword,
           partnerName: null,
           gender: args.gender || null,
         };
 
         const result = await db.insert(user).values(newUser).returning();
-        return result[0];
+        const createdUser = result[0];
+        const token = generateToken(createdUser.id);
+
+        return {
+          user: createdUser,
+          token: token,
+        };
       } catch (error) {
         errorHandler(error);
       }
