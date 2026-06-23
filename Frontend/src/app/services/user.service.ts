@@ -5,8 +5,14 @@ import { map, Observable } from 'rxjs';
 const CREATE_USER = gql`
   mutation CreateUser($name: String!, $password: String!, $gender: String!) {
     createUser(name: $name, password: $password, gender: $gender) {
-      id
-      name
+      user {
+        id
+        name
+        partnerName
+        gender
+        isSingle
+      }
+      token
     }
   }
 `;

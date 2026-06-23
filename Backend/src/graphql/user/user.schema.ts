@@ -8,6 +8,11 @@ export const userSchema = `
     createdAt: String!
   }
 
+  type AuthPayload {
+    user: User!
+    token: String!
+  }
+
   type Query {
     users: [User!]!
     user(id: ID!): User
@@ -18,6 +23,6 @@ export const userSchema = `
       name: String!
       password: String!
       gender: String
-    ): User
+    ): AuthPayload!
   }
 `;

@@ -25,6 +25,8 @@ export class Account {
   private userService = inject(UserService);
   private userContext = inject(UserContext);
 
+  currentUser = this.userContext.currentUser;
+
   username = signal('');
   password = signal('');
   gender = signal('');
@@ -108,7 +110,7 @@ export class Account {
     }
   }
 
-  logout(user: string) {
+  logout() {
     this.userContext.logout();
     this.toastr.info('You have been logged out', 'Logout');
   }
