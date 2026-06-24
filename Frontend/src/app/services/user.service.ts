@@ -17,6 +17,21 @@ const CREATE_USER = gql`
   }
 `;
 
+const LOGIN = gql`
+  mutation Login($name: String!, $password: String!) {
+    login(name: $name, password: $password) {
+      user {
+        id
+        name
+        partnerName
+        gender
+        isSingle
+      }
+      token
+    }
+  }
+`;
+
 export interface User {
   id: string;
   name: string;
@@ -42,5 +57,13 @@ export class UserService {
         variables: { name, password, gender },
       })
       .pipe(map((result) => result.data!.createUser));
+  }
+  login(name: string, password: string): Observable<CreateUserResponse> {
+    return this.apollo
+      .mutate<{ login: CreateUserResponse }>({
+        mutation: LOGIN,
+        variables: { name, password },
+      })
+      .pipe(map((result) => result.data!.login));
   }
 }

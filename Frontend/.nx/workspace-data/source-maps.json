@@ -80,6 +80,10 @@
       "angular.json",
       "nx-angular-json-plugin"
     ],
+    "targets.build.configurations.production.fileReplacements": [
+      "angular.json",
+      "nx-angular-json-plugin"
+    ],
     "targets.build.configurations.production.budgets": [
       "angular.json",
       "nx-angular-json-plugin"

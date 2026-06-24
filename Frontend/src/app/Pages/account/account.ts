@@ -6,17 +6,39 @@ import { HlmLabel } from '@spartan-ng/helm/label';
 import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { HlmInput } from '@spartan-ng/helm/input';
-import { Mars, Venus, User, CircleCheck } from 'lucide-angular';
+import {
+  Mars,
+  Venus,
+  User,
+  CircleCheck,
+  Eye,
+  EyeOff,
+  Calendar,
+  Gift,
+  Gamepad2,
+} from 'lucide-angular';
 import { HlmBadge } from '@spartan-ng/helm/badge';
+import { HlmSwitch } from '../../ui/switch/src';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
 
 @Component({
   selector: 'app-account',
-  imports: [FormsModule, HlmButton, HlmCardImports, HlmLabel, LucideAngularModule, HlmInput],
+  imports: [
+    FormsModule,
+    HlmButton,
+    HlmCardImports,
+    HlmLabel,
+    LucideAngularModule,
+    HlmInput,
+    HlmSwitch,
+  ],
   templateUrl: './account.html',
   providers: [
-    { provide: LUCIDE_ICONS, useValue: new LucideIconProvider({ Mars, Venus, User, CircleCheck }) },
+    {
+      provide: LUCIDE_ICONS,
+      useValue: new LucideIconProvider({ Mars, Venus, User, CircleCheck, Eye, EyeOff }),
+    },
   ],
   styleUrl: './account.scss',
 })
@@ -30,60 +52,79 @@ export class Account {
   username = signal('');
   password = signal('');
   gender = signal('');
+  confirmPassword = signal('');
+
   isSubmited = signal(false);
   isLoading = signal(false);
+  showPassword = signal(true);
+  showConfirmPassword = signal(true);
+  isLoginMode = signal(false);
 
   Setgender(value: string) {
     this.gender.set(value);
   }
 
   checkPassword(password: string): boolean {
+    const errors: string[] = [];
     if (!password.trim()) {
-      this.toastr.error('Password cant be blank!');
-      return false;
+      errors.push('Password cant be blank!');
     }
     if (password.length < 3) {
-      this.toastr.error('Password is too short!');
-      return false;
+      errors.push('Password is too short!');
     }
     if (password.length > 15) {
-      this.toastr.error('Password is too long!');
-      return false;
+      errors.push('Password is too long!');
     }
     const specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
     if (!specialChars.test(password)) {
-      this.toastr.error('Password must contain at least 1 special character (!@#$%^&*...)');
-      return false;
+      errors.push('Password must contain at least 1 special character (!@#$%^&*...)');
+    }
+    if (errors.length > 0) {
+      this.toastr.error(errors.join(' '), 'Password Error');
     }
     return true;
   }
 
   checkUsername(username: string): boolean {
+    const errors: string[] = [];
     if (!username.trim()) {
-      this.toastr.error('Username cannot be blank!');
-      return false;
+      errors.push('Username cannot be blank!');
     }
     if (username.length < 4) {
-      this.toastr.error('Username is too short! Minimum 4 characters.');
-      return false;
+      errors.push('Username is too short! Minimum 4 characters.');
     }
     if (username.length > 15) {
-      this.toastr.error('Username is too long! Maximum 15 characters.');
+      errors.push('Username is too long! Maximum 15 characters.');
+    }
+    if (errors.length > 0) {
+      this.toastr.error(errors.join(' '), 'Password Error');
+    }
+    return true;
+  }
+
+  checkPasswordsMatch(password: string, confirmPassword: string): boolean {
+    if (password !== confirmPassword) {
+      this.toastr.error('The passwords doesnt match', 'Error');
       return false;
     }
     return true;
   }
 
   onSubmit() {
+    if (this.isLoginMode()) {
+      this.onLogin();
+      return;
+    }
     const isUsernameValid = this.checkUsername(this.username());
-    const isPasswordValide = this.checkPassword(this.password());
+    const isPasswordValid = this.checkPassword(this.password());
+    const isPasswordMatch = this.checkPasswordsMatch(this.password(), this.confirmPassword());
 
     if (!this.gender()) {
-      this.toastr.warning('PLease select a gender', 'Warning');
+      this.toastr.warning('Please select a gender', 'Warning');
       return;
     }
 
-    if (isUsernameValid && isPasswordValide && this.gender()) {
+    if (isUsernameValid && isPasswordValid && isPasswordMatch && this.gender()) {
       this.isLoading.set(true);
       this.userService.createUser(this.username(), this.password(), this.gender()).subscribe({
         next: (response) => {
@@ -113,5 +154,36 @@ export class Account {
   logout() {
     this.userContext.logout();
     this.toastr.info('You have been logged out', 'Logout');
+  }
+
+  onLogin() {
+    if (!this.username().trim() || !this.password().trim()) {
+      this.toastr.warning('Please enter username and password', 'Warning');
+      return;
+    }
+    this.isLoading.set(true);
+    this.userService.login(this.username(), this.password()).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        this.isSubmited.set(true);
+        this.userContext.login(response.user, response.token);
+        this.toastr.success('Logged in successfully', 'Success');
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.isSubmited.set(false);
+        const errorMessage = err.message || 'Login failed';
+        this.toastr.error(errorMessage, 'Error');
+        console.error('Login error', err);
+      },
+    });
+  }
+
+  toggleMode() {
+    this.isLoginMode.update((value) => !value);
+    this.username.set('');
+    this.password.set('');
+    this.confirmPassword.set('');
+    this.gender.set('');
   }
 }

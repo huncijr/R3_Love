@@ -39,6 +39,11 @@ export const appConfig: ApplicationConfig = {
     Apollo,
     ...provideCalendar({ provide: DateAdapter, useFactory: adapterFactory }),
     provideAnimations(),
-    provideToastr(),
+    provideToastr({
+      preventDuplicates: true,
+      countDuplicates: false,
+      maxOpened: 1,
+      resetTimeoutOnDuplicate: true,
+    }),
   ],
 };

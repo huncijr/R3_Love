@@ -10,7 +10,7 @@ export class AuthService {
   setToken(token: string): void {
     const expires = new Date();
     expires.setDate(expires.getDate() + 30);
-    document.cookie = `{this.TOKEN_NAME}=${token}; expires=${expires.toUTCString()}; path/; SameSite=Lax`;
+    document.cookie = `${this.TOKEN_NAME}=${token}; expires=${expires.toUTCString()}; path/; SameSite=Lax`;
   }
 
   getToken(): string | null {
@@ -19,7 +19,7 @@ export class AuthService {
   }
 
   clearToken(): void {
-    document.cookie = `${this.TOKEN_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
+    document.cookie = `{this.TOKEN_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
     localStorage.removeItem(this.USER_KEY);
   }
 

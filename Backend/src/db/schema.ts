@@ -12,7 +12,7 @@ export const user = pgTable("Users", {
     .default(sql`gen_random_uuid()`)
     .primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  password: varchar("password", { length: 255 }),
+  password: varchar("password", { length: 255 }).notNull(),
   partnerName: varchar("partner_name", { length: 255 }),
   gender: varchar("gender", { length: 50 }),
   isSingle: boolean("is_single"),

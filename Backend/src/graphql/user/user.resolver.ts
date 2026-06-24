@@ -59,5 +59,37 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+    login: async (
+      _parent: unknown,
+      args: { name: string; password: string },
+    ) => {
+      try {
+        const result = await db
+          .select()
+          .from(user)
+          .where(eq(user.name, args.name));
+        if (result.length === 0) {
+          throw new AppError("Invalid username or password", 401);
+        }
+        const foundUser = result[0];
+
+        if (!foundUser.password) {
+          throw new AppError("Invalid username or password", 401);
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          args.password,
+          foundUser.password,
+        );
+
+        const token = generateToken(foundUser.id);
+        return {
+          user: foundUser,
+          token: token,
+        };
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
   },
 };

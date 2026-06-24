@@ -24,5 +24,9 @@ export const userSchema = `
       password: String!
       gender: String
     ): AuthPayload!
+
+    login(name: String! 
+       password: String!
+    ): AuthPayload
   }
 `;
