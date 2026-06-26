@@ -185,6 +185,24 @@
     </div>
   </div>
 }
+@if (showLoginPrompt()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3">
+    <div hlmCard class="max-w-md w-full text-center p-8 animate-slide-down">
+      <div class="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-200">
+        <lucide-icon name="save" class="w-8 h-8 text-pink-500"></lucide-icon>
+      </div>
+      <h2 hlmCardTitle class="text-2xl mb-2 text-gray-800">Log in to save it!</h2>
+      <p hlmCardDescription class="mb-6 text-gray-600">
+        Your answers are stored locally for now. Log in to save them permanently and access them
+        from anywhere.
+      </p>
+      <div hlmCardFooter class="flex justify-center gap-3">
+        <button hlmBtn variant="outline" (click)="showLoginPrompt.set(false)">Later</button>
+        <button hlmBtn routerLink="/account">Log In</button>
+      </div>
+    </div>
+  </div>
+}
 <div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-[#f4c9f5]">
   <div class="max-w-7xl w-full mx-auto">
     <div

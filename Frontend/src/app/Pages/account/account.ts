@@ -61,6 +61,23 @@ export class Account {
   private userService = inject(UserService);
   private userContext = inject(UserContext);
 
+  private syncCalendarQuiz() {
+    const savedQuiz = localStorage.getItem('calendar-quiz');
+    if (!savedQuiz) return;
+
+    const data = JSON.parse(savedQuiz);
+    this.userService
+      .saveCalendarQuiz(data.hasPartner ?? false, data.datingDate || '', data.partnerBirthday || '')
+      .subscribe({
+        next: () => {
+          localStorage.removeItem('calendar-quiz');
+        },
+        error: (err) => {
+          console.error('Failed to sync calendar quiz', err);
+        },
+      });
+  }
+
   currentUser = this.userContext.currentUser;
 
   username = signal('');
@@ -146,6 +163,7 @@ export class Account {
           this.isSubmited.set(true);
           this.userContext.login(response.user, response.token);
           this.toastr.success('Account created successfully!', 'Success');
+          this.syncCalendarQuiz();
         },
         error: (err) => {
           this.isLoading.set(false);

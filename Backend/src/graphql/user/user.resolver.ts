@@ -36,6 +36,7 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+
     getCalendarQuiz: async (
       _parent: unknown,
       _args: unknown,
@@ -113,6 +114,54 @@ export const userResolver = {
           user: foundUser,
           token: token,
         };
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+    saveCalendarQuiz: async (
+      _parent: unknown,
+      args: {
+        hasPartner: boolean;
+        datingDate?: string;
+        partnerBirthday?: string;
+      },
+      context: { token: string },
+    ) => {
+      try {
+        const userId = getUserIdFromContext(context.token) as string;
+
+        const existing = await db
+          .select()
+          .from(calendarQuiz)
+          .where(eq(calendarQuiz.userId, userId));
+
+        if (existing.length > 0) {
+          const result = await db
+            .update(calendarQuiz)
+            .set({
+              hasPartner: args.hasPartner,
+              datingDate: args.datingDate || null,
+              partnerBirthday: args.partnerBirthday || null,
+              updatedAt: new Date(),
+            })
+            .where(eq(calendarQuiz.userId, userId))
+            .returning();
+          return result[0];
+        }
+
+        const result = await db
+          .insert(calendarQuiz)
+          .values([
+            {
+              userId,
+              hasPartner: args.hasPartner,
+              datingDate: args.datingDate || null,
+              partnerBirthday: args.partnerBirthday || null,
+            },
+          ])
+          .returning();
+        return result[0];
+        return result[0];
       } catch (error) {
         errorHandler(error);
       }

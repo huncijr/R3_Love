@@ -26,6 +26,7 @@ export const userSchema = `
   type Query {
     users: [User!]!
     user(id: ID!): User
+    getCalendarQuiz: CalendarQuiz
   }
 
   type Mutation {
@@ -38,5 +39,11 @@ export const userSchema = `
     login(name: String! 
        password: String!
     ): AuthPayload
+
+       saveCalendarQuiz(
+      hasPartner: Boolean!
+      datingDate: String
+      partnerBirthday: String
+    ): CalendarQuiz!
   }
 `;

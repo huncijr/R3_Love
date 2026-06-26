@@ -30,11 +30,13 @@ import {
   ArrowRight,
   HeartHandshake,
   HeartCrack,
+  Save,
 } from 'lucide-angular';
 import { HlmSheetDescription } from '@spartan-ng/helm/sheet';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { UserService } from '../../../services/user.service';
 import { UserContext } from '../../../services/UserContext/user-context';
+import { RouterLink } from '@angular/router';
 
 interface EventColor {
   name: string;
@@ -55,6 +57,7 @@ interface EventColor {
     HlmRadioGroupImports,
     HlmBadgeImports,
     HlmProgressImports,
+    RouterLink,
   ],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
@@ -80,6 +83,7 @@ interface EventColor {
         ArrowRight,
         HeartHandshake,
         HeartCrack,
+        Save,
       }),
       multi: true,
     },
@@ -128,6 +132,7 @@ export class Calendar implements OnDestroy {
     } else {
       localStorage.setItem('calendar-quiz', JSON.stringify(data));
       this.quizCompleted.set(true);
+      this.showLoginPrompt.set(true);
       if (this.quizHasPartner()) {
         this.calculateDaysTogether();
         this.generateQuizEvents();
@@ -158,6 +163,7 @@ export class Calendar implements OnDestroy {
   quizHasPartner = signal<boolean | null>(null);
 
   daysTogether = signal(0);
+  showLoginPrompt = signal(false);
 
   constructor(
     private UserService: UserService,
@@ -171,16 +177,14 @@ export class Calendar implements OnDestroy {
       this.quizPartnerBirthday.set(data.partnerBirthday);
       this.quizCompleted.set(data.completed || false);
 
-      if (this.quizCompleted()) {
-        if (this.quizHasPartner()) {
-          this.calculateDaysTogether();
-          this.generateQuizEvents();
-        }
+      if (this.UserContext.isLoggedIn()) {
+        this.showLoginPrompt.set(true);
       }
     }
   }
+
   ngOnDestroy() {
-    if (this.reminderInterval()) {
+    if (this.reminderInterval) {
       clearInterval(this.reminderInterval);
     }
   }
@@ -427,19 +431,7 @@ export class Calendar implements OnDestroy {
   }
 
   completeQuiz() {
-    const data = {
-      gender: this.quizGender(),
-      datingDate: this.quizDatingDate(),
-      partnerBirthday: this.quizPartnerBirthday(),
-      completed: true,
-    };
-    localStorage.setItem('calendar-quiz', JSON.stringify(data));
-
-    this.quizCompleted.set(true);
-    if (this.quizHasPartner()) {
-      this.calculateDaysTogether();
-      this.generateQuizEvents();
-    }
+    this.saveQuiz();
   }
 
   private generateQuizEvents() {
