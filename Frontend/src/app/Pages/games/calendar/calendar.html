@@ -13,10 +13,10 @@
           <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
             <div
               class="bg-pink-500 h-2.5 rounded-full transition-all duration-500 ease-out"
-              [style.width.%]="(quizStep() / 3) * 100"
+              [style.width.%]="(quizStep() / 4) * 100"
             ></div>
           </div>
-          <p class="text-xs text-center text-gray-400">Step {{ quizStep() }} of 3</p>
+          <p class="text-xs text-center text-gray-400">Step {{ quizStep() }} of 4</p>
         }
 
         <div htmlCardContent class="p-0">
@@ -65,61 +65,43 @@
         @if (quizStep() === 1) {
           <div class="space-y-4">
             <h3 class="text-xl font-semibold text-center text-gray-800 mb-6">
-              What is your gender?
+              Do you have partner?
             </h3>
-            <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+            <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
               <button
-                (click)="quizGender.set('male')"
+                (click)="quizHasPartner.set(true); nextStep()"
                 class="flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all"
-                [class.border-pink-500]="quizGender() === 'male'"
-                [class.bg-pink-50]="quizGender() === 'male'"
-                [class.shadow-md]="quizGender() === 'male'"
-                [class.border-gray-200]="quizGender() !== 'male'"
-                [class.hover:border-pink-300]="quizGender() !== 'male'"
+                [class.border-pink-500]="quizHasPartner() === true"
+                [class.bg-pink-50]="quizHasPartner() === true"
+                [class.shadow-md]="quizHasPartner() === true"
+                [class.border-gray-200]="quizHasPartner() !== true"
+                [class.hover:border-pink-300]="quizHasPartner() !== true"
               >
                 <lucide-icon
-                  name="mars"
-                  [class.text-pink-500]="quizGender() === 'male'"
-                  [class.text-gray-600]="quizGender() !== 'male'"
+                  name="heart-handshake"
+                  [class.text-pink-500]="quizHasPartner() === true"
+                  [class.text-gray-600]="quizHasPartner() !== true"
                   class="w-6 h-6"
                 ></lucide-icon>
-                <span class="text-sm font-medium">Male</span>
+                <span class="text-sm font-medium">Yes</span>
               </button>
 
               <button
-                (click)="quizGender.set('female')"
+                (click)="quizHasPartner.set(false); nextStep()"
                 class="flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all"
-                [class.border-pink-500]="quizGender() === 'female'"
-                [class.bg-pink-50]="quizGender() === 'female'"
-                [class.shadow-md]="quizGender() === 'female'"
-                [class.border-gray-200]="quizGender() !== 'female'"
-                [class.hover:border-pink-300]="quizGender() !== 'female'"
+                [class.border-pink-500]="quizHasPartner() === false"
+                [class.bg-pink-50]="quizHasPartner() === false"
+                [class.shadow-md]="quizHasPartner() === false"
+                [class.border-gray-200]="quizHasPartner() !== false"
+                [class.hover:border-pink-300]="quizHasPartner() !== false"
               >
                 <lucide-icon
-                  name="venus"
-                  [class.text-pink-500]="quizGender() === 'female'"
-                  [class.text-gray-600]="quizGender() !== 'female'"
+                  name="heart-crack"
+                  [class.text-pink-500]="quizHasPartner() === false"
+                  [class.text-gray-600]="quizHasPartner() !== false"
                   class="w-6 h-6"
                 ></lucide-icon>
-                <span class="text-sm font-medium">Female</span>
-              </button>
-
-              <button
-                (click)="quizGender.set('other')"
-                class="flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all"
-                [class.border-pink-500]="quizGender() === 'other'"
-                [class.bg-pink-50]="quizGender() === 'other'"
-                [class.shadow-md]="quizGender() === 'other'"
-                [class.border-gray-200]="quizGender() !== 'other'"
-                [class.hover:border-pink-300]="quizGender() !== 'other'"
-              >
-                <lucide-icon
-                  name="shirt"
-                  [class.text-pink-500]="quizGender() === 'other'"
-                  [class.text-gray-600]="quizGender() !== 'other'"
-                  class="w-6 h-6"
-                ></lucide-icon>
-                <span class="text-sm font-medium">Other</span>
+                <span class="text-sm font-medium">No</span>
               </button>
             </div>
           </div>
@@ -156,34 +138,44 @@
             </div>
           </div>
         }
+        @if (quizStep() === 4) {
+          <div class="space-y-6 text-center py-8">
+            <div
+              class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-pink-100 mb-4"
+            >
+              <lucide-icon name="check-check" class="w-10 h-10 text-pink-500"></lucide-icon>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800">You are finished</h3>
+            <p class="text-gray-600">
+              {{
+                quizHasPartner()
+                  ? 'Your calendar is ready with your special dates'
+                  : 'Your calendar is ready . You can always update this later.'
+              }}
+            </p>
+          </div>
+        }
         <div hlmCardFooter class="flex gap-3 pt-2">
           @if (quizStep() > 1) {
-            <button
-              hlmBtn
-              (click)="prevStep()"
-              class="flex-1"
-              [disabled]="quizStep() === 1 && !quizGender()"
-            >
-              Back
-            </button>
+            <button hlmBtn (click)="prevStep()" class="flex-1">Back</button>
           }
-          @if (quizStep() === 3) {
-            <button
-              hlmBtn
-              (click)="completeQuiz()"
-              class="flex-1"
-              [disabled]="!quizPartnerBirthday()"
-            >
-              Finish
+
+          @if (quizStep() === 4) {
+            <button hlmBtn (click)="completeQuiz()" class="flex-1">Start Exploring</button>
+          } @else if (quizStep() === 3) {
+            <button hlmBtn (click)="nextStep()" class="flex-1" [disabled]="!quizPartnerBirthday()">
+              Next
             </button>
-          } @else if (quizStep() > 0) {
+          } @else if (quizStep() === 2) {
+            <button hlmBtn (click)="nextStep()" class="flex-1" [disabled]="!quizDatingDate()">
+              Next
+            </button>
+          } @else if (quizStep() === 1) {
             <button
               hlmBtn
               (click)="nextStep()"
               class="flex-1"
-              [disabled]="
-                (quizStep() === 1 && !quizGender()) || (quizStep() == 2 && !quizDatingDate())
-              "
+              [disabled]="quizHasPartner() === null"
             >
               Next
             </button>

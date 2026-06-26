@@ -32,6 +32,21 @@ const LOGIN = gql`
   }
 `;
 
+const SAVE_CALENDAR_QUIZ = gql`
+  mutation SaveCalendarQuiz($hasPartner: Boolean!, $datingDate: String, $partnerBirthday: String) {
+    saveCalendarQuiz(
+      hasPartner: $hasPartner
+      datingDate: $datingDate
+      partnerBirthday: $partnerBirthday
+    ) {
+      id
+      hasPartner
+      datingDate
+      partnerBirthday
+    }
+  }
+`;
+
 export interface User {
   id: string;
   name: string;
@@ -65,5 +80,28 @@ export class UserService {
         variables: { name, password },
       })
       .pipe(map((result) => result.data!.login));
+  }
+  saveCalendarQuiz(hasPartner: boolean, datingDate: string, partnerBirthday: string) {
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation SaveCalendarQuiz(
+          $hasPartner: Boolean!
+          $datingDate: String
+          $partnerBirthday: String
+        ) {
+          saveCalendarQuiz(
+            hasPartner: $hasPartner
+            datingDate: $datingDate
+            partnerBirthday: $partnerBirthday
+          ) {
+            id
+            hasPartner
+            datingDate
+            partnerBirthday
+          }
+        }
+      `,
+      variables: { hasPartner, datingDate, partnerBirthday },
+    });
   }
 }

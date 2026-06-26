@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnDestroy, signal } from '@angular/core';
 import { DatePipe, NgFor } from '@angular/common';
 import { CalendarMonthViewComponent, CalendarEvent } from 'angular-calendar';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -28,9 +28,13 @@ import {
   Mars,
   Shirt,
   ArrowRight,
+  HeartHandshake,
+  HeartCrack,
 } from 'lucide-angular';
 import { HlmSheetDescription } from '@spartan-ng/helm/sheet';
 import { HlmLabel } from '@spartan-ng/helm/label';
+import { UserService } from '../../../services/user.service';
+import { UserContext } from '../../../services/UserContext/user-context';
 
 interface EventColor {
   name: string;
@@ -74,12 +78,14 @@ interface EventColor {
         Mars,
         Shirt,
         ArrowRight,
+        HeartHandshake,
+        HeartCrack,
       }),
       multi: true,
     },
   ],
 })
-export class Calendar {
+export class Calendar implements OnDestroy {
   private loadSavedDate(): Date {
     const saved = localStorage.getItem('calendar-view-date');
     if (saved) {
@@ -95,6 +101,39 @@ export class Calendar {
   private savedDate = () => {
     localStorage.setItem('calendar-view-date', this.viewDate.toISOString());
   };
+
+  private reminderInterval: any;
+
+  private saveQuiz() {
+    const data = {
+      hasPartner: this.quizHasPartner() ?? false,
+      datingDate: this.quizDatingDate(),
+      partnerBirthday: this.quizPartnerBirthday(),
+    };
+    if (this.UserContext.isLoggedIn()) {
+      this.UserService.saveCalendarQuiz(
+        data.hasPartner,
+        data.datingDate,
+        data.partnerBirthday,
+      ).subscribe({
+        next: () => {
+          this.quizCompleted.set(true);
+          if (this.quizHasPartner()) {
+            this.calculateDaysTogether();
+            this.generateQuizEvents();
+          }
+        },
+        error: (err) => console.error('Failed to save quiz', err),
+      });
+    } else {
+      localStorage.setItem('calendar-quiz', JSON.stringify(data));
+      this.quizCompleted.set(true);
+      if (this.quizHasPartner()) {
+        this.calculateDaysTogether();
+        this.generateQuizEvents();
+      }
+    }
+  }
 
   eventsSignal = signal<CalendarEvent[]>(this.getDefaultEvents());
 
@@ -116,10 +155,14 @@ export class Calendar {
   quizDatingDate = signal<string>('');
   quizPartnerBirthday = signal<string>('');
   quizCompleted = signal(false);
+  quizHasPartner = signal<boolean | null>(null);
 
   daysTogether = signal(0);
 
-  constructor() {
+  constructor(
+    private UserService: UserService,
+    private UserContext: UserContext,
+  ) {
     const savedQuiz = localStorage.getItem('calendar-quiz');
     if (savedQuiz) {
       const data = JSON.parse(savedQuiz);
@@ -129,9 +172,16 @@ export class Calendar {
       this.quizCompleted.set(data.completed || false);
 
       if (this.quizCompleted()) {
-        this.calculateDaysTogether();
-        this.generateQuizEvents();
+        if (this.quizHasPartner()) {
+          this.calculateDaysTogether();
+          this.generateQuizEvents();
+        }
       }
+    }
+  }
+  ngOnDestroy() {
+    if (this.reminderInterval()) {
+      clearInterval(this.reminderInterval);
     }
   }
 
@@ -140,12 +190,20 @@ export class Calendar {
   }
 
   nextStep() {
-    if (this.quizStep() < 3) {
+    if (this.quizStep() === 1 && !this.quizHasPartner()) {
+      this.quizStep.set(4);
+      return;
+    }
+    if (this.quizStep() < 4) {
       this.quizStep.update((s) => s + 1);
     }
   }
 
   prevStep() {
+    if (this.quizStep() === 4 && !this.quizHasPartner()) {
+      this.quizStep.set(1);
+      return;
+    }
     if (this.quizStep() > 1) {
       this.quizStep.update((s) => s - 1);
     }
@@ -378,8 +436,10 @@ export class Calendar {
     localStorage.setItem('calendar-quiz', JSON.stringify(data));
 
     this.quizCompleted.set(true);
-    this.calculateDaysTogether();
-    this.generateQuizEvents();
+    if (this.quizHasPartner()) {
+      this.calculateDaysTogether();
+      this.generateQuizEvents();
+    }
   }
 
   private generateQuizEvents() {

@@ -1,9 +1,19 @@
 import { db } from "../../db/index.js";
-import { user } from "../../db/schema.js";
+import { calendarQuiz, user } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
-import { generateToken } from "../../middleware/Auth.js";
+import { generateToken, verifyToken } from "../../middleware/Auth.js";
+
+const getUserIdFromContext = (token: string): string => {
+  if (!token) throw new AppError("Unathorized", 401);
+  try {
+    const decoded = verifyToken(token);
+    return decoded.userId;
+  } catch {
+    throw new AppError("Invalid token", 401);
+  }
+};
 
 export const userResolver = {
   Query: {
@@ -22,6 +32,22 @@ export const userResolver = {
           errorHandler(new AppError("User not found", 404));
         }
         return result[0];
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+    getCalendarQuiz: async (
+      _parent: unknown,
+      _args: unknown,
+      context: { token: string },
+    ) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        const result = await db
+          .select()
+          .from(calendarQuiz)
+          .where(eq(calendarQuiz.userId, userId));
+        return result[0] || null;
       } catch (error) {
         errorHandler(error);
       }

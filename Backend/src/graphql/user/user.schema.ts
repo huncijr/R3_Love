@@ -8,6 +8,16 @@ export const userSchema = `
     createdAt: String!
   }
 
+    type CalendarQuiz {
+    id: ID!
+    userId: ID!
+    hasPartner: Boolean!
+    datingDate: String
+    partnerBirthday: String
+    createdAt: String!
+    updatedAt: String!
+  }
+
   type AuthPayload {
     user: User!
     token: String!
