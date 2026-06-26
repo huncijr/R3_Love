@@ -16,7 +16,9 @@ import {
   Calendar,
   Gift,
   Gamepad2,
+  MoveRight,
 } from 'lucide-angular';
+import { RouterLink } from '@angular/router';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmSwitch } from '../../ui/switch/src';
 import { UserService } from '../../services/user.service';
@@ -32,12 +34,24 @@ import { UserContext } from '../../services/UserContext/user-context';
     LucideAngularModule,
     HlmInput,
     HlmSwitch,
+    RouterLink,
   ],
   templateUrl: './account.html',
   providers: [
     {
       provide: LUCIDE_ICONS,
-      useValue: new LucideIconProvider({ Mars, Venus, User, CircleCheck, Eye, EyeOff }),
+      useValue: new LucideIconProvider({
+        Mars,
+        Venus,
+        User,
+        CircleCheck,
+        Eye,
+        EyeOff,
+        Calendar,
+        Gamepad2,
+        Gift,
+        MoveRight,
+      }),
     },
   ],
   styleUrl: './account.scss',
@@ -142,7 +156,6 @@ export class Account {
         },
       });
       this.isSubmited.set(true);
-      this.toastr.success('Account created succesfully', 'Success');
       console.log('Account created:', {
         username: this.username(),
         password: this.password(),

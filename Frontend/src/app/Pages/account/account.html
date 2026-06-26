@@ -1,26 +1,98 @@
-<div class="min-h-screen flex items-center justify-center">
+<div class="min-h-screen flex flex-col items-center gap-5 pt-10 px-4">
   @if (currentUser()) {
-    <section hlmCard class="w-full max-w-md bg-white shadow-xl border border-border rounded-2xl">
-      <div hlmCardHeader class="text-center pb-2">
-        <h2 hlmCardTitle class="text-2xl font-bold text-primary">
-          Welcome, {{ currentUser()?.name }}
-        </h2>
-      </div>
-      <div hlmCardContent class="space-y-4">
-        <div class="flex items-center gap-3 p-3 bg-primary-light/30 rounded-lg">
-          <lucide-icon name="user" class="w-5 h-5 text-primary-main"></lucide-icon>
-          <div>
-            <p class="text-sm text-muted">Username</p>
-            <p class="font-medium text-neutral-text">{{ currentUser()?.name }}</p>
-          </div>
+    <div class="w-full flex flex-col gap-2 p-4">
+      <div class="w-full animate-fade-in-up">
+        <div class="flex items-center gap-3">
+          <h2 class="text-3xl font-bold" style="color: var(--primary)">
+            {{ currentUser()?.name }}
+          </h2>
+          <span
+            class="inline-block mt-2 px-4 py-1 rounded-full text-sm font-medium"
+            style="background-color: var(--secondary); color: var(--secondary-foreground)"
+          >
+            {{ currentUser()?.gender }}
+          </span>
         </div>
-        <div></div>
+        <div class="w-full h-0.5 mt-1" style="background-color: var(--border)"></div>
       </div>
-    </section>
+      <div class="w-full animate-fade-in-up delay-100">
+        <p class="text-left mt-3 text-2xl font-medium text-border">Setup your account</p>
+        <span style="text-primary">(0/3)</span>
+      </div>
+      <section
+        hlmCard
+        class="w-full cursor-pointer transition-transform hover:scale-[1.02] animate-fade-in-up delay-200"
+        style="background-color: var(--card); color: var(--card-foreground)"
+      >
+        <div hlmCardContent class="flex items-center justify-between p-5">
+          <div class="flex items-center gap-4">
+            <lucide-icon name="calendar" class="w-10 h-10 text-primary"></lucide-icon>
+            <div class="flex flex-col">
+              <span class="text-lg font-semibold">Set up the Calendar</span>
+              <span class="text-sm text-muted">Plan your special dates</span>
+            </div>
+          </div>
+          <a
+            [routerLink]="['/games/calendar']"
+            hlmBtn
+            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            Continue
+            <lucide-icon name="move-right" class="w-4 h-4"></lucide-icon>
+          </a>
+        </div>
+      </section>
+      <section
+        hlmCard
+        class="w-full cursor-pointer transition-transform hover:scale-[1.02] animate-fade-in-up delay-300"
+        style="background-color: var(--card); color: var(--card-foreground)"
+      >
+        <div hlmCardContent class="flex items-center justify-between p-5">
+          <div class="flex items-center gap-4">
+            <lucide-icon name="calendar" class="w-10 h-10 text-primary"></lucide-icon>
+            <div class="flex flex-col">
+              <span class="text-lg font-semibold">Gift for your Partner</span>
+              <span class="text-sm text-muted">Find the perfect surprise</span>
+            </div>
+          </div>
+          <a
+            [routerLink]="['/games/calendar']"
+            hlmBtn
+            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            Continue
+            <lucide-icon name="move-right" class="w-4 h-4"></lucide-icon>
+          </a>
+        </div>
+      </section>
+      <section
+        hlmCard
+        class="w-full cursor-pointer transition-transform hover:scale-[1.02] animate-fade-in-up delay-400"
+        style="background-color: var(--card); color: var(--card-foreground)"
+      >
+        <div hlmCardContent class="flex items-center justify-between p-5">
+          <div class="flex items-center gap-4">
+            <lucide-icon name="calendar" class="w-10 h-10 text-primary"></lucide-icon>
+            <div class="flex flex-col">
+              <span class="text-lg font-semibold">Play a Game</span>
+              <span class="text-sm text-muted">Have fun together</span>
+            </div>
+          </div>
+          <a
+            [routerLink]="['/games/calendar']"
+            hlmBtn
+            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            Continue
+            <lucide-icon name="move-right" class="w-4 h-4"></lucide-icon>
+          </a>
+        </div>
+      </section>
+    </div>
   } @else {
     <section
       hlmCard
-      class="w-full min-h-[560px] max-w-md flex flex-col bg-white shadow-xl border border-border rounded-2xl"
+      class="w-full min-h-[560px] max-w-md flex flex-col bg-white shadow-xl border border-border rounded-2xl animate-fade-in-scale"
     >
       <div hlmCardHeader class="text-center pb-2 relative">
         <div class="absolute top-3 right-3 flex items-center gap-2">
