@@ -74,16 +74,25 @@
             </div>
           }
         </div>
-
-        <a
-          routerLink="/account"
-          routerLinkActive="text-primary-main font-semibold"
-          (click)="closeMenu()"
-          class="menu-item-entrance menu-item-delay-3 flex items-center gap-2 py-2 px-3 rounded-lg text-neutral-text hover:bg-primary-light hover:text-primary-dark transition-colors"
-        >
-          <lucide-icon name="user" class="w-5 h-5 sm:w-4 h-4"></lucide-icon>
-          MAKE AN ACCOUNT
-        </a>
+        @if (currentUser()) {
+          <a
+            routerLink="/account"
+            routerLinkActive="text-primary-main font-semibold"
+            (click)="closeMenu()"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-primary-light/30 transition-colors"
+          >
+            <lucide-icon name="circle-user-round" class="w-5 h-5 sm:w-4 h-4"></lucide-icon>
+            {{ currentUser()?.name }}
+          </a>
+        } @else {
+          <a
+            routerLink="/account"
+            class="hlmBtn bg-primary hover:bg-accent text-white px-4 py-2 roundede-lg font-semibold transition-colors"
+          >
+            <lucide-icon name="circle-check" class="w-4 h-4 inline mr-1"></lucide-icon> Make an
+            account
+          </a>
+        }
       </div>
     </div>
   }

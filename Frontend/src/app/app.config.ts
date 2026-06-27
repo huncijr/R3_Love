@@ -10,13 +10,19 @@ import { HttpLink } from 'apollo-angular/http';
 import { environment } from '../enviroments/enviroment';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
+import { AuthService } from './services/Auth/auth';
 
-export function createApollo(httpLink: HttpLink): ApolloClientOptions {
+export function createApollo(httpLink: HttpLink, authService: AuthService): ApolloClientOptions {
   const http = httpLink.create({
     uri: environment.graphqlUri,
   });
-  const credentialsLink = new ApolloLink((operation, forward) => {
+
+  const authLink = new ApolloLink((operation, forward) => {
+    const token = authService.getToken();
     operation.setContext({
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+      },
       fetchOptions: {
         credentials: 'include',
       },
@@ -25,7 +31,11 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions {
   });
 
   return {
-    link: credentialsLink.concat(http),
+    link: authLink.concat(http),
+    cache: new InMemoryCache(),
+  };
+  return {
+    link: authLink.concat(http),
     cache: new InMemoryCache(),
   };
 }
@@ -35,7 +45,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(),
-    { provide: APOLLO_OPTIONS, useFactory: createApollo, deps: [HttpLink] },
+    { provide: APOLLO_OPTIONS, useFactory: createApollo, deps: [HttpLink, AuthService] },
     Apollo,
     ...provideCalendar({ provide: DateAdapter, useFactory: adapterFactory }),
     provideAnimations(),

@@ -1,9 +1,81 @@
 {
-  "id": "b6b17e97-1b78-4dc4-9699-39ce1c709caf",
+  "id": "7d3cbbb4-d401-4d23-97e4-f76ea0f6aaba",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.CalendarQuiz": {
+      "name": "CalendarQuiz",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "has_partner": {
+          "name": "has_partner",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dating_date": {
+          "name": "dating_date",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "partner_birthday": {
+          "name": "partner_birthday",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CalendarQuiz_user_id_Users_id_fk": {
+          "name": "CalendarQuiz_user_id_Users_id_fk",
+          "tableFrom": "CalendarQuiz",
+          "tableTo": "Users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.Users": {
       "name": "Users",
       "schema": "",
@@ -25,7 +97,7 @@
           "name": "password",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "partner_name": {
           "name": "partner_name",

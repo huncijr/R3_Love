@@ -69,9 +69,10 @@ async function startServer(): Promise<void> {
     context: async (
       contextArgs: StandaloneServerContextFunctionArgument,
     ): Promise<MyContext> => {
-      const cookieHeader = contextArgs.req.headers.cookie || "";
-      const cookies = parseCookies(cookieHeader);
-      const token: string = contextArgs.req.headers.authorization || "";
+      const authHeader = contextArgs.req.headers.authorization || "";
+      const token: string = authHeader.startsWith("Bearer")
+        ? authHeader.slice(7)
+        : authHeader;
       return { token };
     },
   });

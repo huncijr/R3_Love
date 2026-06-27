@@ -129,7 +129,7 @@ export const userResolver = {
     ) => {
       try {
         const userId = getUserIdFromContext(context.token) as string;
-
+        console.log(userId);
         const existing = await db
           .select()
           .from(calendarQuiz)

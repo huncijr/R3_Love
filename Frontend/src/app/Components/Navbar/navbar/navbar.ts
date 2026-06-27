@@ -1,4 +1,4 @@
-import { Component, signal, HostListener, ElementRef } from '@angular/core';
+import { Component, signal, HostListener, ElementRef, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';
 
@@ -15,7 +15,10 @@ import {
   CalendarHeart,
   Gift,
   HeartPulse,
+  CircleCheck,
+  CircleUserRound,
 } from 'lucide-angular';
+import { UserContext } from '../../../services/UserContext/user-context';
 @Component({
   selector: 'app-navbar',
   imports: [RouterLink, RouterLinkActive, LucideAngularModule],
@@ -33,18 +36,24 @@ import {
         CalendarHeart,
         Gift,
         HeartPulse,
+        CircleCheck,
         ChevronDown,
+        CircleUserRound,
       }),
       multi: true,
     },
   ],
 })
 export class Navbar {
+  private userContext = inject(UserContext);
+  currentUser = this.userContext.currentUser;
   isMenuOpen = signal(false);
   isGamesOpen = signal(false);
 
   constructor(private elementRef: ElementRef) {
     const menuSaved = localStorage.getItem('menuOpen');
+    console.log('User from context:', this.currentUser());
+
     const gameSaved = localStorage.getItem('gamesOpen');
     // console.log('menuOpen from storage:', menuSaved);
     // console.log('gamesOpen from storage:', gameSaved);
