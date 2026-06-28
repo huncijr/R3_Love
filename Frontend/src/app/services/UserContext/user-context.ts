@@ -5,8 +5,6 @@ export interface User {
   id: string;
   name: string;
   gender: string | null;
-  partnerName: string | null;
-  isSingle: boolean | null;
 }
 
 @Injectable({
@@ -18,8 +16,13 @@ export class UserContext {
   isLoggedIn = computed(() => this.currentUser() !== null);
   constructor(private authService: AuthService) {
     const savedUser = this.authService.getUser();
+    console.log('UserContext constructor - savedUser:', savedUser);
+    console.log('UserContext constructor - getUser() result:', this.authService.getUser());
     if (savedUser) {
       this.currentUser.set(savedUser);
+      console.log('UserContext constructor - currentUser set to:', this.currentUser());
+    } else {
+      console.log('UserContext constructor - savedUser was null/undefined');
     }
   }
 

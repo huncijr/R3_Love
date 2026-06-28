@@ -8,9 +8,7 @@ const CREATE_USER = gql`
       user {
         id
         name
-        partnerName
         gender
-        isSingle
       }
       token
     }
@@ -23,9 +21,7 @@ const LOGIN = gql`
       user {
         id
         name
-        partnerName
         gender
-        isSingle
       }
       token
     }
@@ -33,14 +29,16 @@ const LOGIN = gql`
 `;
 
 const SAVE_CALENDAR_QUIZ = gql`
-  mutation SaveCalendarQuiz($hasPartner: Boolean!, $datingDate: String, $partnerBirthday: String) {
+  mutation SaveCalendarQuiz($isSingle: Boolean!, $partnerName: String, $datingDate: String, $partnerBirthday: String) {
     saveCalendarQuiz(
-      hasPartner: $hasPartner
+      isSingle: $isSingle
+      partnerName: $partnerName
       datingDate: $datingDate
       partnerBirthday: $partnerBirthday
     ) {
       id
-      hasPartner
+      isSingle
+      partnerName
       datingDate
       partnerBirthday
     }
@@ -50,9 +48,7 @@ const SAVE_CALENDAR_QUIZ = gql`
 export interface User {
   id: string;
   name: string;
-  partnerName: string | null;
   gender: string | null;
-  isSingle: boolean | null;
 }
 
 export interface CreateUserResponse {
@@ -81,27 +77,30 @@ export class UserService {
       })
       .pipe(map((result) => result.data!.login));
   }
-  saveCalendarQuiz(hasPartner: boolean, datingDate: string, partnerBirthday: string) {
+  saveCalendarQuiz(isSingle: boolean, partnerName: string, datingDate: string, partnerBirthday: string) {
     return this.apollo.mutate({
       mutation: gql`
         mutation SaveCalendarQuiz(
-          $hasPartner: Boolean!
+          $isSingle: Boolean!
+          $partnerName: String
           $datingDate: String
           $partnerBirthday: String
         ) {
           saveCalendarQuiz(
-            hasPartner: $hasPartner
+            isSingle: $isSingle
+            partnerName: $partnerName
             datingDate: $datingDate
             partnerBirthday: $partnerBirthday
           ) {
             id
-            hasPartner
+            isSingle
+            partnerName
             datingDate
             partnerBirthday
           }
         }
       `,
-      variables: { hasPartner, datingDate, partnerBirthday },
+      variables: { isSingle, partnerName, datingDate, partnerBirthday },
     });
   }
 }

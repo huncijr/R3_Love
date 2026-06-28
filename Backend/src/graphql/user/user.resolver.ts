@@ -61,7 +61,6 @@ export const userResolver = {
       args: {
         name: string;
         password: string;
-        partnerName?: string;
         gender?: string;
       },
     ) => {
@@ -70,7 +69,6 @@ export const userResolver = {
         const newUser = {
           name: args.name,
           password: hashedPassword,
-          partnerName: null,
           gender: args.gender || null,
         };
 
@@ -121,7 +119,8 @@ export const userResolver = {
     saveCalendarQuiz: async (
       _parent: unknown,
       args: {
-        hasPartner: boolean;
+        isSingle: boolean;
+        partnerName?: string;
         datingDate?: string;
         partnerBirthday?: string;
       },
@@ -139,7 +138,8 @@ export const userResolver = {
           const result = await db
             .update(calendarQuiz)
             .set({
-              hasPartner: args.hasPartner,
+              isSingle: args.isSingle,
+              partnerName: args.partnerName || null,
               datingDate: args.datingDate || null,
               partnerBirthday: args.partnerBirthday || null,
               updatedAt: new Date(),
@@ -154,13 +154,13 @@ export const userResolver = {
           .values([
             {
               userId,
-              hasPartner: args.hasPartner,
+              isSingle: args.isSingle,
+              partnerName: args.partnerName || null,
               datingDate: args.datingDate || null,
               partnerBirthday: args.partnerBirthday || null,
             },
           ])
           .returning();
-        return result[0];
         return result[0];
       } catch (error) {
         errorHandler(error);

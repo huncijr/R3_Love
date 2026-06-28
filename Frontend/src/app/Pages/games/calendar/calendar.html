@@ -13,10 +13,10 @@
           <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
             <div
               class="bg-pink-500 h-2.5 rounded-full transition-all duration-500 ease-out"
-              [style.width.%]="(quizStep() / 4) * 100"
+              [style.width.%]="(quizStep() / 5) * 100"
             ></div>
           </div>
-          <p class="text-xs text-center text-gray-400">Step {{ quizStep() }} of 4</p>
+          <p class="text-xs text-center text-gray-400">Step {{ quizStep() }} of 5</p>
         }
 
         <div htmlCardContent class="p-0">
@@ -69,36 +69,36 @@
             </h3>
             <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
               <button
-                (click)="quizHasPartner.set(true); nextStep()"
+                (click)="quizIsSingle.set(false); nextStep()"
                 class="flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all"
-                [class.border-pink-500]="quizHasPartner() === true"
-                [class.bg-pink-50]="quizHasPartner() === true"
-                [class.shadow-md]="quizHasPartner() === true"
-                [class.border-gray-200]="quizHasPartner() !== true"
-                [class.hover:border-pink-300]="quizHasPartner() !== true"
+                [class.border-pink-500]="quizIsSingle() === false"
+                [class.bg-pink-50]="quizIsSingle() === false"
+                [class.shadow-md]="quizIsSingle() === false"
+                [class.border-gray-200]="quizIsSingle() !== false"
+                [class.hover:border-pink-300]="quizIsSingle() !== false"
               >
                 <lucide-icon
                   name="heart-handshake"
-                  [class.text-pink-500]="quizHasPartner() === true"
-                  [class.text-gray-600]="quizHasPartner() !== true"
+                  [class.text-pink-500]="quizIsSingle() === false"
+                  [class.text-gray-600]="quizIsSingle() !== false"
                   class="w-6 h-6"
                 ></lucide-icon>
                 <span class="text-sm font-medium">Yes</span>
               </button>
 
               <button
-                (click)="quizHasPartner.set(false); nextStep()"
+                (click)="quizIsSingle.set(true); nextStep()"
                 class="flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all"
-                [class.border-pink-500]="quizHasPartner() === false"
-                [class.bg-pink-50]="quizHasPartner() === false"
-                [class.shadow-md]="quizHasPartner() === false"
-                [class.border-gray-200]="quizHasPartner() !== false"
-                [class.hover:border-pink-300]="quizHasPartner() !== false"
+                [class.border-pink-500]="quizIsSingle() === true"
+                [class.bg-pink-50]="quizIsSingle() === true"
+                [class.shadow-md]="quizIsSingle() === true"
+                [class.border-gray-200]="quizIsSingle() !== true"
+                [class.hover:border-pink-300]="quizIsSingle() !== true"
               >
                 <lucide-icon
                   name="heart-crack"
-                  [class.text-pink-500]="quizHasPartner() === false"
-                  [class.text-gray-600]="quizHasPartner() !== false"
+                  [class.text-pink-500]="quizIsSingle() === true"
+                  [class.text-gray-600]="quizIsSingle() !== true"
                   class="w-6 h-6"
                 ></lucide-icon>
                 <span class="text-sm font-medium">No</span>
@@ -107,6 +107,22 @@
           </div>
         }
         @if (quizStep() === 2) {
+          <div class="space-y-4">
+            <label class="text-lg font-semibold text-center block text-gray-800 mb-4">
+              What is your partner's name?
+            </label>
+            <div class="flex justify-center">
+              <input
+                type="text"
+                [ngModel]="quizPartnerName()"
+                (ngModelChange)="quizPartnerName.set($event)"
+                placeholder="Partner's name"
+                class="w-full max-w-xs text-center text-lg px-4 py-3 rounded-lg border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent bg-white"
+              />
+            </div>
+          </div>
+        }
+        @if (quizStep() === 3) {
           <div class="space-y-4">
             <label class="text-lg font-semibold text-center block text-gray-800 mb-4"
               >When did you start dating with your partner?</label
@@ -122,7 +138,7 @@
             </div>
           </div>
         }
-        @if (quizStep() === 3) {
+        @if (quizStep() === 4) {
           <div class="space-y-4">
             <label class="text-lg font-semibold text-center block text-gray-800 mb-4">
               When is your partner's birthday?
@@ -138,7 +154,7 @@
             </div>
           </div>
         }
-        @if (quizStep() === 4) {
+        @if (quizStep() === 5) {
           <div class="space-y-6 text-center py-8">
             <div
               class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-pink-100 mb-4"
@@ -148,7 +164,7 @@
             <h3 class="text-2xl font-bold text-gray-800">You are finished</h3>
             <p class="text-gray-600">
               {{
-                quizHasPartner()
+                !quizIsSingle()
                   ? 'Your calendar is ready with your special dates'
                   : 'Your calendar is ready . You can always update this later.'
               }}
@@ -160,14 +176,18 @@
             <button hlmBtn (click)="prevStep()" class="flex-1">Back</button>
           }
 
-          @if (quizStep() === 4) {
+          @if (quizStep() === 5) {
             <button hlmBtn (click)="completeQuiz()" class="flex-1">Start Exploring</button>
-          } @else if (quizStep() === 3) {
+          } @else if (quizStep() === 4) {
             <button hlmBtn (click)="nextStep()" class="flex-1" [disabled]="!quizPartnerBirthday()">
               Next
             </button>
-          } @else if (quizStep() === 2) {
+          } @else if (quizStep() === 3) {
             <button hlmBtn (click)="nextStep()" class="flex-1" [disabled]="!quizDatingDate()">
+              Next
+            </button>
+          } @else if (quizStep() === 2) {
+            <button hlmBtn (click)="nextStep()" class="flex-1" [disabled]="!quizPartnerName()">
               Next
             </button>
           } @else if (quizStep() === 1) {
@@ -175,7 +195,7 @@
               hlmBtn
               (click)="nextStep()"
               class="flex-1"
-              [disabled]="quizHasPartner() === null"
+              [disabled]="quizIsSingle() === null"
             >
               Next
             </button>

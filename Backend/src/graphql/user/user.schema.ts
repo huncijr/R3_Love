@@ -2,16 +2,15 @@ export const userSchema = `
   type User {
     id: ID!
     name: String!
-    partnerName: String
     gender: String
-    isSingle: Boolean
     createdAt: String!
   }
 
-    type CalendarQuiz {
+  type CalendarQuiz {
     id: ID!
     userId: ID!
-    hasPartner: Boolean!
+    isSingle: Boolean!
+    partnerName: String
     datingDate: String
     partnerBirthday: String
     createdAt: String!
@@ -36,12 +35,13 @@ export const userSchema = `
       gender: String
     ): AuthPayload!
 
-    login(name: String! 
+    login(name: String!
        password: String!
     ): AuthPayload
 
-       saveCalendarQuiz(
-      hasPartner: Boolean!
+    saveCalendarQuiz(
+      isSingle: Boolean!
+      partnerName: String
       datingDate: String
       partnerBirthday: String
     ): CalendarQuiz!

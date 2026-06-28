@@ -1,5 +1,5 @@
 {
-  "id": "7d3cbbb4-d401-4d23-97e4-f76ea0f6aaba",
+  "id": "6d683d26-792b-4e3e-8e20-272632f5a891",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -21,11 +21,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "has_partner": {
-          "name": "has_partner",
+        "is_single": {
+          "name": "is_single",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true
+        },
+        "partner_name": {
+          "name": "partner_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
         },
         "dating_date": {
           "name": "dating_date",
@@ -99,21 +105,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "partner_name": {
-          "name": "partner_name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
         "gender": {
           "name": "gender",
           "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_single": {
-          "name": "is_single",
-          "type": "boolean",
           "primaryKey": false,
           "notNull": false
         },

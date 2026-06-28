@@ -13,9 +13,7 @@ export const user = pgTable("Users", {
     .primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(),
-  partnerName: varchar("partner_name", { length: 255 }),
   gender: varchar("gender", { length: 50 }),
-  isSingle: boolean("is_single"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -26,7 +24,8 @@ export const calendarQuiz = pgTable("CalendarQuiz", {
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  hasPartner: boolean("has_partner").notNull(),
+  isSingle: boolean("is_single").notNull(),
+  partnerName: varchar("partner_name", { length: 255 }),
   datingDate: varchar("dating_date", { length: 50 }),
   partnerBirthday: varchar("partner_birthday", { length: 50 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),

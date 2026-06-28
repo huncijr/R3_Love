@@ -5,6 +5,14 @@
     </a>
   </div>
 
+  @if (currentUser()) {
+    <div
+      class="absolute top-1/2 right-4 -translate-y-1/2 md:hidden flex items-center gap-1.5 text-sm font-medium text-neutral-text"
+    >
+      <lucide-icon name="circle-user-round" class="w-4 h-4 text-primary-main"></lucide-icon>
+      {{ currentUser()?.name }}
+    </div>
+  }
   <button
     (click)="toggleMenu()"
     class="absolute top-1/2 left-4 -translate-y-1/2 md:hidden p-1.5 rounded-lg hover:bg-primary-light transition-colors"
@@ -74,17 +82,8 @@
             </div>
           }
         </div>
-        @if (currentUser()) {
-          <a
-            routerLink="/account"
-            routerLinkActive="text-primary-main font-semibold"
-            (click)="closeMenu()"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-primary-light/30 transition-colors"
-          >
-            <lucide-icon name="circle-user-round" class="w-5 h-5 sm:w-4 h-4"></lucide-icon>
-            {{ currentUser()?.name }}
-          </a>
-        } @else {
+
+        @if (!currentUser()) {
           <a
             routerLink="/account"
             class="hlmBtn bg-primary hover:bg-accent text-white px-4 py-2 roundede-lg font-semibold transition-colors"
@@ -157,14 +156,24 @@
           </div>
         }
       </div>
-      <a
-        routerLink="/account"
-        routerLinkActive="text-primary-main font-semibold"
-        class="menu-item-entrance menu-item-delay-3 flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
-      >
-        <lucide-icon name="user" class="w-4 h-4"></lucide-icon>
-        MAKE AN ACCOUNT
-      </a>
+      @if (currentUser()) {
+        <a
+          routerLink="/account"
+          routerLinkActive="text-primary-main font-semibold"
+          class="menu-item-entrance menu-item-delay-3 flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
+        >
+          <lucide-icon name="circle-user-round" class="w-4 h-4" />{{ currentUser()?.name }}</a
+        >
+      } @else {
+        <a
+          routerLink="/account"
+          routerLinkActive="text-primary-main font-semibold"
+          class="menu-item-entrance menu-item-delay-3 flex items-center gap-1.5 text-sm font-medium text-neutral-text hover:text-primary-main transition-colors"
+        >
+          <lucide-icon name="user" class="w-4 h-4"></lucide-icon>
+          MAKE AN ACCOUNT
+        </a>
+      }
     </div>
   </div>
   <div

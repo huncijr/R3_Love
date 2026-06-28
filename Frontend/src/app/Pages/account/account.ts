@@ -66,8 +66,14 @@ export class Account {
     if (!savedQuiz) return;
 
     const data = JSON.parse(savedQuiz);
+    const isSingle = data.isSingle ?? (data.hasPartner != null ? !data.hasPartner : false);
     this.userService
-      .saveCalendarQuiz(data.hasPartner ?? false, data.datingDate || '', data.partnerBirthday || '')
+      .saveCalendarQuiz(
+        isSingle,
+        data.partnerName || '',
+        data.datingDate || '',
+        data.partnerBirthday || '',
+      )
       .subscribe({
         next: () => {
           localStorage.removeItem('calendar-quiz');

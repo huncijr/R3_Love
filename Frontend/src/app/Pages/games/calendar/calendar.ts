@@ -110,19 +110,21 @@ export class Calendar implements OnDestroy {
 
   private saveQuiz() {
     const data = {
-      hasPartner: this.quizHasPartner() ?? false,
+      isSingle: this.quizIsSingle() ?? false,
+      partnerName: this.quizPartnerName(),
       datingDate: this.quizDatingDate(),
       partnerBirthday: this.quizPartnerBirthday(),
     };
     if (this.UserContext.isLoggedIn()) {
       this.UserService.saveCalendarQuiz(
-        data.hasPartner,
+        data.isSingle,
+        data.partnerName,
         data.datingDate,
         data.partnerBirthday,
       ).subscribe({
         next: () => {
           this.quizCompleted.set(true);
-          if (this.quizHasPartner()) {
+          if (!this.quizIsSingle()) {
             this.calculateDaysTogether();
             this.generateQuizEvents();
           }
@@ -133,7 +135,7 @@ export class Calendar implements OnDestroy {
       localStorage.setItem('calendar-quiz', JSON.stringify(data));
       this.quizCompleted.set(true);
       this.showLoginPrompt.set(true);
-      if (this.quizHasPartner()) {
+      if (!this.quizIsSingle()) {
         this.calculateDaysTogether();
         this.generateQuizEvents();
       }
@@ -160,7 +162,8 @@ export class Calendar implements OnDestroy {
   quizDatingDate = signal<string>('');
   quizPartnerBirthday = signal<string>('');
   quizCompleted = signal(false);
-  quizHasPartner = signal<boolean | null>(null);
+  quizIsSingle = signal<boolean | null>(null);
+  quizPartnerName = signal<string>('');
 
   daysTogether = signal(0);
   showLoginPrompt = signal(false);
@@ -176,6 +179,13 @@ export class Calendar implements OnDestroy {
       this.quizDatingDate.set(data.datingDate || '');
       this.quizPartnerBirthday.set(data.partnerBirthday);
       this.quizCompleted.set(data.completed || false);
+
+      if ('hasPartner' in data) {
+        this.quizIsSingle.set(!data.hasPartner);
+      } else {
+        this.quizIsSingle.set(data.isSingle ?? null);
+      }
+      this.quizPartnerName.set(data.partnerName || '');
 
       if (this.UserContext.isLoggedIn()) {
         this.showLoginPrompt.set(true);
@@ -194,17 +204,17 @@ export class Calendar implements OnDestroy {
   }
 
   nextStep() {
-    if (this.quizStep() === 1 && !this.quizHasPartner()) {
-      this.quizStep.set(4);
+    if (this.quizStep() === 1 && this.quizIsSingle()) {
+      this.quizStep.set(5);
       return;
     }
-    if (this.quizStep() < 4) {
+    if (this.quizStep() < 5) {
       this.quizStep.update((s) => s + 1);
     }
   }
 
   prevStep() {
-    if (this.quizStep() === 4 && !this.quizHasPartner()) {
+    if (this.quizStep() === 5 && this.quizIsSingle()) {
       this.quizStep.set(1);
       return;
     }
