@@ -1,4 +1,4 @@
-@if (!quizCompleted()) {
+@if (!quizCompleted() && !isLoadingQuiz()) {
   <div
     class="fixed inset-0 z-100 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4"
   >
@@ -191,12 +191,7 @@
               Next
             </button>
           } @else if (quizStep() === 1) {
-            <button
-              hlmBtn
-              (click)="nextStep()"
-              class="flex-1"
-              [disabled]="quizIsSingle() === null"
-            >
+            <button hlmBtn (click)="nextStep()" class="flex-1" [disabled]="quizIsSingle() === null">
               Next
             </button>
           }
@@ -223,7 +218,27 @@
     </div>
   </div>
 }
-<div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-[#f4c9f5]">
+<div class="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 bg-background">
+  @if (quizCompleted()) {
+    <div
+      class="bg-white rounded-3xl shadow-lg border border-ring overflow-hidden mb-4 p-4 animate-slide-down"
+    >
+      @if (quizIsSingle()) {
+        <span>Currently: single</span>
+      } @else {
+        <div class="flex items-center gap-3 text-black">
+          <lucide-icon name="heart" class="w-5 h-5"></lucide-icon>
+          <span class="font-bold">{{ quizPartnerName() }}</span>
+          <span class="text-sm text-gray-500">|</span>
+          <span class="text-sm text-gray-600"
+            >Birthday: {{ quizPartnerBirthday() | date: 'MMMM d, yyyy' }}</span
+          >
+          <span class="text-sm text-gray-500"></span>
+          <span class="text-sm text-gray-600">Together for {{ daysTogether() }}</span>
+        </div>
+      }
+    </div>
+  }
   <div class="max-w-7xl w-full mx-auto">
     <div
       class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden mb-4 animate-slide-down"

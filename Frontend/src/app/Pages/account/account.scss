@@ -19,6 +19,15 @@
     transform: scale(1);
   }
 }
+.card-hover {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  &:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.15);
+  }
+}
 
 .animate-fade-in-up {
   opacity: 0;

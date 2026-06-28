@@ -1,4 +1,4 @@
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { DatePipe, NgFor } from '@angular/common';
 import { CalendarMonthViewComponent, CalendarEvent } from 'angular-calendar';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -89,7 +89,7 @@ interface EventColor {
     },
   ],
 })
-export class Calendar implements OnDestroy {
+export class Calendar implements OnInit, OnDestroy {
   private loadSavedDate(): Date {
     const saved = localStorage.getItem('calendar-view-date');
     if (saved) {
@@ -168,10 +168,14 @@ export class Calendar implements OnDestroy {
   daysTogether = signal(0);
   showLoginPrompt = signal(false);
 
+  isLoadingQuiz = signal(true);
+
   constructor(
     private UserService: UserService,
     private UserContext: UserContext,
-  ) {
+  ) {}
+
+  private loadFromLocalStorage() {
     const savedQuiz = localStorage.getItem('calendar-quiz');
     if (savedQuiz) {
       const data = JSON.parse(savedQuiz);
@@ -187,8 +191,9 @@ export class Calendar implements OnDestroy {
       }
       this.quizPartnerName.set(data.partnerName || '');
 
-      if (this.UserContext.isLoggedIn()) {
-        this.showLoginPrompt.set(true);
+      if (!this.quizIsSingle()) {
+        this.calculateDaysTogether();
+        this.generateQuizEvents();
       }
     }
   }
@@ -196,6 +201,29 @@ export class Calendar implements OnDestroy {
   ngOnDestroy() {
     if (this.reminderInterval) {
       clearInterval(this.reminderInterval);
+    }
+  }
+
+  ngOnInit(): void {
+    if (this.UserContext.isLoggedIn()) {
+      this.UserService.getCalendarQuiz().subscribe({
+        next: (quiz) => {
+          if (quiz) {
+            this.quizIsSingle.set(quiz.isSingle);
+            this.quizPartnerName.set(quiz.partnerName || '');
+            this.quizDatingDate.set(quiz.datingDate || '');
+            this.quizPartnerBirthday.set(quiz.partnerBirthday || '');
+            this.quizCompleted.set(true);
+            if (!quiz.isSingle) {
+              this.calculateDaysTogether();
+              this.generateQuizEvents();
+            }
+          }
+        },
+      });
+    } else {
+      this.loadFromLocalStorage();
+      this.isLoadingQuiz.set(false);
     }
   }
 

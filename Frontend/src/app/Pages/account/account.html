@@ -52,69 +52,156 @@
       </div>
       <section
         hlmCard
-        class="w-full cursor-pointer transition-transform hover:scale-[1.02] animate-fade-in-up delay-200"
-        style="background-color: var(--card); color: var(--card-foreground)"
+        [class.cursor-default]="userProgress().calendarDone"
+        [class.cursor-pointer]="!userProgress().calendarDone"
+        [style.backgroundColor]="userProgress().calendarDone ? '#e5e7eb' : 'var(--card)'"
+        class="w-full transition-transform animate-fade-in-up delay-200 card-hover"
+        style="color: var(--card-foreground)"
       >
+        @if (userProgress().calendarDone) {
+          <div
+            class="absolute -top-0 -left-10 bg-green-500 text-white text-[9px] font-bold py-1.5 px-12 transform -rotate-45 shadow-md z-10 whitespace-nowrap tracking-wider"
+          >
+            Done
+          </div>
+        }
         <div hlmCardContent class="flex items-center justify-between p-5">
           <div class="flex items-center gap-4">
-            <lucide-icon name="calendar" class="w-10 h-10 text-primary"></lucide-icon>
+            <lucide-icon
+              name="calendar"
+              class="w-10 h-10 text-primary"
+              [style.opacity]="userProgress().calendarDone ? '0.4' : '1'"
+            ></lucide-icon>
             <div class="flex flex-col">
-              <span class="text-lg font-semibold">Set up the Calendar</span>
-              <span class="text-sm text-muted">Plan your special dates</span>
+              <span
+                class="text-lg font-semibold"
+                [class.line-through]="userProgress().calendarDone"
+                [class.text-gray-500]="userProgress().calendarDone"
+                >Set up the Calendar</span
+              >
+              <span
+                class="text-sm text-muted"
+                [class.line-through]="userProgress().calendarDone"
+                [class.text-gray-400]="userProgress().calendarDone"
+                >Plan your special dates</span
+              >
             </div>
           </div>
+
           <a
-            [routerLink]="['/games/calendar']"
+            [routerLink]="!userProgress().calendarDone ? ['/games/calendar'] : null"
             hlmBtn
-            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            [class.pointer-events-none]="userProgress().calendarDone"
+            [class.cursor-default]="userProgress().calendarDone"
+            [class.cursor-pointer]="!userProgress().calendarDone"
+            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-dark transition-colors"
           >
-            Continue
+            <span [class.line-through]="userProgress().calendarDone"> Continue </span>
+
             <lucide-icon name="move-right" class="w-4 h-4"></lucide-icon>
           </a>
         </div>
       </section>
       <section
         hlmCard
-        class="w-full cursor-pointer transition-transform hover:scale-[1.02] animate-fade-in-up delay-300"
-        style="background-color: var(--card); color: var(--card-foreground)"
+        [class.cursor-default]="userProgress().giftDone"
+        [class.cursor-pointer]="!userProgress().giftDone"
+        [style.backgroundColor]="userProgress().giftDone ? '#e5e7eb' : 'var(--card)'"
+        class="w-full transition-transform animate-fade-in-up delay-300 card-hover"
+        style="color: var(--card-foreground)"
       >
+        @if (userProgress().giftDone) {
+          <div
+            class="absolute -top-0 -left-10 bg-green-500 text-white text-[9px] font-bold py-1.5 px-12 transform -rotate-45 shadow-md z-10 whitespace-nowrap tracking-wider"
+          >
+            Done
+          </div>
+        }
         <div hlmCardContent class="flex items-center justify-between p-5">
           <div class="flex items-center gap-4">
-            <lucide-icon name="calendar" class="w-10 h-10 text-primary"></lucide-icon>
+            <lucide-icon
+              name="gift"
+              class="w-10 h-10 text-primary"
+              [style.opacity]="userProgress().giftDone ? '0.4' : '1'"
+            ></lucide-icon>
             <div class="flex flex-col">
-              <span class="text-lg font-semibold">Gift for your Partner</span>
-              <span class="text-sm text-muted">Find the perfect surprise</span>
+              <span
+                class="text-lg font-semibold"
+                [class.line-through]="userProgress().giftDone"
+                [class.text-gray-500]="userProgress().giftDone"
+                >Gift for your Partner</span
+              >
+              <span
+                class="text-sm text-muted"
+                [class.line-through]="userProgress().giftDone"
+                [class.text-gray-400]="userProgress().giftDone"
+                >Find the perfect surprise</span
+              >
             </div>
           </div>
+
           <a
-            [routerLink]="['/games/calendar']"
+            [routerLink]="!userProgress().calendarDone ? ['/games/calendar'] : null"
             hlmBtn
-            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            [class.pointer-events-none]="userProgress().giftDone"
+            [class.cursor-default]="userProgress().giftDone"
+            [class.cursor-pointer]="!userProgress().giftDone"
+            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-dark transition-colors"
           >
-            Continue
+            <span [class.line-through]="userProgress().giftDone"> Continue </span>
             <lucide-icon name="move-right" class="w-4 h-4"></lucide-icon>
           </a>
         </div>
       </section>
       <section
         hlmCard
-        class="w-full cursor-pointer transition-transform hover:scale-[1.02] animate-fade-in-up delay-400"
-        style="background-color: var(--card); color: var(--card-foreground)"
+        [class.hover:scale-[1.02]]="!userProgress().gameDone"
+        [class.cursor-default]="userProgress().gameDone"
+        [class.cursor-pointer]="!userProgress().gameDone"
+        [style.backgroundColor]="userProgress().gameDone ? '#e5e7eb' : 'var(--card)'"
+        class="w-full transition-transform animate-fade-in-up delay-400 card-hover"
+        style="color: var(--card-foreground)"
       >
+        @if (userProgress().gameDone) {
+          <div
+            class="absolute -top-0 -left-10 bg-green-500 text-white text-[9px] font-bold py-1.5 px-12 transform -rotate-45 shadow-md z-10 whitespace-nowrap tracking-wider"
+          >
+            Done
+          </div>
+        }
         <div hlmCardContent class="flex items-center justify-between p-5">
           <div class="flex items-center gap-4">
-            <lucide-icon name="calendar" class="w-10 h-10 text-primary"></lucide-icon>
+            <lucide-icon
+              name="gamepad-2"
+              class="w-10 h-10 text-primary"
+              [style.opacity]="userProgress().gameDone ? '0.4' : '1'"
+            ></lucide-icon>
             <div class="flex flex-col">
-              <span class="text-lg font-semibold">Play a Game</span>
-              <span class="text-sm text-muted">Have fun together</span>
+              <span
+                class="text-lg font-semibold"
+                [class.line-through]="userProgress().gameDone"
+                [class.text-gray-500]="userProgress().gameDone"
+                >Play a Game</span
+              >
+              <span
+                class="text-sm text-muted"
+                [class.line-through]="userProgress().gameDone"
+                [class.text-gray-400]="userProgress().gameDone"
+                >Have fun together</span
+              >
             </div>
           </div>
+
           <a
-            [routerLink]="['/games/calendar']"
+            [routerLink]="!userProgress().calendarDone ? ['/games/calendar'] : null"
             hlmBtn
-            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            [class.pointer-events-none]="userProgress().gameDone"
+            [class.cursor-default]="userProgress().gameDone"
+            [class.cursor-pointer]="!userProgress().gameDone"
+            class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-dark transition-colors"
           >
-            Continue
+            <span [class.line-through]="userProgress().gameDone"> Continue </span>
+
             <lucide-icon name="move-right" class="w-4 h-4"></lucide-icon>
           </a>
         </div>
