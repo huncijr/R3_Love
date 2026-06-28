@@ -5,6 +5,7 @@ import {
   varchar,
   timestamp,
   boolean,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("Users", {
@@ -14,6 +15,10 @@ export const user = pgTable("Users", {
   name: varchar("name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(),
   gender: varchar("gender", { length: 50 }),
+  calendarDone: boolean("calendar_done").default(false),
+  giftDone: boolean("gift_done").default(false),
+  gameDone: boolean("game_done").default(false),
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

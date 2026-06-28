@@ -6,6 +6,12 @@ export const userSchema = `
     createdAt: String!
   }
 
+  type UserProgress{
+  calendarDone: Boolean
+  giftDone: Boolean
+  gameDone: Boolean
+  }
+
   type CalendarQuiz {
     id: ID!
     userId: ID!
@@ -26,6 +32,7 @@ export const userSchema = `
     users: [User!]!
     user(id: ID!): User
     getCalendarQuiz: CalendarQuiz
+    getUserProgress: UserProgress
   }
 
   type Mutation {

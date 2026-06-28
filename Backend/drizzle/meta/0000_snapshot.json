@@ -1,5 +1,5 @@
 {
-  "id": "6d683d26-792b-4e3e-8e20-272632f5a891",
+  "id": "fa9ecc79-7304-4a4f-8a18-da5e9605388e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -110,6 +110,27 @@
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
+        },
+        "calendar_done": {
+          "name": "calendar_done",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "gift_done": {
+          "name": "gift_done",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "game_done": {
+          "name": "game_done",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",

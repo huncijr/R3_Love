@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
@@ -17,6 +17,7 @@ import {
   Gift,
   Gamepad2,
   MoveRight,
+  UserStar,
 } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 import { HlmBadge } from '@spartan-ng/helm/badge';
@@ -51,12 +52,13 @@ import { UserContext } from '../../services/UserContext/user-context';
         Gamepad2,
         Gift,
         MoveRight,
+        UserStar,
       }),
     },
   ],
   styleUrl: './account.scss',
 })
-export class Account {
+export class Account implements OnInit {
   private toastr = inject(ToastrService);
   private userService = inject(UserService);
   private userContext = inject(UserContext);
@@ -96,6 +98,55 @@ export class Account {
   showPassword = signal(true);
   showConfirmPassword = signal(true);
   isLoginMode = signal(false);
+
+  calendarQuiz = signal<any>(null);
+  userProgress = signal<{ calendarDone: boolean; giftDone: boolean; gameDone: boolean }>({
+    calendarDone: false,
+    giftDone: false,
+    gameDone: false,
+  });
+
+  completedCount = computed(() => {
+    let count = 0;
+    if (this.userProgress().calendarDone) count++;
+    if (this.userProgress().giftDone) count++;
+    if (this.userProgress().gameDone) count++;
+    return count;
+  });
+
+  setupItems = computed(() => {
+    let items: Array<{ id: string; label: string; done: boolean }> = [];
+    items.push({
+      id: 'calendar',
+      label: 'Calendar Quiz',
+      done: this.userProgress().calendarDone,
+    });
+    items.push({
+      id: 'gift',
+      label: 'gift Setup',
+      done: this.userProgress().giftDone,
+    });
+    items.push({
+      id: 'game',
+      label: 'game Setup',
+      done: this.userProgress().gameDone,
+    });
+
+    return items;
+  });
+
+  ngOnInit() {
+    this.userService.getCalendarQuiz().subscribe({
+      next: (quiz) => {
+        this.calendarQuiz.set(quiz);
+      },
+      error: (err) => console.error('Failed to load calendar quiz', err),
+    });
+    this.userService.getUserProgress().subscribe({
+      next: (progress) => this.userProgress.set(progress),
+      error: (err) => console.error('Failed to load progress', err),
+    });
+  }
 
   Setgender(value: string) {
     this.gender.set(value);

@@ -53,6 +53,28 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+    getUserProgress: async (
+      _parent: unknown,
+      _args: unknown,
+      context: { token: string },
+    ) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        const result = await db
+          .select({
+            calendarDone: user.calendarDone,
+            giftDone: user.giftDone,
+            gameDone: user.gameDone,
+          })
+          .from(user)
+          .where(eq(user.id, userId));
+        return (
+          result[0] || { calendarDone: false, giftDone: false, gameDone: false }
+        );
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
   },
 
   Mutation: {
@@ -146,6 +168,11 @@ export const userResolver = {
             })
             .where(eq(calendarQuiz.userId, userId))
             .returning();
+
+          await db
+            .update(user)
+            .set({ calendarDone: true })
+            .where(eq(user.id, userId));
           return result[0];
         }
 

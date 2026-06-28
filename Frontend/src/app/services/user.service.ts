@@ -29,7 +29,12 @@ const LOGIN = gql`
 `;
 
 const SAVE_CALENDAR_QUIZ = gql`
-  mutation SaveCalendarQuiz($isSingle: Boolean!, $partnerName: String, $datingDate: String, $partnerBirthday: String) {
+  mutation SaveCalendarQuiz(
+    $isSingle: Boolean!
+    $partnerName: String
+    $datingDate: String
+    $partnerBirthday: String
+  ) {
     saveCalendarQuiz(
       isSingle: $isSingle
       partnerName: $partnerName
@@ -41,6 +46,28 @@ const SAVE_CALENDAR_QUIZ = gql`
       partnerName
       datingDate
       partnerBirthday
+    }
+  }
+`;
+
+const GET_CALENDAR_QUIZ = gql`
+  query GetCalendarQuiz {
+    getCalendarQuiz {
+      id
+      isSingle
+      partnerName
+      datingDate
+      partnerBirthday
+    }
+  }
+`;
+
+const GET_USER_PROGRESS = gql`
+  query GetUserProgress {
+    getUserProgress {
+      calendarDone
+      giftDone
+      gameDone
     }
   }
 `;
@@ -77,7 +104,12 @@ export class UserService {
       })
       .pipe(map((result) => result.data!.login));
   }
-  saveCalendarQuiz(isSingle: boolean, partnerName: string, datingDate: string, partnerBirthday: string) {
+  saveCalendarQuiz(
+    isSingle: boolean,
+    partnerName: string,
+    datingDate: string,
+    partnerBirthday: string,
+  ) {
     return this.apollo.mutate({
       mutation: gql`
         mutation SaveCalendarQuiz(
@@ -102,5 +134,29 @@ export class UserService {
       `,
       variables: { isSingle, partnerName, datingDate, partnerBirthday },
     });
+  }
+
+  getCalendarQuiz(): Observable<any> {
+    return this.apollo
+      .query({
+        query: GET_CALENDAR_QUIZ,
+        fetchPolicy: 'network-only',
+      })
+      .pipe(map((result: any) => result.data?.getCalendarQuiz));
+  }
+
+  getUserProgress(): Observable<{ calendarDone: boolean; giftDone: boolean; gameDone: boolean }> {
+    return this.apollo
+      .query({ query: GET_USER_PROGRESS, fetchPolicy: 'network-only' })
+      .pipe(
+        map(
+          (result: any) =>
+            result.data?.getUserProgress ?? {
+              calendarDone: false,
+              giftDone: false,
+              gameDone: false,
+            },
+        ),
+      );
   }
 }

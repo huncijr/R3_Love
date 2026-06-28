@@ -14,6 +14,9 @@ CREATE TABLE "Users" (
 	"name" varchar(255) NOT NULL,
 	"password" varchar(255) NOT NULL,
 	"gender" varchar(50),
+	"calendar_done" boolean DEFAULT false,
+	"gift_done" boolean DEFAULT false,
+	"game_done" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
