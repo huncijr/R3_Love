@@ -220,21 +220,159 @@
 }
 <div class="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 bg-background">
   @if (quizCompleted()) {
-    <div
-      class="bg-white rounded-3xl shadow-lg border border-ring overflow-hidden mb-4 p-4 animate-slide-down"
-    >
-      @if (quizIsSingle()) {
-        <span>Currently: single</span>
-      } @else {
-        <div class="flex items-center gap-3 text-black">
-          <lucide-icon name="heart" class="w-5 h-5"></lucide-icon>
-          <span class="font-bold">{{ quizPartnerName() }}</span>
-          <span class="text-sm text-gray-500">|</span>
-          <span class="text-sm text-gray-600"
-            >Birthday: {{ quizPartnerBirthday() | date: 'MMMM d, yyyy' }}</span
+    <div class="w-full max-w-2xl mb-6 animate-slide-down">
+      @if (!isEditingQuiz()) {
+        <div
+          class="relative bg-linear-to-br from-primary-light/30 to-white border border-primary-light rounded-2xl shadow-md p-6"
+        >
+          <button
+            (click)="isEditingQuiz.set(true)"
+            class="absolute top-4 right-4 text-muted hover:text-primary-main transition-colors cursor-pointer"
+            title="Edit"
           >
-          <span class="text-sm text-gray-500"></span>
-          <span class="text-sm text-gray-600">Together for {{ daysTogether() }}</span>
+            <lucide-icon name="pencil" class="w-4 h-4"></lucide-icon>
+          </button>
+          @if (quizIsSingle()) {
+            <div class="flex flex-col items-center gap-3 py-4">
+              <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
+                <lucide-icon name="user" class="w-7 h-7 text-gray-400"></lucide-icon>
+              </div>
+              <span class="text-lg font-semibold text-neutral-text">Currently Single</span>
+              <p class="text-sm text-muted">You can always update this later</p>
+            </div>
+          } @else {
+            <div class="flex flex-col items-center gap-4">
+              <div class="flex flex-col items-center gap-4">
+                <div
+                  class="w-16 h-16 rounded-full bg-primary-main flex items-center justify-center shadow-lg shadow-primary-main/20"
+                >
+                  <lucide-icon name="users" class="w-8 h-8 text-white"></lucide-icon>
+                </div>
+                <div class="text-center">
+                  <h3 class="text-2xl font-bold text-primary-dark">{{ quizPartnerName() }}</h3>
+                  <span class="text-sm text-muted">Your Partner</span>
+                </div>
+                <div class="w-full grid grid-cols-2 gap-3 mt-2">
+                  <div
+                    class="flex flex-col items-center p-3 rounded-xl bg-primary-light/20 border border-primary-light/40"
+                  >
+                    <lucide-icon name="cake" class="w-5 h-5 text-primary-main mb-1"></lucide-icon>
+                    <span class="text-xs text-muted">Birthday</span>
+                    <span class="text-sm font-semibold text-neutral-text">{{
+                      quizPartnerBirthday() | date: `MMM d, yyyy`
+                    }}</span>
+                  </div>
+                  <div
+                    class="flex flex-col items-center p-3 rounded-xl bg-primary-light/20 border border-primary-light/40"
+                  >
+                    <lucide-icon name="calendar-heart" class="w-5 h-5 text-primary-main mb-1">
+                    </lucide-icon>
+                    <span class="text-xs text-muted">Together</span>
+                    <span class="text-sm font-semibold text-neutral-text"
+                      >{{ daysTogether() }} days</span
+                    >
+                  </div>
+                  <div
+                    class="flex flex-col items-center p-3 rounded-xl bg-rose-50 norder border-rose-200"
+                  >
+                    <lucide-icon name="heart" class="w-5 h-5 text-rose-500 mb-1"></lucide-icon>
+                    <span class="text-xs text-rose-400">Valentine's</span>
+                    <span class="text-sm font-semibold text-rose-600"
+                      >{{ daysUntilValentines() }} days</span
+                    >
+                  </div>
+                  <div
+                    class="flex flex-col items-center p-3 rounded-xl bg-purple-50 border border-purple-200"
+                  >
+                    <lucide-icon name="sparkles" class="w-5 h-5 text-purple-500 mb-1"></lucide-icon>
+                    <span class="text-xs text-purple-400">Anniversary</span>
+                    <span class="text-sm font-semibold text-purple-600"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+      @if (isEditingQuiz()) {
+        <div class="bg-white border border-primary-light rounded-2xl shadow-md p-6 space-y-4">
+          <h3 class="text-lg font-bold text-primary-dark text-center">Edit Partner Info</h3>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-neutral-text">Relationship status</label>
+            <div class="flex gap-2">
+              <button
+                type="button"
+                (click)="quizIsSingle.set(false)"
+                [class.bg-primary-main]="quizIsSingle() === false"
+                [class.text-white]="quizIsSingle() === false"
+                [class.bg-primary-light]="quizIsSingle() !== false"
+                [class.text-primary-dark]="quizIsSingle() !== false"
+                class="flex-1 py-2 rounded-lg border border-border font-medium transition-all cursor-pointer"
+              >
+                In a relationship
+              </button>
+              <button
+                type="button"
+                (click)="quizIsSingle.set(true)"
+                [class.bg-primary-main]="quizIsSingle() === true"
+                [class.text-white]="quizIsSingle() === true"
+                [class.bg-primary-light]="quizIsSingle() !== true"
+                [class.text-primary-dark]="quizIsSingle() !== true"
+                class="flex-1 py-2 rounded-lg border border-border font-medium transition-all cursor-pointer"
+              >
+                Single
+              </button>
+            </div>
+          </div>
+          @if (!quizIsSingle()) {
+            <div class="space-y-1">
+              <label class="text-sm font-medium text-neutral-text">Partner's Name</label>
+              <input
+                type="text"
+                [ngModel]="quizPartnerName()"
+                (ngModelChange)="quizPartnerName.set($event)"
+                class="w-full px-3 py-2 rounded-lg border border-primary-light focus:outline-none focus:ring-2 focus:ring-primary-main bg-white"
+              />
+            </div>
+            <div class="space-y-1">
+              <label class="text-sm font-medium text-neutral-text">Partner's Birthday</label>
+              <input
+                type="date"
+                [ngModel]="quizPartnerBirthday()"
+                (ngModelChange)="quizPartnerBirthday.set($event)"
+                class="w-full px-3 py-2 rounded-lg border border-primary-light focus:outline-none focus:ring-2 focus:ring-primary-main bg-white"
+              />
+            </div>
+            <div class="space-y-1">
+              <label class="text-sm font-medium text-neutral-text">Dating Since</label>
+              <input
+                type="date"
+                [ngModel]="quizDatingDate()"
+                (ngModelChange)="quizDatingDate.set($event)"
+                class="w-full px-3 py-2 rounded-lg border border-primary-light focus:outline-none focus:ring-2 focus:ring-primary-main bg-white"
+              />
+            </div>
+          }
+
+          <div class="flex gap-3 pt-2">
+            <button
+              hlmBtn
+              variant="outline"
+              (click)="isEditingQuiz.set(false)"
+              class="flex-1 cursor-pointer"
+            >
+              <lucide-icon name="x" class="w-4 h-4 mr-1"></lucide-icon>
+              Cancel
+            </button>
+            <button
+              hlmBtn
+              (click)="updateQuiz()"
+              class="flex-1 bg-primary-main hover:bg-primary-dark text-white cursor-pointer"
+            >
+              <lucide-icon name="save" class="w-4 h-4 mr-1"> </lucide-icon>
+              Save Changes
+            </button>
+          </div>
         </div>
       }
     </div>

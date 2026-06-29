@@ -188,6 +188,11 @@ export const userResolver = {
             },
           ])
           .returning();
+
+        await db
+          .update(user)
+          .set({ calendarDone: true })
+          .where(eq(user.id, userId));
         return result[0];
       } catch (error) {
         errorHandler(error);

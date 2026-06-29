@@ -31,6 +31,10 @@ import {
   HeartHandshake,
   HeartCrack,
   Save,
+  Pencil,
+  Cake,
+  Users,
+  Sparkle,
 } from 'lucide-angular';
 import { HlmSheetDescription } from '@spartan-ng/helm/sheet';
 import { HlmLabel } from '@spartan-ng/helm/label';
@@ -84,6 +88,10 @@ interface EventColor {
         HeartHandshake,
         HeartCrack,
         Save,
+        Pencil,
+        Cake,
+        Users,
+        Sparkle,
       }),
       multi: true,
     },
@@ -166,9 +174,12 @@ export class Calendar implements OnInit, OnDestroy {
   quizPartnerName = signal<string>('');
 
   daysTogether = signal(0);
+  daysUntilValentines = signal(0);
+  daysUntilAnniversary = signal(0);
   showLoginPrompt = signal(false);
 
   isLoadingQuiz = signal(true);
+  isEditingQuiz = signal(false);
 
   constructor(
     private UserService: UserService,
@@ -208,6 +219,7 @@ export class Calendar implements OnInit, OnDestroy {
     if (this.UserContext.isLoggedIn()) {
       this.UserService.getCalendarQuiz().subscribe({
         next: (quiz) => {
+          this.isLoadingQuiz.set(false);
           if (quiz) {
             this.quizIsSingle.set(quiz.isSingle);
             this.quizPartnerName.set(quiz.partnerName || '');
@@ -219,6 +231,10 @@ export class Calendar implements OnInit, OnDestroy {
               this.generateQuizEvents();
             }
           }
+        },
+        error: (err) => {
+          this.isLoadingQuiz.set(false);
+          console.error('Failed to load calendar quiz', err);
         },
       });
     } else {
@@ -239,6 +255,17 @@ export class Calendar implements OnInit, OnDestroy {
     if (this.quizStep() < 5) {
       this.quizStep.update((s) => s + 1);
     }
+  }
+
+  updateQuiz() {
+    this.saveQuiz();
+    this.isEditingQuiz.set(true);
+  }
+
+  restartQuiz() {
+    this.quizStep.set(1);
+    this.quizCompleted.set(false);
+    this.isEditingQuiz.set(false);
   }
 
   prevStep() {
@@ -468,6 +495,25 @@ export class Calendar implements OnInit, OnDestroy {
     this.daysTogether.set(diffDays);
   }
 
+  private calculateSpecialDates() {
+    this.daysUntilValentines.set(this.daysUntilDate(1, 14));
+    if (this.quizDatingDate()) {
+      const dating = new Date(this.quizDatingDate());
+      this.daysUntilAnniversary.set(this.daysUntilDate(dating.getMonth(), dating.getDate()));
+    }
+  }
+
+  private daysUntilDate(month: number, day: number): number {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const currentYear = today.getFullYear();
+    let nextDate = new Date(currentYear, month, day);
+    if (nextDate) {
+      nextDate = new Date(currentYear + 1, month, day);
+    }
+    const diffMs = nextDate.getTime() - today.getTime();
+    return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  }
   completeQuiz() {
     this.saveQuiz();
   }

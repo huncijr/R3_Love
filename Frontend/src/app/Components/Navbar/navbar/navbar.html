@@ -6,12 +6,14 @@
   </div>
 
   @if (currentUser()) {
-    <div
-      class="absolute top-1/2 right-4 -translate-y-1/2 md:hidden flex items-center gap-1.5 text-sm font-medium text-neutral-text"
+    <a
+      routerLink="/account"
+      routerLinkActive="font-semibold"
+      class="cursor-pointer absolute top-1/2 right-4 -translate-y-1/2 md:hidden flex items-center gap-1.5 text-sm font-medium text-neutral-text"
     >
       <lucide-icon name="circle-user-round" class="w-4 h-4 text-primary-main"></lucide-icon>
       {{ currentUser()?.name }}
-    </div>
+    </a>
   }
   <button
     (click)="toggleMenu()"

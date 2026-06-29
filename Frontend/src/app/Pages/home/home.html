@@ -1,1 +1,63 @@
-<p>home works!</p>
+<div class="min-h-screen flex flex-col items-center gap-5 pt-10 px-4">
+  @if (isLoggedIn() && hasPartner()) {
+    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up">
+      <section
+        hlmCard
+        class="bg-linear-to-r from-primary/50 to-background border border-borde shadow-md overflow-hidden"
+      >
+        <div hlmCardContent class="flex flex-col items-center justify-center p-8 gap-3">
+          <div
+            class="w-16 h-16 rounded-full bg-primary-main flex items-center justify-center shadow-lg shadow-primary-main/20"
+          >
+            <lucide-icon name="heart" class="w-8 h-8 text-white"></lucide-icon>
+          </div>
+          <span class="text-sm font-medium text-muted">Together for</span>
+          <h2 class="text-4xl md:text-5xl font-bold text-primary-dark">
+            {{ daysTogether() }} days
+          </h2>
+          <p class="text-sm text-black text-center px-4">{{ funFact() }}</p>
+        </div>
+      </section>
+      <section
+        hlmCard
+        class="bg-linear-to-r from-primary/50 to-background border border-border shadow-md overflow-hidden"
+      >
+        <div hlmCardHeader class="pb-2">
+          <div class="flex items-center gap-2">
+            <lucide-icon name="calendar-days" class="w-5 h-5 text-primary"></lucide-icon>
+            <h3 hlmCardTitle class="text-lg font-bold text-primary">Upcoming events</h3>
+          </div>
+        </div>
+        <div hlmCardContent class="space-y-3 p-5">
+          @if (daysUntilBirthday() > 0) {
+            <div
+              class="flex items-center gap-3 p-3 rounded-lg bg-primary-light/60 border border-primary-light"
+            >
+              <lucide-icon name="clock" class="w-5 h-5"></lucide-icon>
+              <div class="flex flex-col">
+                <span class="font-semibold text-neutral-text">Partner's Birthday</span>
+                <span class="text-sm text-muted">In {{ daysUntilBirthday() }} days</span>
+              </div>
+            </div>
+          }
+          @if (daysUntilAnniversary() > 0) {
+            <div
+              class="flex items-center gap-3 p-3 rounded-lg bg-primary-light/60 border border-primary-light"
+            >
+              <lucide-icon name="clock" class="w-5 h-5"></lucide-icon>
+              <div class="flex flex-col">
+                <span class="font-semibold text-neutral-text">Anniversary</span>
+                <span class="text-sm text-muted">In {{ daysUntilAnniversary() }} days</span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  } @else {
+    <div class="text-center py-20 animate-fade-in-up">
+      <h1 class="text-3xl font-bold text-primary mb-4">Welcome to R_Love!</h1>
+      <p class="text-muted">Your personal relationship</p>
+    </div>
+  }
+</div>
