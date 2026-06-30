@@ -82,10 +82,16 @@ export const userResolver = {
     ) => {
       try {
         const userId = getUserIdFromContext(context.token);
-        return await db
+        const events = await db
           .select()
           .from(calendarEvents)
           .where(eq(calendarEvents.userId, userId));
+
+        return events.map((event) => ({
+          ...event,
+          startDate: event.startDate.toISOString(),
+          createdAt: event.createdAt.toISOString(),
+        }));
       } catch (error) {
         errorHandler(error);
       }

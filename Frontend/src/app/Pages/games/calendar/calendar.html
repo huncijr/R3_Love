@@ -558,7 +558,7 @@
 
 @if (toastVisible() && toastMessage()) {
   <div
-    class="fixed top-6 left-1/2 -translate-x-1/2 z-60 bg-white flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg border transition-all duration-300 toast-enter"
+    class="fixed top-6 left-1/2 z-60 bg-white flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg border transition-all duration-300 toast-enter"
     [class.translate-y-0]="toastVisible()"
     [class.translate-y-20]="!toastVisible()"
     [class.opacity-100]="toastVisible()"
@@ -593,3 +593,23 @@
     </div>
   </div>
 </ng-template>
+
+@if (tipToastVisible() && !tipToastDismissed()) {
+  <div
+    class="fixed top-6 left-1/2 z-60 bg-white flex flex-col gap-2 px-4 py-3 rounded-xl shadow-lg border border-yellow-400 transition-all duration-300 toast-enter"
+  >
+    <div class="flex items-center gap-2">
+      <lucide-icon name="lightbulb" class="w-5 h-5 text-yellow-500"></lucide-icon>
+      <span class="text-sm font-medium text-neutral-text italic">
+        You can add events by clicking on a day!
+      </span>
+    </div>
+    <button
+      hlmBtn
+      (click)="dismissTipToast()"
+      class="text-xs text-background hover:text-background/70 transition-colors self-end cursor-pointer"
+    >
+      Don't show again
+    </button>
+  </div>
+}

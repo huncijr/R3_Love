@@ -8,6 +8,8 @@
     --color-red-50: oklch(97.1% 0.013 17.38);
     --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-500: oklch(63.7% 0.237 25.331);
+    --color-yellow-400: oklch(85.2% 0.199 91.936);
+    --color-yellow-500: oklch(79.5% 0.184 86.047);
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-green-700: oklch(52.7% 0.154 150.069);
@@ -240,6 +242,9 @@
   .\@container\/card-header {
     container-type: inline-size;
     container-name: card-header;
+  }
+  .pointer-events-auto {
+    pointer-events: auto;
   }
   .pointer-events-none {
     pointer-events: none;
@@ -845,6 +850,9 @@
   .border-transparent {
     border-color: transparent;
   }
+  .border-yellow-400 {
+    border-color: var(--color-yellow-400);
+  }
   .bg-\[\#ce85ae\] {
     background-color: #ce85ae;
   }
@@ -1204,6 +1212,9 @@
   .text-accent {
     color: var(--accent);
   }
+  .text-background {
+    color: var(--background);
+  }
   .text-black {
     color: var(--color-black);
   }
@@ -1305,6 +1316,12 @@
   }
   .text-white {
     color: var(--color-white);
+  }
+  .text-yellow-500 {
+    color: var(--color-yellow-500);
+  }
+  .italic {
+    font-style: italic;
   }
   .line-through {
     text-decoration-line: line-through;
@@ -1655,6 +1672,16 @@
         background-color: var(--primary);
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in oklab, var(--primary) 80%, transparent);
+        }
+      }
+    }
+  }
+  .hover\:text-background\/70 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--background);
+        @supports (color: color-mix(in lab, red, red)) {
+          color: color-mix(in oklab, var(--background) 70%, transparent);
         }
       }
     }

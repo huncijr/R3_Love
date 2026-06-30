@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal, effect } from '@angular/core';
 import { DatePipe, NgFor } from '@angular/common';
 import { CalendarMonthViewComponent, CalendarEvent } from 'angular-calendar';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -37,6 +37,7 @@ import {
   Users,
   Sparkle,
   UserMinus,
+  Lightbulb,
 } from 'lucide-angular';
 import { HlmSheetDescription } from '@spartan-ng/helm/sheet';
 import { HlmLabel } from '@spartan-ng/helm/label';
@@ -95,6 +96,7 @@ interface EventColor {
         Users,
         Sparkle,
         UserMinus,
+        Lightbulb,
       }),
       multi: true,
     },
@@ -186,12 +188,38 @@ export class Calendar implements OnInit, OnDestroy {
   isLoadingQuiz = signal(true);
   isEditingQuiz = signal(false);
 
+  showTipToast = signal(false);
+  tipDismissed = signal(false);
+
+  tipToastVisible = signal(false);
+  tipToastDismissed = signal(false);
+  private tipShown = false;
+
   private quizBackup: any = null;
 
   constructor(
     private UserService: UserService,
     private UserContext: UserContext,
-  ) {}
+  ) {
+    const dismissed = localStorage.getItem('calendar-tip-dismissed');
+    if (dismissed === 'true') {
+      this.tipToastDismissed.set(true);
+    }
+
+    effect(() => {
+      if (
+        this.quizCompleted() &&
+        !this.showLoginPrompt() &&
+        !this.tipToastDismissed() &&
+        !this.tipShown
+      ) {
+        this.tipShown = true;
+        setTimeout(() => {
+          this.tipToastVisible.set(true);
+        }, 1000);
+      }
+    });
+  }
 
   private loadFromLocalStorage() {
     const savedQuiz = localStorage.getItem('calendar-quiz');
@@ -226,7 +254,6 @@ export class Calendar implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.UserContext.isLoggedIn()) {
       this.loadCalendarEvents();
-      console.log('here');
       this.UserService.getCalendarQuiz().subscribe({
         next: (quiz) => {
           this.isLoadingQuiz.set(false);
@@ -249,8 +276,6 @@ export class Calendar implements OnInit, OnDestroy {
         },
       });
     } else {
-      console.log('i am here');
-
       this.loadFromLocalStorage();
       this.isLoadingQuiz.set(false);
     }
@@ -419,6 +444,16 @@ export class Calendar implements OnInit, OnDestroy {
     this.savedDate();
   }
 
+  dismissTip() {
+    localStorage.setItem('calendar-tip-dismissed', 'true');
+    this.tipDismissed.set(true);
+  }
+  dismissTipToast() {
+    localStorage.setItem('calendar-tip-dismissed', 'true');
+    this.tipToastDismissed.set(true);
+    this.tipToastVisible.set(false);
+  }
+
   onDayClicked(day: any) {
     this.selectedDate.set(day.date);
     this.showAddForm.set(true);
@@ -538,12 +573,11 @@ export class Calendar implements OnInit, OnDestroy {
           start: new Date(e.startDate),
           title: e.title,
           allDay: e.allDay,
-          color: e.color ? { primary: e.color, secondary: e.color + '33' } : undefined,
+          color: e.color ? { primary: e.color, secondary: e.color } : undefined,
           meta: { description: e.description },
         }));
         console.log('[DEBUG] Mapped events:', mapped);
         this.eventsSignal.update((existing) => [...existing, ...mapped]);
-        console.log('[DEBUG] Updated eventsSignal:', this.eventsSignal());
       },
       error: (err) => console.error('Failed to load events', err),
     });
@@ -558,7 +592,11 @@ export class Calendar implements OnInit, OnDestroy {
       allDay: event.allDay,
       color: event.color?.primary,
     }).subscribe({
-      next: () => this.toastr.success('Event saved', 'Success'),
+      next: () => {
+        this.toastr.success('Event saved', 'Success');
+        this.loadCalendarEvents();
+      },
+
       error: (err) => console.error('Failed to save event', err),
     });
   }

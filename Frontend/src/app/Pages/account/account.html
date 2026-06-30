@@ -43,12 +43,18 @@
             name="circle-check"
             class="w-5 h-5 md:w-10 mr-2 md:h-10 text-green-500"
           ></lucide-icon>
-          <p class="text-xl md:text-4xl font-bold text-green-600">Finish your account</p>
+          <p class="text-xl md:text-4xl font-bold text-green-600 archivo-black">
+            Finish your account
+          </p>
         </div>
       </div>
       <div class="w-full flex animate-fade-in-up delay-100">
-        <p class="text-lg md:text-xl font-medium px-2 text-border">Setup your account</p>
-        <span class="text-primary text-lg md:text-xl">({{ completedCount() }}/3)</span>
+        <p class="text-lg md:text-xl font-medium px-2 text-primary archivo-black">
+          Setup your account
+        </p>
+        <span class="text-primary text-lg md:text-xl archivo-black"
+          >({{ completedCount() }}/3)</span
+        >
       </div>
       <section
         hlmCard
@@ -222,7 +228,7 @@
         </div>
       </div>
       <div htmlCardHeader class="text-center pb-2">
-        <h2 hlmCardTitle class="text-2xl font-bold text-primary">
+        <h2 hlmCardTitle class="text-2xl font-bold text-primary playwrite-id mb-4">
           {{ isLoginMode() ? 'Login' : 'Create an Account' }}
         </h2>
         <p hlmCardDescription class="text-muted">
@@ -312,7 +318,7 @@
                 [class.text-white]="gender() === 'Male'"
                 [class.bg-primary-light]="gender() !== 'Male'"
                 [class.text-primary-dark]="gender() !== 'Male'"
-                class="cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
+                class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
               >
                 <lucide-icon name="mars" class="w-4 h-4 inline mr-1"></lucide-icon>
                 Male
@@ -324,7 +330,7 @@
                 [class.text-white]="gender() === 'Female'"
                 [class.bg-primary-light]="gender() !== 'Female'"
                 [class.text-primary-dark]="gender() !== 'Female'"
-                class="cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
+                class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
               >
                 <lucide-icon name="venus" class="w-4 h-4 inline mr-1"></lucide-icon>
                 Female
@@ -336,7 +342,7 @@
                 [class.text-white]="gender() === 'Other'"
                 [class.bg-primary-light]="gender() !== 'Other'"
                 [class.text-primary-dark]="gender() !== 'Other'"
-                class="cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
+                class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
               >
                 <lucide-icon name="user" class="w-4 h-4 inline mr-1"></lucide-icon>
                 Other
