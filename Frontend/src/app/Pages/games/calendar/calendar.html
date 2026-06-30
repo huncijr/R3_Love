@@ -35,7 +35,7 @@
               <div class="flex flex-col justify-between px-5 py-2">
                 <div>
                   <h2 class="text-4xl items-center font-bold text-[#be185d] font-display">
-                    Welcome!
+                    Welcome !
                   </h2>
                   <p
                     class="text-gray-600 text-left text-lg leading-relaxed font-bold mb-3 font-display tracking-wider"
@@ -226,7 +226,7 @@
           class="relative bg-linear-to-br from-primary-light/30 to-white border border-primary-light rounded-2xl shadow-md p-6"
         >
           <button
-            (click)="isEditingQuiz.set(true)"
+            (click)="startEdit()"
             class="absolute top-4 right-4 text-muted hover:text-primary-main transition-colors cursor-pointer"
             title="Edit"
           >
@@ -235,7 +235,7 @@
           @if (quizIsSingle()) {
             <div class="flex flex-col items-center gap-3 py-4">
               <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
-                <lucide-icon name="user" class="w-7 h-7 text-gray-400"></lucide-icon>
+                <lucide-icon name="user-minus" class="w-7 h-7 text-gray-400"></lucide-icon>
               </div>
               <span class="text-lg font-semibold text-neutral-text">Currently Single</span>
               <p class="text-sm text-muted">You can always update this later</p>
@@ -252,7 +252,7 @@
                   <h3 class="text-2xl font-bold text-primary-dark">{{ quizPartnerName() }}</h3>
                   <span class="text-sm text-muted">Your Partner</span>
                 </div>
-                <div class="w-full grid grid-cols-2 gap-3 mt-2">
+                <div class="w-full grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
                   <div
                     class="flex flex-col items-center p-3 rounded-xl bg-primary-light/20 border border-primary-light/40"
                   >
@@ -273,20 +273,25 @@
                     >
                   </div>
                   <div
-                    class="flex flex-col items-center p-3 rounded-xl bg-rose-50 norder border-rose-200"
+                    class="flex flex-col items-center p-3 rounded-xl bg-primary-light/20 border border-primary-light/40"
                   >
-                    <lucide-icon name="heart" class="w-5 h-5 text-rose-500 mb-1"></lucide-icon>
-                    <span class="text-xs text-rose-400">Valentine's</span>
-                    <span class="text-sm font-semibold text-rose-600"
+                    <lucide-icon name="heart" class="w-5 h-5 text-primary-main mb-1"></lucide-icon>
+                    <span class="text-xs text-muted">Valentine's</span>
+                    <span class="text-sm font-semibold text-neutral-text"
                       >{{ daysUntilValentines() }} days</span
                     >
                   </div>
                   <div
-                    class="flex flex-col items-center p-3 rounded-xl bg-purple-50 border border-purple-200"
+                    class="flex flex-col items-center p-3 rounded-xl bg-primary-light/20 border border-primary-light/40"
                   >
-                    <lucide-icon name="sparkles" class="w-5 h-5 text-purple-500 mb-1"></lucide-icon>
-                    <span class="text-xs text-purple-400">Anniversary</span>
-                    <span class="text-sm font-semibold text-purple-600"></span>
+                    <lucide-icon
+                      name="sparkle"
+                      class="w-5 h-5 text-primary-main mb-1"
+                    ></lucide-icon>
+                    <span class="text-xs text-muted">Anniversary</span>
+                    <span class="text-sm font-semibold text-neutral-text"
+                      >{{ daysUntilAnniversary() }} days</span
+                    >
                   </div>
                 </div>
               </div>
@@ -353,14 +358,8 @@
               />
             </div>
           }
-
           <div class="flex gap-3 pt-2">
-            <button
-              hlmBtn
-              variant="outline"
-              (click)="isEditingQuiz.set(false)"
-              class="flex-1 cursor-pointer"
-            >
+            <button hlmBtn variant="outline" (click)="cancelEdit()" class="flex-1 cursor-pointer">
               <lucide-icon name="x" class="w-4 h-4 mr-1"></lucide-icon>
               Cancel
             </button>
@@ -407,7 +406,6 @@
         </button>
       </div>
     </div>
-
     <div class="flex flex-col md:flex-row gap-4 animate-slide-down">
       <div class="bg-white rounded-2xl shadow-lg border border-[#f472b6] overflow-hidden flex-1">
         <div class="p-4" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
@@ -490,7 +488,6 @@
           {{ selectedDate() | date: 'MMMM d,yyyy' }}
         </p>
       </div>
-
       <div class="flex flex-col gap-4">
         <div>
           <label class="text-xs font-medium text-pink-700 mb-1 block">Event Title</label>

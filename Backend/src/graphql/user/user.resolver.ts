@@ -1,6 +1,6 @@
 import { db } from "../../db/index.js";
-import { calendarQuiz, user } from "../../db/schema.js";
-import { eq } from "drizzle-orm";
+import { calendarEvents, calendarQuiz, user } from "../../db/schema.js";
+import { and, eq } from "drizzle-orm";
 import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
 import { generateToken, verifyToken } from "../../middleware/Auth.js";
@@ -71,6 +71,21 @@ export const userResolver = {
         return (
           result[0] || { calendarDone: false, giftDone: false, gameDone: false }
         );
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+    getCalendarEvents: async (
+      _parent: unknown,
+      _args: unknown,
+      context: { token: string },
+    ) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        return await db
+          .select()
+          .from(calendarEvents)
+          .where(eq(calendarEvents.userId, userId));
       } catch (error) {
         errorHandler(error);
       }
@@ -196,6 +211,60 @@ export const userResolver = {
         return result[0];
       } catch (error) {
         errorHandler(error);
+      }
+    },
+    saveCalendarEvent: async (
+      _parent: unknown,
+      args: {
+        event: {
+          title: string;
+          description?: string;
+          startDate: string;
+          allDay?: boolean;
+          color?: string;
+        };
+      },
+      context: { token: string },
+    ) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        const result = await db
+          .insert(calendarEvents)
+          .values({
+            userId,
+            title: args.event.title,
+            description: args.event.description || null,
+            startDate: new Date(args.event.startDate),
+            allDay: args.event.allDay ?? true,
+            color: args.event.color || null,
+          })
+          .returning();
+        console.log("[DEBUG] Found events in DB:", result);
+
+        return result[0];
+      } catch (error) {}
+    },
+
+    deleteCalendarEvent: async (
+      _parents: unknown,
+      args: { id: string },
+      context: { token: string },
+    ) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        const events = await db
+          .delete(calendarEvents)
+          .where(
+            and(
+              eq(calendarEvents.id, args.id),
+              eq(calendarEvents.userId, userId),
+            ),
+          );
+        console.log("[DEBUG] Found events in DB:", events);
+
+        return true;
+      } catch (err) {
+        errorHandler(err);
       }
     },
   },

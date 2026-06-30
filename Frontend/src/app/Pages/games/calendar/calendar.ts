@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { DatePipe, NgFor } from '@angular/common';
 import { CalendarMonthViewComponent, CalendarEvent } from 'angular-calendar';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -7,6 +7,7 @@ import { HlmRadioGroupImports } from '../../../ui/radio-group/src';
 import { HlmProgressImports } from '../../../ui/progress/src';
 import { HlmBadgeImports } from '../../../ui/badge/src';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 import {
   LucideAngularModule,
@@ -35,6 +36,7 @@ import {
   Cake,
   Users,
   Sparkle,
+  UserMinus,
 } from 'lucide-angular';
 import { HlmSheetDescription } from '@spartan-ng/helm/sheet';
 import { HlmLabel } from '@spartan-ng/helm/label';
@@ -92,6 +94,7 @@ interface EventColor {
         Cake,
         Users,
         Sparkle,
+        UserMinus,
       }),
       multi: true,
     },
@@ -115,7 +118,7 @@ export class Calendar implements OnInit, OnDestroy {
   };
 
   private reminderInterval: any;
-
+  private toastr = inject(ToastrService);
   private saveQuiz() {
     const data = {
       isSingle: this.quizIsSingle() ?? false,
@@ -134,6 +137,7 @@ export class Calendar implements OnInit, OnDestroy {
           this.quizCompleted.set(true);
           if (!this.quizIsSingle()) {
             this.calculateDaysTogether();
+            this.calculateSpecialDates();
             this.generateQuizEvents();
           }
         },
@@ -145,6 +149,7 @@ export class Calendar implements OnInit, OnDestroy {
       this.showLoginPrompt.set(true);
       if (!this.quizIsSingle()) {
         this.calculateDaysTogether();
+        this.calculateSpecialDates();
         this.generateQuizEvents();
       }
     }
@@ -181,6 +186,8 @@ export class Calendar implements OnInit, OnDestroy {
   isLoadingQuiz = signal(true);
   isEditingQuiz = signal(false);
 
+  private quizBackup: any = null;
+
   constructor(
     private UserService: UserService,
     private UserContext: UserContext,
@@ -204,6 +211,7 @@ export class Calendar implements OnInit, OnDestroy {
 
       if (!this.quizIsSingle()) {
         this.calculateDaysTogether();
+        this.calculateSpecialDates();
         this.generateQuizEvents();
       }
     }
@@ -217,6 +225,8 @@ export class Calendar implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.UserContext.isLoggedIn()) {
+      this.loadCalendarEvents();
+      console.log('here');
       this.UserService.getCalendarQuiz().subscribe({
         next: (quiz) => {
           this.isLoadingQuiz.set(false);
@@ -228,6 +238,7 @@ export class Calendar implements OnInit, OnDestroy {
             this.quizCompleted.set(true);
             if (!quiz.isSingle) {
               this.calculateDaysTogether();
+              this.calculateSpecialDates();
               this.generateQuizEvents();
             }
           }
@@ -238,6 +249,8 @@ export class Calendar implements OnInit, OnDestroy {
         },
       });
     } else {
+      console.log('i am here');
+
       this.loadFromLocalStorage();
       this.isLoadingQuiz.set(false);
     }
@@ -258,8 +271,18 @@ export class Calendar implements OnInit, OnDestroy {
   }
 
   updateQuiz() {
-    this.saveQuiz();
-    this.isEditingQuiz.set(true);
+    if (!this.quizIsSingle()) {
+      const name = this.quizPartnerBirthday().trim();
+      const birthday = this.quizPartnerBirthday().trim();
+      const datingDate = this.quizDatingDate().trim();
+      if (!name || !birthday || !datingDate) {
+        this.toastr.error('Please fill in all partner fields', 'Password Error');
+
+        return;
+      }
+      this.saveQuiz();
+      this.isEditingQuiz.set(false);
+    }
   }
 
   restartQuiz() {
@@ -450,8 +473,7 @@ export class Calendar implements OnInit, OnDestroy {
     this.newEventDescription.set('');
     this.newEventColor.set('#ec4899');
     this.isShowing.set(false);
-
-    this.ShowToast('Event added succesfully');
+    this.saveEventToBackend(newEvent);
   }
 
   cancelAdd() {
@@ -462,6 +484,27 @@ export class Calendar implements OnInit, OnDestroy {
     this.newEventColor.set('#ec4899');
     this.titleError.set(false);
     this.isShowing.set(false);
+  }
+
+  startEdit() {
+    this.quizBackup = {
+      isSingle: this.quizIsSingle(),
+      partnerName: this.quizPartnerName(),
+      partnerBirthday: this.quizPartnerBirthday(),
+      datingDate: this.quizDatingDate(),
+    };
+    this.isEditingQuiz.set(true);
+  }
+
+  cancelEdit() {
+    if (this.quizBackup) {
+      this.quizIsSingle.set(this.quizBackup.isSingle);
+      this.quizPartnerName.set(this.quizBackup.partnerName);
+      this.quizPartnerBirthday.set(this.quizBackup.partnerBirthday);
+      this.quizDatingDate.set(this.quizBackup.datingdate);
+      this.quizBackup = null;
+    }
+    this.isEditingQuiz.set(false);
   }
 
   private handleSwipe() {
@@ -487,11 +530,44 @@ export class Calendar implements OnInit, OnDestroy {
     }, 3000);
   }
 
+  private loadCalendarEvents() {
+    if (!this.UserContext.isLoggedIn()) return;
+    this.UserService.getCalendarEvents().subscribe({
+      next: (events) => {
+        const mapped = events.map((e) => ({
+          start: new Date(e.startDate),
+          title: e.title,
+          allDay: e.allDay,
+          color: e.color ? { primary: e.color, secondary: e.color + '33' } : undefined,
+          meta: { description: e.description },
+        }));
+        console.log('[DEBUG] Mapped events:', mapped);
+        this.eventsSignal.update((existing) => [...existing, ...mapped]);
+        console.log('[DEBUG] Updated eventsSignal:', this.eventsSignal());
+      },
+      error: (err) => console.error('Failed to load events', err),
+    });
+  }
+
+  private saveEventToBackend(event: CalendarEvent) {
+    if (!this.UserContext.isLoggedIn()) return;
+    this.UserService.saveCalendarEvent({
+      title: event.title,
+      description: event.meta?.description,
+      startDate: event.start.toISOString(),
+      allDay: event.allDay,
+      color: event.color?.primary,
+    }).subscribe({
+      next: () => this.toastr.success('Event saved', 'Success'),
+      error: (err) => console.error('Failed to save event', err),
+    });
+  }
+
   private calculateDaysTogether() {
     const datingDate = new Date(this.quizDatingDate());
     const today = new Date();
     const diffTime = Math.abs(today.getTime() - datingDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 24));
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     this.daysTogether.set(diffDays);
   }
 
@@ -508,7 +584,7 @@ export class Calendar implements OnInit, OnDestroy {
     today.setHours(0, 0, 0, 0);
     const currentYear = today.getFullYear();
     let nextDate = new Date(currentYear, month, day);
-    if (nextDate) {
+    if (nextDate < today) {
       nextDate = new Date(currentYear + 1, month, day);
     }
     const diffMs = nextDate.getTime() - today.getTime();

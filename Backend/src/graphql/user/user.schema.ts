@@ -28,12 +28,34 @@ export const userSchema = `
     token: String!
   }
 
-  type Query {
+
+  type CalendarEvent {
+    id: ID!
+    userId: ID!
+    title: String!
+    description: String
+    startDate: String!
+    allDay: Boolean
+    color: String
+    createdAt: String!
+  }
+
+  input EventInput {
+    title: String!
+    description: String
+    startDate: String!
+    allDay: Boolean
+    color: String
+  }
+
+    type Query {
     users: [User!]!
     user(id: ID!): User
     getCalendarQuiz: CalendarQuiz
     getUserProgress: UserProgress
+    getCalendarEvents: [CalendarEvent!]
   }
+
 
   type Mutation {
     createUser(
@@ -52,5 +74,8 @@ export const userSchema = `
       datingDate: String
       partnerBirthday: String
     ): CalendarQuiz!
+
+    saveCalendarEvent(event: EventInput!): CalendarEvent!
+    deleteCalendarEvent(id: ID!): Boolean!
   }
 `;

@@ -14,7 +14,7 @@ export function generateToken(userId: string): string {
 }
 
 export function verifyToken(token: string): { userId: string } {
-  console.log(token);
+  // console.log(token);
   const decoded = jwt.verify(token, JWT_SECRET) as unknown;
   return decoded as { userId: string };
 }

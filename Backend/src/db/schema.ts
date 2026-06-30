@@ -22,6 +22,9 @@ export const user = pgTable("Users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export type User = typeof user.$inferSelect;
+export type newUser = typeof user.$inferInsert;
+
 export const calendarQuiz = pgTable("CalendarQuiz", {
   id: uuid("id")
     .default(sql`gen_random_uuid()`)
@@ -37,8 +40,25 @@ export const calendarQuiz = pgTable("CalendarQuiz", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export type User = typeof user.$inferSelect;
-export type newUser = typeof user.$inferInsert;
-
 export type CalendarQuiz = typeof calendarQuiz.$inferSelect;
 export type NewCalendarQuiz = typeof calendarQuiz.$inferInsert;
+
+export const calendarEvents = pgTable("CalendarEvents", {
+  id: uuid("id")
+    .default(sql`gen_random_uuid()`)
+    .primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, {
+      onDelete: "cascade",
+    }),
+  description: varchar("description", { length: 500 }),
+  title: varchar("title", { length: 255 }).notNull(),
+  startDate: timestamp("start_date").notNull(),
+  allDay: boolean("all_day").default(true),
+  color: varchar("color", { length: 50 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type CalendarEvents = typeof calendarEvents.$inferSelect;
+export type NewCalendarEvents = typeof calendarEvents.$inferInsert;

@@ -146,17 +146,56 @@ export class UserService {
   }
 
   getUserProgress(): Observable<{ calendarDone: boolean; giftDone: boolean; gameDone: boolean }> {
+    return this.apollo.query({ query: GET_USER_PROGRESS, fetchPolicy: 'network-only' }).pipe(
+      map(
+        (result: any) =>
+          result.data?.getUserProgress ?? {
+            calendarDone: false,
+            giftDone: false,
+            gameDone: false,
+          },
+      ),
+    );
+  }
+  getCalendarEvents() {
     return this.apollo
-      .query({ query: GET_USER_PROGRESS, fetchPolicy: 'network-only' })
-      .pipe(
-        map(
-          (result: any) =>
-            result.data?.getUserProgress ?? {
-              calendarDone: false,
-              giftDone: false,
-              gameDone: false,
-            },
-        ),
-      );
+      .query<{ getCalendarEvents: any[] }>({
+        query: gql`
+          query {
+            getCalendarEvents {
+              id
+              title
+              description
+              startDate
+              allDay
+              color
+            }
+          }
+        `,
+      })
+      .pipe(map((result) => result.data?.getCalendarEvents ?? []));
+  }
+  saveCalendarEvent(event: {
+    title: string;
+    description?: string;
+    startDate: string;
+    allDay?: boolean;
+    color?: string;
+  }) {
+    return this.apollo
+      .mutate<{ saveCalendarEvent: any }>({
+        mutation: gql`
+          mutation SaveCalendarEvent($event: EventInput!) {
+            saveCalendarEvent(event: $event) {
+              id
+              title
+              startDate
+              color
+            }
+          }
+        `,
+        variables: { event },
+      })
+      .pipe(map((result) => result.data?.saveCalendarEvent));
   }
 }
