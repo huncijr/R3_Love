@@ -7,6 +7,8 @@ import { HlmProgressImports } from '../../../ui/progress/src';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { HlmBadge } from '@spartan-ng/helm/badge';
+import { HlmSelectImports } from '../../../ui/select/src';
+
 import {
   LucideAngularModule,
   LUCIDE_ICONS,
@@ -22,12 +24,11 @@ import {
   Gift,
   RotateCcw,
 } from 'lucide-angular';
-
 export interface QuizQuestion {
   id: string;
   section: number;
   text: string;
-  type: 'text' | 'radio' | 'number' | 'select';
+  type: 'text' | 'radio' | 'number' | 'select' | 'text_with_options';
   options?: string[];
   image?: string;
   placeholder?: string;
@@ -84,7 +85,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'g5',
     section: 0,
     text: 'What is their hair color / style?',
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Blonde', 'Brunette', 'Red', 'Black'],
     image: 'Sparkles',
     placeholder: 'e.g. Blonde, long, wavy',
   },
@@ -94,7 +96,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'i1',
     section: 1,
     text: 'What are their favorite hobbies?',
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Gaming', 'Reading', 'Sports', 'Music'],
     image: 'Star',
     placeholder: 'e.g. Painting, hiking, gaming',
   },
@@ -110,7 +113,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'i3',
     section: 1,
     text: 'What is their favorite color?',
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Blue', 'Pink', 'Green', 'Black'],
     image: 'Palette',
     placeholder: 'e.g. Pastel pink, navy blue',
   },
@@ -118,7 +122,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'i4',
     section: 1,
     text: 'What kind of music do they love?',
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Pop', 'Rock', 'Classical', 'Hip-hop'],
     image: 'Heart',
     placeholder: 'e.g. K-pop, jazz, rock',
   },
@@ -126,7 +131,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'i5',
     section: 1,
     text: 'Any allergies or things they dislike?',
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Flowers', 'Chocolate', 'Strong scents', 'Nothing specific'],
     image: 'Sparkles',
     placeholder: 'e.g. Allergic to flowers',
   },
@@ -136,7 +142,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'd1',
     section: 2,
     text: 'How do they spend weekends?',
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Outdoors', 'Home relaxing', 'Social events', 'Creative projects'],
     image: 'Star',
     placeholder: 'e.g. Reading at a café',
   },
@@ -144,7 +151,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'd2',
     section: 2,
     text: 'What is their dream vacation?',
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Beach resort', 'Mountain hiking', 'City exploration', 'Cultural tour'],
     image: 'Heart',
     placeholder: 'e.g. Japan, Maldives',
   },
@@ -166,7 +174,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'd4',
     section: 2,
     text: 'What did they buy last for themselves?',
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Clothes', 'Tech gadget', 'Book', 'Skincare'],
     image: 'Sparkles',
     placeholder: 'e.g. A new keyboard',
   },
@@ -174,7 +183,8 @@ const ALL_QUESTIONS: QuizQuestion[] = [
     id: 'd5',
     section: 2,
     text: "What would make them say 'wow'?",
-    type: 'text',
+    type: 'text_with_options',
+    options: ['Personalized gift', 'Experience', 'Handmade item', 'Surprise trip'],
     image: 'Star',
     placeholder: 'e.g. Personalized jewelry',
   },
@@ -219,6 +229,7 @@ function generateRecommendation(answers: QuizAnswer[]): GiftRecommendation[] {
     HlmLabel,
     LucideAngularModule,
     HlmBadge,
+    HlmSelectImports,
   ],
   templateUrl: './gift.html',
   styleUrl: './gift.scss',
@@ -246,6 +257,20 @@ export class GiftFinder {
   answers = signal<QuizAnswer[]>([]);
   isCompleted = signal(false);
   recommendations = signal<GiftRecommendation[]>([]);
+  showCustomInput = signal(false);
+  customValue = signal('');
+  animationKey = signal(0);
+
+  isLoadingRecommendations = signal(false);
+  loadingProgress = signal(0);
+  loadingMessage = signal('');
+
+  LOADING_MESSAGES = [
+    'Analyzing your answers...',
+    'Creating gift recommendations ...',
+    'Determining what they would love...',
+    'Personalizing results just for you ...',
+  ];
 
   questionsInSection = computed(() =>
     ALL_QUESTIONS.filter((q) => q.section === this.currentSection()),
@@ -290,6 +315,8 @@ export class GiftFinder {
   next() {
     if (!this.canProceed()) return;
     const sectionQ = this.questionsInSection();
+    this.showCustomInput.set(false);
+    this.customValue.set('');
     if (this.currentQuestionIndex() < sectionQ.length - 1) {
       this.currentQuestionIndex.update((i) => i + 1);
     } else if (this.currentSection() < 2) {
@@ -298,11 +325,62 @@ export class GiftFinder {
     } else {
       this.finishQuiz();
     }
+    this.animationKey.update((k) => k + 1);
   }
 
   private finishQuiz() {
+    this.isLoadingRecommendations.set(true);
+    this.loadingProgress.set(0);
+
+    let msgIdx = 0;
+    this.loadingMessage.set(this.LOADING_MESSAGES[0]);
+    const msgInterval = setInterval(() => {
+      msgIdx = (msgIdx + 1) % this.LOADING_MESSAGES.length;
+      this.loadingMessage.set(this.LOADING_MESSAGES[msgIdx]);
+    }, 800);
+
+    const progressInterval = setInterval(() => {
+      this.loadingProgress.update((p) => Math.min(p + 2, 95));
+    }, 80);
+
+    setTimeout(() => {
+      clearInterval(msgInterval);
+      clearInterval(progressInterval);
+      this.loadingProgress.set(100);
+      this.isLoadingRecommendations.set(false);
+      this.isCompleted.set(true);
+      this.recommendations.set(generateRecommendation(this.answers()));
+    }, 3500);
+
     this.isCompleted.set(true);
     this.recommendations.set(generateRecommendation(this.answers()));
+  }
+
+  onAnswerSelected(value: string) {
+    this.setAnswer(value);
+    setTimeout(() => {
+      this.next();
+    }, 300);
+  }
+
+  onEnterKey(event: KeyboardEvent) {
+    if (event.key === 'Enter' && this.canProceed()) {
+      this.next();
+    }
+  }
+
+  onCustomEnter(event: KeyboardEvent) {
+    if (event.key === 'Enter' && this.customValue().trim()) {
+      this.submitCustom();
+    }
+  }
+
+  submitCustom() {
+    if (this.customValue().trim()) {
+      this.onAnswerSelected(this.customValue().trim());
+      this.showCustomInput.set(false);
+      this.customValue.set('');
+    }
   }
 
   restart() {

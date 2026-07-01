@@ -21,7 +21,10 @@
       "@spartan-ng/helm/label": ["./src/app/ui/label/src/index.ts"],
       "@spartan-ng/helm/radio-group": ["./src/app/ui/radio-group/src/index.ts"],
       "@spartan-ng/helm/progress": ["./src/app/ui/progress/src/index.ts"],
-      "@spartan-ng/helm/badge": ["./src/app/ui/badge/src/index.ts"]
+      "@spartan-ng/helm/badge": ["./src/app/ui/badge/src/index.ts"],
+      "@spartan-ng/helm/select": ["./src/app/ui/select/src/index.ts"],
+      "@spartan-ng/helm/icon": ["./src/app/ui/icon/src/index.ts"],
+      "@spartan-ng/helm/spinner": ["./src/app/ui/spinner/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

@@ -22,81 +22,159 @@
           </div>
           <hlm-progress [value]="progressPercent()" class="h-2"></hlm-progress>
         </div>
-        <section
-          hlmCard
-          class="bg-white/80 backdrop-blur-md border border-primary-light/50 shadow-lg"
-        >
-          <div hlmCardHeader class="pb-2">
-            <div class="flex items-center gap-3">
-              <div
-                class="w-10 h-10 rounded-xl bg-primary-light/50 flex items-center justify-center"
-              >
-                <lucide-icon
-                  [name]="currentQuestion().image || 'star'"
-                  class="w-5 h-5 text-primary-main"
-                ></lucide-icon>
-              </div>
-              <div>
-                <span class="text-xs text-muted uppercase tracking-wide"
-                  >Step {{ currentSection() + 1 }} of 3</span
-                >
-                <h3 hlmCardTitle class="text-lg text-neutral-text leading-tight">
-                  {{ currentQuestion().text }}
-                </h3>
-              </div>
-            </div>
-          </div>
-          <div hlmCardContent class="pt-4">
-            @if (currentQuestion().type === 'text' || currentQuestion().type === 'number') {
-              <div class="space-y-2">
-                <label hlmLabel>{{ currentQuestion().placeholder || 'Your answer' }}</label>
-                <input
-                  hlmInput
-                  [type]="currentQuestion().type"
-                  [ngModel]="getAnswerValue(currentQuestion().id)"
-                  (ngModelChange)="setAnswer($any($event).target.value)"
-                  class="w-full"
-                  [placeholder]="currentQuestion().placeholder || ''"
-                />
-              </div>
-            }
-            @if (currentQuestion().type === 'select') {
-              <div class="space-y-2">
-                <select
-                  class="w-full p-3 rounded-lg border border-primary-light/60 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-main/30"
-                  [ngModel]="getAnswerValue(currentQuestion().id)"
-                  (change)="setAnswer($any($event).target.value)"
-                >
-                  <option value="" disabled>
-                    {{ currentQuestion().placeholder || 'Select an option' }}
-                  </option>
-                  @for (opt of currentQuestion().options; track opt) {
-                    <option [value]="opt">{{ opt }}</option>
-                  }
-                </select>
-              </div>
-            }
-            @if (currentQuestion().type === 'radio') {
-              <div class="space-y-2">
-                @for (opt of currentQuestion().options; track opt) {
-                  <label
-                    class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+        @for (key of [animationKey()]; track key) {
+          <section
+            hlmCard
+            class="bg-white/80 backdrop-blur-md border border-primary-light/50 shadow-lg"
+          >
+            <div class="animate-ease-in-reveal">
+              <div hlmCardHeader class="pb-2">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-primary-light/50 flex items-center justify-center"
                   >
+                    <lucide-icon
+                      [name]="currentQuestion().image || 'star'"
+                      class="w-5 h-5 text-primary-main"
+                    ></lucide-icon>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted uppercase tracking-wide"
+                      >Step {{ currentSection() + 1 }} of 3</span
+                    >
+                    <h3 hlmCardTitle class="text-lg text-neutral-text leading-tight">
+                      {{ currentQuestion().text }}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div hlmCardContent class="pt-4">
+                @if (currentQuestion().type === 'text' || currentQuestion().type === 'number') {
+                  <div class="space-y-2">
+                    <label hlmLabel>{{ currentQuestion().placeholder || 'Your answer' }}</label>
                     <input
-                      type="radio"
-                      [name]="currentQuestion().id"
-                      [value]="opt"
-                      [checked]="getAnswerValue(currentQuestion().id) === opt"
-                      (change)="setAnswer(opt)"
-                      class="w-4 h-4 accent-primary-main"
+                      hlmInput
+                      [type]="currentQuestion().type"
+                      [ngModel]="getAnswerValue(currentQuestion().id)"
+                      (ngModelChange)="setAnswer($event)"
+                      class="w-full"
+                      (keydown)="onEnterKey($event)"
+                      [placeholder]="currentQuestion().placeholder || ''"
                     />
-                    <span class="text-sm text-neutral-text">{{ opt }}</span>
-                  </label>
+                    <button hlmBtn class="w-full gap-2" (click)="next()" [disabled]="!canProceed()">
+                      Continue
+                      <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
+                    </button>
+                  </div>
+                }
+                @if (currentQuestion().type === 'select') {
+                  <div class="space-y-2">
+                    <hlm-select
+                      [ngModel]="getAnswerValue(currentQuestion().id)"
+                      (ngModelChange)="onAnswerSelected($event)"
+                    >
+                      <hlm-select-trigger class="w-full">
+                        <hlm-select-value
+                          [placeholder]="currentQuestion().placeholder || 'Select an option'"
+                        />
+                      </hlm-select-trigger>
+                      <hlm-select-content>
+                        @for (opt of currentQuestion().options; track opt) {
+                          <hlm-select-item [value]="opt">{{ opt }}</hlm-select-item>
+                        }
+                      </hlm-select-content>
+                    </hlm-select>
+                  </div>
+                }
+                @if (currentQuestion().type === 'radio') {
+                  <div class="space-y-2">
+                    @for (opt of currentQuestion().options; track opt) {
+                      <label
+                        class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                      >
+                        <input
+                          type="radio"
+                          [name]="currentQuestion().id"
+                          [value]="opt"
+                          [checked]="getAnswerValue(currentQuestion().id) === opt"
+                          (change)="onAnswerSelected(opt)"
+                          class="w-4 h-4 accent-primary-main"
+                        />
+                        <span class="text-sm text-neutral-text">{{ opt }}</span>
+                      </label>
+                    }
+                  </div>
+                }
+                @if (currentQuestion().type === 'text_with_options') {
+                  <div class="space-y-3">
+                    @for (opt of currentQuestion().options; track opt) {
+                      <label
+                        class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                        [class.bg-primary-light]="getAnswerValue(currentQuestion().id) === opt"
+                        [class.border-ring]="getAnswerValue(currentQuestion().id) === opt"
+                      >
+                        <input
+                          type="radio"
+                          [name]="currentQuestion().id"
+                          [value]="opt"
+                          [checked]="getAnswerValue(currentQuestion().id) === opt"
+                          (change)="onAnswerSelected(opt)"
+                          class="w-4 h-4 accent-primary-main"
+                        />
+                        <span class="text-sm text-neutral-text">{{ opt }}</span>
+                      </label>
+                    }
+                    <label
+                      class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                    >
+                      <input
+                        type="radio"
+                        [name]="currentQuestion().id"
+                        value="__other__"
+                        [checked]="showCustomInput()"
+                        (change)="showCustomInput.set(true)"
+                        class="w-4 h-4 accent-primary-main"
+                      />
+                      <span class="text-sm text-neutral-text">Other</span>
+                    </label>
+                    @if (showCustomInput()) {
+                      <input
+                        hlmInput
+                        type="text"
+                        [ngModel]="customValue()"
+                        (ngModelChange)="customValue.set($event)"
+                        (keydown)="onCustomEnter($event)"
+                        class="w-full"
+                        [placeholder]="currentQuestion().placeholder || 'Your answer'"
+                      />
+                      <button
+                        hlmBtn
+                        class="w-full"
+                        (click)="submitCustom()"
+                        [disabled]="!customValue().trim()"
+                      >
+                        Continue
+                      </button>
+                    }
+                  </div>
+                }
+                @if (isLoadingRecommendations()) {
+                  <div class="animate-ease-in-reveal text-center py-12 space-y-6">
+                    <div class="space-y-2">
+                      <p class="text-lg font-medium text-neutral-text">{{ loadingMessage() }}</p>
+                      <div class="w-64 mx-auto bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div
+                          class="bg-primary-main h-full rounded-full transition-all duration-100"
+                          [style.width.%]="loadingProgress()"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
                 }
               </div>
-            }
-          </div>
-        </section>
+            </div>
+          </section>
+        }
       </div>
     }
   </div>
