@@ -1,57 +1,75 @@
 <div class="min-h-screen flex flex-col items-center gap-5 pt-10 px-4">
   @if (isLoggedIn() && hasPartner()) {
-    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up">
+    <div class="w-full max-w-5xl grid grid-cols-10 gap-4 animate-fade-in-up auto-rows-[180px]">
       <section
         hlmCard
-        class="bg-linear-to-r from-primary/50 to-background border border-borde shadow-md overflow-hidden"
+        class="col-span-2 row-span-2 bg-white/70 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-hidden flex items-center justify-center"
       >
-        <div hlmCardContent class="flex flex-col items-center justify-center p-8 gap-3">
+        <span class="text-muted text-sm">Quick Stats</span>
+      </section>
+      <section
+        hlmCard
+        class="col-span-4 row-span-1 bg-white/70 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-hidden"
+      >
+        <div hlmCardContent class="flex flex-col items-center justify-center h-full gap-2">
           <div
-            class="w-16 h-16 rounded-full bg-primary-main flex items-center justify-center shadow-lg shadow-primary-main/20"
+            class="w-12 h-12 rounded-full bg-primary-main flex items-center justify-center shadow-lg shadow-primary-main/20"
           >
-            <lucide-icon name="heart" class="w-8 h-8 text-white"></lucide-icon>
+            <lucide-icon name="heart" class="w-6 h-6 text-white"></lucide-icon>
           </div>
-          <span class="text-sm font-medium text-muted">Together for</span>
-          <h2 class="text-4xl md:text-5xl font-bold text-primary-dark">
-            {{ daysTogether() }} days
+          <span class="text-xs font-medium text-muted">Together for</span>
+          <h2 class="text-3xl font-bold text-primary-dark leading-none">
+            {{ daysTogether() }} <span class="text-lg font-medium">days</span>
           </h2>
-          <p class="text-sm text-black text-center px-4">{{ funFact() }}</p>
+          <p class="text-xs text-neutral-text text-center px-4">{{ funFact() }}</p>
         </div>
       </section>
       <section
         hlmCard
-        class="bg-linear-to-r from-primary/50 to-background border border-border shadow-md overflow-hidden"
+        class="col-span-4 row-span-1 bg-white/70 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-x-hidden"
       >
-        <div hlmCardHeader class="pb-2">
+        <div hlmCardHeader class="pb-1 pt-4 px-5">
           <div class="flex items-center gap-2">
-            <lucide-icon name="calendar-days" class="w-5 h-5 text-primary"></lucide-icon>
-            <h3 hlmCardTitle class="text-lg font-bold text-primary">Upcoming events</h3>
+            <lucide-icon name="calendar-days" class="w-4 h-4 text-primary-main"></lucide-icon>
+            <h3 hlmCardTitle class="text-base font-bold text-primary-dark">Upcoming events</h3>
           </div>
         </div>
-        <div hlmCardContent class="space-y-3 p-5">
+        <div hlmCardContent class="space-y-2 px-4 pb-4">
           @if (daysUntilBirthday() > 0) {
             <div
-              class="flex items-center gap-3 p-3 rounded-lg bg-primary-light/60 border border-primary-light"
+              class="flex items-center gap-2 p-2 rounded-lg bg-primary-light/40 border border-primary-light/60"
             >
-              <lucide-icon name="clock" class="w-5 h-5"></lucide-icon>
+              <lucide-icon name="clock" class="w-4 h-4 text-primary-main"></lucide-icon>
               <div class="flex flex-col">
-                <span class="font-semibold text-neutral-text">Partner's Birthday</span>
-                <span class="text-sm text-muted">In {{ daysUntilBirthday() }} days</span>
+                <span class="text-sm font-semibold text-neutral-text">Partner's Birthday</span>
+                <span class="text-xs text-muted">In {{ daysUntilBirthday() }} days</span>
               </div>
             </div>
           }
           @if (daysUntilAnniversary() > 0) {
             <div
-              class="flex items-center gap-3 p-3 rounded-lg bg-primary-light/60 border border-primary-light"
+              class="flex items-center gap-2 p-2 rounded-lg bg-primary-light/30 border border-primary-light/60"
             >
-              <lucide-icon name="clock" class="w-5 h-5"></lucide-icon>
+              <lucide-icon name="clock" class="w-4 h-4 text-primary-main"></lucide-icon>
               <div class="flex flex-col">
-                <span class="font-semibold text-neutral-text">Anniversary</span>
-                <span class="text-sm text-muted">In {{ daysUntilAnniversary() }} days</span>
+                <span class="text-sm font-semibold text-neutral-text">Anniversary</span>
+                <span class="text-xs text-muted">In {{ daysUntilAnniversary() }}days</span>
               </div>
             </div>
           }
         </div>
+      </section>
+      <section
+        hlmCard
+        class="col-span-3 row-span-1 bg-white/70 backdrop-blur-md border-primary border shadow-sm overflow-hidden flex items-center justify-center"
+      >
+        <span class="text-muted text-sm"></span>
+      </section>
+      <section
+        hlmCard
+        class="col-span-5 row-span-1 bg-white backdrop-blur-md border border-primary-light/60 shadow-sm overflow-hidden flex items-center justify-center"
+      >
+        <span class="text-muted text-sm">Partner Profile</span>
       </section>
     </div>
   } @else {
