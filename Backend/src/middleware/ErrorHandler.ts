@@ -1,3 +1,4 @@
+// Custom error class for operational errors with an HTTP status code
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
@@ -10,6 +11,7 @@ export class AppError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+// Logs the error with context and rethrows it for upstream handling
 export function errorHandler(error: unknown): never {
   if (error instanceof AppError) {
     console.error(`[OPERATIONAL ERROR ${error.statusCode}] ${error.message}`);

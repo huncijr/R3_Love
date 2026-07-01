@@ -5,6 +5,7 @@ import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
 import { generateToken, verifyToken } from "../../middleware/Auth.js";
 
+// Extracts and verifies user ID from JWT token in request context
 const getUserIdFromContext = (token: string): string => {
   if (!token) throw new AppError("Unathorized", 401);
   try {
@@ -17,6 +18,7 @@ const getUserIdFromContext = (token: string): string => {
 
 export const userResolver = {
   Query: {
+    // Returns all registered users (admin/debug use)
     users: async () => {
       try {
         return await db.select().from(user);
@@ -25,6 +27,7 @@ export const userResolver = {
       }
     },
 
+    // Returns a single user by ID
     user: async (_parent: unknown, args: { id: string }) => {
       try {
         const result = await db.select().from(user).where(eq(user.id, args.id));
@@ -37,6 +40,7 @@ export const userResolver = {
       }
     },
 
+    // Fetches the calendar quiz data for the authenticated user
     getCalendarQuiz: async (
       _parent: unknown,
       _args: unknown,
@@ -53,6 +57,7 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+    // Returns completion status of all three game modules
     getUserProgress: async (
       _parent: unknown,
       _args: unknown,
@@ -75,6 +80,7 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+    // Loads all calendar events belonging to the authenticated user
     getCalendarEvents: async (
       _parent: unknown,
       _args: unknown,
@@ -99,6 +105,7 @@ export const userResolver = {
   },
 
   Mutation: {
+    // Registers a new user with hashed password and returns auth token
     createUser: async (
       _parent: unknown,
       args: {
@@ -127,6 +134,7 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+    // Authenticates user and returns JWT token
     login: async (
       _parent: unknown,
       args: { name: string; password: string },
@@ -159,6 +167,7 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+    // Upserts calendar quiz answers and marks calendar module as completed
     saveCalendarQuiz: async (
       _parent: unknown,
       args: {
@@ -219,6 +228,7 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+    // Creates a new custom event in the user's calendar
     saveCalendarEvent: async (
       _parent: unknown,
       args: {
@@ -251,6 +261,7 @@ export const userResolver = {
       } catch (error) {}
     },
 
+    // Removes a calendar event by ID (only if owned by the authenticated user)
     deleteCalendarEvent: async (
       _parents: unknown,
       args: { id: string },

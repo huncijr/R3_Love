@@ -103,6 +103,7 @@ interface EventColor {
   ],
 })
 export class Calendar implements OnInit, OnDestroy {
+  // Restores the last viewed calendar month from localStorage
   private loadSavedDate(): Date {
     const saved = localStorage.getItem('calendar-view-date');
     if (saved) {
@@ -121,6 +122,7 @@ export class Calendar implements OnInit, OnDestroy {
 
   private reminderInterval: any;
   private toastr = inject(ToastrService);
+  // Persists calendar quiz answers to backend or localStorage depending on auth state
   private saveQuiz() {
     const data = {
       isSingle: this.quizIsSingle() ?? false,
@@ -221,6 +223,7 @@ export class Calendar implements OnInit, OnDestroy {
     });
   }
 
+  // Loads quiz data from localStorage for non-authenticated users
   private loadFromLocalStorage() {
     const savedQuiz = localStorage.getItem('calendar-quiz');
     if (savedQuiz) {
@@ -285,6 +288,7 @@ export class Calendar implements OnInit, OnDestroy {
     return new Date().toISOString().split('T')[0];
   }
 
+  // Advances to the next quiz step, skipping partner questions if single
   nextStep() {
     if (this.quizStep() === 1 && this.quizIsSingle()) {
       this.quizStep.set(5);
@@ -295,6 +299,7 @@ export class Calendar implements OnInit, OnDestroy {
     }
   }
 
+  // Validates and saves edited quiz data, then exits edit mode
   updateQuiz() {
     if (!this.quizIsSingle()) {
       const name = this.quizPartnerBirthday().trim();
@@ -310,6 +315,7 @@ export class Calendar implements OnInit, OnDestroy {
     }
   }
 
+  // Resets quiz state to allow retaking the calendar setup
   restartQuiz() {
     this.quizStep.set(1);
     this.quizCompleted.set(false);
@@ -329,6 +335,7 @@ export class Calendar implements OnInit, OnDestroy {
     this.quizGender.set(value ?? '');
   }
 
+  // Returns fixed romantic holidays displayed on every calendar
   getDefaultEvents(): CalendarEvent[] {
     const year = this.viewDate.getFullYear();
     return [
@@ -477,6 +484,7 @@ export class Calendar implements OnInit, OnDestroy {
     this.handleSwipe();
   }
 
+  // Validates and adds a new custom event to the calendar
   addEvent() {
     const date = this.selectedDate();
     const title = this.newEventTitle();
@@ -521,6 +529,7 @@ export class Calendar implements OnInit, OnDestroy {
     this.isShowing.set(false);
   }
 
+  // Stores current quiz data before entering edit mode for potential rollback
   startEdit() {
     this.quizBackup = {
       isSingle: this.quizIsSingle(),
@@ -531,6 +540,7 @@ export class Calendar implements OnInit, OnDestroy {
     this.isEditingQuiz.set(true);
   }
 
+  // Restores quiz data from backup and exits edit mode
   cancelEdit() {
     if (this.quizBackup) {
       this.quizIsSingle.set(this.quizBackup.isSingle);
@@ -565,6 +575,7 @@ export class Calendar implements OnInit, OnDestroy {
     }, 3000);
   }
 
+  // Fetches user's custom events from the backend and merges them into the calendar
   private loadCalendarEvents() {
     if (!this.UserContext.isLoggedIn()) return;
     this.UserService.getCalendarEvents().subscribe({
@@ -583,6 +594,7 @@ export class Calendar implements OnInit, OnDestroy {
     });
   }
 
+  // Sends a newly created event to the backend for persistence
   private saveEventToBackend(event: CalendarEvent) {
     if (!this.UserContext.isLoggedIn()) return;
     this.UserService.saveCalendarEvent({
@@ -601,6 +613,7 @@ export class Calendar implements OnInit, OnDestroy {
     });
   }
 
+  // Computes total days since the relationship started
   private calculateDaysTogether() {
     const datingDate = new Date(this.quizDatingDate());
     const today = new Date();
@@ -609,6 +622,7 @@ export class Calendar implements OnInit, OnDestroy {
     this.daysTogether.set(diffDays);
   }
 
+  // Calculates days remaining until Valentine's Day and next anniversary
   private calculateSpecialDates() {
     this.daysUntilValentines.set(this.daysUntilDate(1, 14));
     if (this.quizDatingDate()) {
@@ -617,6 +631,7 @@ export class Calendar implements OnInit, OnDestroy {
     }
   }
 
+  // Helper to compute days until a recurring annual date
   private daysUntilDate(month: number, day: number): number {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -628,10 +643,12 @@ export class Calendar implements OnInit, OnDestroy {
     const diffMs = nextDate.getTime() - today.getTime();
     return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
   }
+  // Finalizes the quiz and triggers save
   completeQuiz() {
     this.saveQuiz();
   }
 
+  // Auto-generates anniversary and birthday events based on quiz answers
   private generateQuizEvents() {
     const currentYear = new Date().getFullYear();
     const events: CalendarEvent[] = [];

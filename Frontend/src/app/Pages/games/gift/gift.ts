@@ -272,12 +272,15 @@ export class GiftFinder {
     'Personalizing results just for you ...',
   ];
 
+  // Filters questions to show only those in the current section
   questionsInSection = computed(() =>
     ALL_QUESTIONS.filter((q) => q.section === this.currentSection()),
   );
 
+  // Returns the currently active question object
   currentQuestion = computed(() => this.questionsInSection()[this.currentQuestionIndex()]);
 
+  // Calculates overall quiz completion percentage across all sections
   progressPercent = computed(() => {
     const total = ALL_QUESTIONS.length;
     let answered = 0;
@@ -288,15 +291,18 @@ export class GiftFinder {
     return Math.round((answered / total) * 100);
   });
 
+  // Calculates completion percentage within the current section only
   sectionProgress = computed(() => {
     const sectionQ = this.questionsInSection();
     return Math.round(((this.currentQuestionIndex() + 1) / sectionQ.length) * 100);
   });
 
+  // Retrieves the stored answer for a specific question ID
   getAnswerValue(qid: string): string {
     return this.answers().find((a) => a.questionId === qid)?.value || '';
   }
 
+  // Stores or updates an answer for the current question
   setAnswer(value: string) {
     const qid = this.currentQuestion().id;
     this.answers.update((list) => {
@@ -305,13 +311,16 @@ export class GiftFinder {
     });
   }
 
+  // Returns the display name of the current section
   sectionName = computed(() => SECTION_NAMES[this.currentSection()]);
 
+  // Checks if the current question has a valid answer before allowing progression
   canProceed(): boolean {
     const val = this.getAnswerValue(this.currentQuestion().id);
     return val.trim().length > 0;
   }
 
+  // Advances to the next question, section, or triggers completion
   next() {
     if (!this.canProceed()) return;
     const sectionQ = this.questionsInSection();
@@ -328,6 +337,7 @@ export class GiftFinder {
     this.animationKey.update((k) => k + 1);
   }
 
+  // Triggers the AI recommendation loading simulation with progress bar and cycling messages
   private finishQuiz() {
     this.isLoadingRecommendations.set(true);
     this.loadingProgress.set(0);
@@ -351,11 +361,9 @@ export class GiftFinder {
       this.isCompleted.set(true);
       this.recommendations.set(generateRecommendation(this.answers()));
     }, 3500);
-
-    this.isCompleted.set(true);
-    this.recommendations.set(generateRecommendation(this.answers()));
   }
 
+  // Stores the answer and auto-advances after a short delay for radio/select inputs
   onAnswerSelected(value: string) {
     this.setAnswer(value);
     setTimeout(() => {
@@ -363,18 +371,21 @@ export class GiftFinder {
     }, 300);
   }
 
+  // Allows pressing Enter to submit text/number inputs
   onEnterKey(event: KeyboardEvent) {
     if (event.key === 'Enter' && this.canProceed()) {
       this.next();
     }
   }
 
+  // Allows pressing Enter to submit a custom text input
   onCustomEnter(event: KeyboardEvent) {
     if (event.key === 'Enter' && this.customValue().trim()) {
       this.submitCustom();
     }
   }
 
+  // Saves the custom text input as the answer and hides the input field
   submitCustom() {
     if (this.customValue().trim()) {
       this.onAnswerSelected(this.customValue().trim());
@@ -383,6 +394,7 @@ export class GiftFinder {
     }
   }
 
+  // Resets all quiz state to allow retaking the gift finder
   restart() {
     this.currentSection.set(0);
     this.currentQuestionIndex.set(0);

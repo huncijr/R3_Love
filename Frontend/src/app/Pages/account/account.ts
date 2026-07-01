@@ -63,6 +63,7 @@ export class Account implements OnInit {
   private userService = inject(UserService);
   private userContext = inject(UserContext);
 
+  // Syncs locally stored calendar quiz to backend after successful registration
   private syncCalendarQuiz() {
     const savedQuiz = localStorage.getItem('calendar-quiz');
     if (!savedQuiz) return;
@@ -106,6 +107,7 @@ export class Account implements OnInit {
     gameDone: false,
   });
 
+  // Counts how many of the three game modules the user has completed
   completedCount = computed(() => {
     let count = 0;
     if (this.userProgress().calendarDone) count++;
@@ -114,6 +116,7 @@ export class Account implements OnInit {
     return count;
   });
 
+  // Returns the list of setup steps with their completion status
   setupItems = computed(() => {
     let items: Array<{ id: string; label: string; done: boolean }> = [];
     items.push({
@@ -152,6 +155,7 @@ export class Account implements OnInit {
     this.gender.set(value);
   }
 
+  // Validates password length and special character requirements
   checkPassword(password: string): boolean {
     const errors: string[] = [];
     if (!password.trim()) {
@@ -173,6 +177,7 @@ export class Account implements OnInit {
     return true;
   }
 
+  // Validates username length constraints
   checkUsername(username: string): boolean {
     const errors: string[] = [];
     if (!username.trim()) {
@@ -190,6 +195,7 @@ export class Account implements OnInit {
     return true;
   }
 
+  // Ensures password and confirmation fields match
   checkPasswordsMatch(password: string, confirmPassword: string): boolean {
     if (password !== confirmPassword) {
       this.toastr.error('The passwords doesnt match', 'Error');
@@ -198,6 +204,7 @@ export class Account implements OnInit {
     return true;
   }
 
+  // Handles both registration and login form submission
   onSubmit() {
     if (this.isLoginMode()) {
       this.onLogin();
@@ -239,11 +246,13 @@ export class Account implements OnInit {
     }
   }
 
+  // Clears user session and shows logout confirmation
   logout() {
     this.userContext.logout();
     this.toastr.info('You have been logged out', 'Logout');
   }
 
+  // Authenticates existing user and stores session token
   onLogin() {
     if (!this.username().trim() || !this.password().trim()) {
       this.toastr.warning('Please enter username and password', 'Warning');
@@ -267,6 +276,7 @@ export class Account implements OnInit {
     });
   }
 
+  // Switches between login and registration form views
   toggleMode() {
     this.isLoginMode.update((value) => !value);
     this.username.set('');

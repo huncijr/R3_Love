@@ -18,6 +18,7 @@ const Node_env = process.env.NODE_ENV || "development";
 const PORT = Number(process.env.PORT) || 4000;
 const isDevelopment = Node_env === "development";
 
+// Parses a raw cookie string into a key-value object for easy access
 function parseCookies(cookieHeader: string): Record<string, string> {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
@@ -28,11 +29,13 @@ function parseCookies(cookieHeader: string): Record<string, string> {
   return cookies;
 }
 
+// CORS configuration allowing local development and production origins
 const corsOption = {
   origin: isDevelopment ? ["http://localhost:4200", "*"] : ["https://..."],
   credentials: true,
 };
 
+// GraphQL context shape containing the extracted JWT token from the request
 interface MyContext {
   token: string;
 }
@@ -62,6 +65,7 @@ const server = new ApolloServer({
   },
 });
 
+// Initializes the database connection and starts the Apollo GraphQL server
 async function startServer(): Promise<void> {
   await connectDatabase();
   const { url }: { url: string } = await startStandaloneServer(server, {

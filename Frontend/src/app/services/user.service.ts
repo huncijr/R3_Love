@@ -72,12 +72,14 @@ const GET_USER_PROGRESS = gql`
   }
 `;
 
+// Frontend user shape matching the GraphQL User type
 export interface User {
   id: string;
   name: string;
   gender: string | null;
 }
 
+// Response shape returned by createUser and login mutations
 export interface CreateUserResponse {
   user: User;
   token: string;
@@ -86,8 +88,11 @@ export interface CreateUserResponse {
 @Injectable({
   providedIn: 'root',
 })
+// GraphQL API service for all user-related backend operations
 export class UserService {
   constructor(private apollo: Apollo) {}
+
+  // Registers a new user and returns the created user with auth token
   createUser(name: string, password: string, gender: string): Observable<CreateUserResponse> {
     return this.apollo
       .mutate<{ createUser: CreateUserResponse }>({
@@ -96,6 +101,7 @@ export class UserService {
       })
       .pipe(map((result) => result.data!.createUser));
   }
+  // Authenticates existing user and returns token for session management
   login(name: string, password: string): Observable<CreateUserResponse> {
     return this.apollo
       .mutate<{ login: CreateUserResponse }>({
@@ -104,6 +110,7 @@ export class UserService {
       })
       .pipe(map((result) => result.data!.login));
   }
+  // Sends calendar quiz answers to the backend (creates or updates record)
   saveCalendarQuiz(
     isSingle: boolean,
     partnerName: string,
@@ -136,6 +143,7 @@ export class UserService {
     });
   }
 
+  // Fetches the saved calendar quiz data for the authenticated user
   getCalendarQuiz(): Observable<any> {
     return this.apollo
       .query({
@@ -145,6 +153,7 @@ export class UserService {
       .pipe(map((result: any) => result.data?.getCalendarQuiz));
   }
 
+  // Retrieves completion status of all three game modules
   getUserProgress(): Observable<{ calendarDone: boolean; giftDone: boolean; gameDone: boolean }> {
     return this.apollo.query({ query: GET_USER_PROGRESS, fetchPolicy: 'network-only' }).pipe(
       map(
@@ -157,6 +166,7 @@ export class UserService {
       ),
     );
   }
+  // Loads all custom calendar events created by the authenticated user
   getCalendarEvents() {
     return this.apollo
       .query<{ getCalendarEvents: any[] }>({
@@ -175,6 +185,7 @@ export class UserService {
       })
       .pipe(map((result) => result.data?.getCalendarEvents ?? []));
   }
+  // Persists a new custom event to the user's calendar
   saveCalendarEvent(event: {
     title: string;
     description?: string;

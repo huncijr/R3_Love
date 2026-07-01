@@ -49,120 +49,16 @@
                 </div>
               </div>
               <div hlmCardContent class="pt-4">
-                @if (currentQuestion().type === 'text' || currentQuestion().type === 'number') {
-                  <div class="space-y-2">
-                    <label hlmLabel>{{ currentQuestion().placeholder || 'Your answer' }}</label>
-                    <input
-                      hlmInput
-                      [type]="currentQuestion().type"
-                      [ngModel]="getAnswerValue(currentQuestion().id)"
-                      (ngModelChange)="setAnswer($event)"
-                      class="w-full"
-                      (keydown)="onEnterKey($event)"
-                      [placeholder]="currentQuestion().placeholder || ''"
-                    />
-                    <button hlmBtn class="w-full gap-2" (click)="next()" [disabled]="!canProceed()">
-                      Continue
-                      <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
-                    </button>
-                  </div>
-                }
-                @if (currentQuestion().type === 'select') {
-                  <div class="space-y-2">
-                    <hlm-select
-                      [ngModel]="getAnswerValue(currentQuestion().id)"
-                      (ngModelChange)="onAnswerSelected($event)"
-                    >
-                      <hlm-select-trigger class="w-full">
-                        <hlm-select-value
-                          [placeholder]="currentQuestion().placeholder || 'Select an option'"
-                        />
-                      </hlm-select-trigger>
-                      <hlm-select-content>
-                        @for (opt of currentQuestion().options; track opt) {
-                          <hlm-select-item [value]="opt">{{ opt }}</hlm-select-item>
-                        }
-                      </hlm-select-content>
-                    </hlm-select>
-                  </div>
-                }
-                @if (currentQuestion().type === 'radio') {
-                  <div class="space-y-2">
-                    @for (opt of currentQuestion().options; track opt) {
-                      <label
-                        class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
-                      >
-                        <input
-                          type="radio"
-                          [name]="currentQuestion().id"
-                          [value]="opt"
-                          [checked]="getAnswerValue(currentQuestion().id) === opt"
-                          (change)="onAnswerSelected(opt)"
-                          class="w-4 h-4 accent-primary-main"
-                        />
-                        <span class="text-sm text-neutral-text">{{ opt }}</span>
-                      </label>
-                    }
-                  </div>
-                }
-                @if (currentQuestion().type === 'text_with_options') {
-                  <div class="space-y-3">
-                    @for (opt of currentQuestion().options; track opt) {
-                      <label
-                        class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
-                        [class.bg-primary-light]="getAnswerValue(currentQuestion().id) === opt"
-                        [class.border-ring]="getAnswerValue(currentQuestion().id) === opt"
-                      >
-                        <input
-                          type="radio"
-                          [name]="currentQuestion().id"
-                          [value]="opt"
-                          [checked]="getAnswerValue(currentQuestion().id) === opt"
-                          (change)="onAnswerSelected(opt)"
-                          class="w-4 h-4 accent-primary-main"
-                        />
-                        <span class="text-sm text-neutral-text">{{ opt }}</span>
-                      </label>
-                    }
-                    <label
-                      class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
-                    >
-                      <input
-                        type="radio"
-                        [name]="currentQuestion().id"
-                        value="__other__"
-                        [checked]="showCustomInput()"
-                        (change)="showCustomInput.set(true)"
-                        class="w-4 h-4 accent-primary-main"
-                      />
-                      <span class="text-sm text-neutral-text">Other</span>
-                    </label>
-                    @if (showCustomInput()) {
-                      <input
-                        hlmInput
-                        type="text"
-                        [ngModel]="customValue()"
-                        (ngModelChange)="customValue.set($event)"
-                        (keydown)="onCustomEnter($event)"
-                        class="w-full"
-                        [placeholder]="currentQuestion().placeholder || 'Your answer'"
-                      />
-                      <button
-                        hlmBtn
-                        class="w-full"
-                        (click)="submitCustom()"
-                        [disabled]="!customValue().trim()"
-                      >
-                        Continue
-                      </button>
-                    }
-                  </div>
-                }
                 @if (isLoadingRecommendations()) {
-                  <div class="animate-ease-in-reveal text-center py-12 space-y-6">
-                    <div class="space-y-2">
+                  <div
+                    class="flex flex-col items-center justify-center py-16 space-y-6 animate-ease-in-reveal"
+                  >
+                    <div
+                      class="w-12 h-12 rounded-full border-4 border-primary-light border-t-primary-main animate-spin"
+                    ></div>
+                    <div class="space-y-2 text-center">
                       <p class="text-lg font-medium text-neutral-text">{{ loadingMessage() }}</p>
-                      <div class="w-64 mx-auto bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div class="w-64 bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div
                           class="bg-primary-main h-full rounded-full transition-all duration-100"
                           [style.width.%]="loadingProgress()"
@@ -170,6 +66,121 @@
                       </div>
                     </div>
                   </div>
+                } @else {
+                  @if (currentQuestion().type === 'text' || currentQuestion().type === 'number') {
+                    <div class="space-y-2">
+                      <label hlmLabel>{{ currentQuestion().placeholder || 'Your answer' }}</label>
+                      <input
+                        hlmInput
+                        [type]="currentQuestion().type"
+                        [ngModel]="getAnswerValue(currentQuestion().id)"
+                        (ngModelChange)="setAnswer($event)"
+                        class="w-full"
+                        (keydown)="onEnterKey($event)"
+                        [placeholder]="currentQuestion().placeholder || ''"
+                      />
+                      <button
+                        hlmBtn
+                        class="w-full gap-2"
+                        (click)="next()"
+                        [disabled]="!canProceed()"
+                      >
+                        Continue
+                        <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
+                      </button>
+                    </div>
+                  }
+                  @if (currentQuestion().type === 'select') {
+                    <div class="space-y-2">
+                      <hlm-select
+                        [ngModel]="getAnswerValue(currentQuestion().id)"
+                        (ngModelChange)="onAnswerSelected($event)"
+                      >
+                        <hlm-select-trigger class="w-full">
+                          <hlm-select-value
+                            [placeholder]="currentQuestion().placeholder || 'Select an option'"
+                          />
+                        </hlm-select-trigger>
+                        <hlm-select-content>
+                          @for (opt of currentQuestion().options; track opt) {
+                            <hlm-select-item [value]="opt">{{ opt }}</hlm-select-item>
+                          }
+                        </hlm-select-content>
+                      </hlm-select>
+                    </div>
+                  }
+                  @if (currentQuestion().type === 'radio') {
+                    <div class="space-y-2">
+                      @for (opt of currentQuestion().options; track opt) {
+                        <label
+                          class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                        >
+                          <input
+                            type="radio"
+                            [name]="currentQuestion().id"
+                            [value]="opt"
+                            [checked]="getAnswerValue(currentQuestion().id) === opt"
+                            (change)="onAnswerSelected(opt)"
+                            class="w-4 h-4 accent-primary-main"
+                          />
+                          <span class="text-sm text-neutral-text">{{ opt }}</span>
+                        </label>
+                      }
+                    </div>
+                  }
+                  @if (currentQuestion().type === 'text_with_options') {
+                    <div class="space-y-3">
+                      @for (opt of currentQuestion().options; track opt) {
+                        <label
+                          class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                          [class.bg-primary-light]="getAnswerValue(currentQuestion().id) === opt"
+                          [class.border-ring]="getAnswerValue(currentQuestion().id) === opt"
+                        >
+                          <input
+                            type="radio"
+                            [name]="currentQuestion().id"
+                            [value]="opt"
+                            [checked]="getAnswerValue(currentQuestion().id) === opt"
+                            (change)="onAnswerSelected(opt)"
+                            class="w-4 h-4 accent-primary-main"
+                          />
+                          <span class="text-sm text-neutral-text">{{ opt }}</span>
+                        </label>
+                      }
+                      <label
+                        class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                      >
+                        <input
+                          type="radio"
+                          [name]="currentQuestion().id"
+                          value="__other__"
+                          [checked]="showCustomInput()"
+                          (change)="showCustomInput.set(true)"
+                          class="w-4 h-4 accent-primary-main"
+                        />
+                        <span class="text-sm text-neutral-text">Other</span>
+                      </label>
+                      @if (showCustomInput()) {
+                        <input
+                          hlmInput
+                          type="text"
+                          [ngModel]="customValue()"
+                          (ngModelChange)="customValue.set($event)"
+                          (keydown)="onCustomEnter($event)"
+                          class="w-full"
+                          [placeholder]="currentQuestion().placeholder || 'Your answer'"
+                        />
+                        <button
+                          hlmBtn
+                          class="w-full"
+                          (click)="submitCustom()"
+                          [disabled]="!customValue().trim()"
+                        >
+                          Continue
+                        </button>
+                      }
+                    </div>
+                  }
                 }
               </div>
             </div>

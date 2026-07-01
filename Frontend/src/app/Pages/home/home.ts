@@ -27,6 +27,7 @@ import { UserContext } from '../../services/UserContext/user-context';
 export class Home implements OnInit {
   private userService = inject(UserService);
   private userContext = inject(UserContext);
+  // Computes total days since the relationship started
   private calculateDaysTogether(datingDateStr: string) {
     const datingDate = new Date(datingDateStr);
     const today = new Date();
@@ -69,6 +70,7 @@ export class Home implements OnInit {
     }
   }
 
+  // Calculates days remaining until next anniversary and partner's birthday
   private calculateUpcomingDates(datingDateStr: string, birthdayStr: string) {
     if (birthdayStr) {
       this.daysUntilBirthday.set(this.daysUntil(birthdayStr));
@@ -78,6 +80,7 @@ export class Home implements OnInit {
     }
   }
 
+  // Helper to compute days until the next occurrence of a given date
   private daysUntil(dateStr: string): number {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -92,6 +95,7 @@ export class Home implements OnInit {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
+  // Returns a fun relationship fact based on total days together
   private getFunFact(days: number): string {
     const facts = [
       `That's ${(days * 24).toLocaleString()} hours of love!`,

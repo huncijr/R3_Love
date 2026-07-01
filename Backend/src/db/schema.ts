@@ -8,6 +8,7 @@ import {
   integer,
 } from "drizzle-orm/pg-core";
 
+// Users table: stores authentication and progress data
 export const user = pgTable("Users", {
   id: uuid("id")
     .default(sql`gen_random_uuid()`)
@@ -25,6 +26,7 @@ export const user = pgTable("Users", {
 export type User = typeof user.$inferSelect;
 export type newUser = typeof user.$inferInsert;
 
+// Calendar quiz answers: relationship status, partner info and key dates
 export const calendarQuiz = pgTable("CalendarQuiz", {
   id: uuid("id")
     .default(sql`gen_random_uuid()`)
@@ -43,6 +45,7 @@ export const calendarQuiz = pgTable("CalendarQuiz", {
 export type CalendarQuiz = typeof calendarQuiz.$inferSelect;
 export type NewCalendarQuiz = typeof calendarQuiz.$inferInsert;
 
+// Custom calendar events created by users (anniversaries, reminders, etc.)
 export const calendarEvents = pgTable("CalendarEvents", {
   id: uuid("id")
     .default(sql`gen_random_uuid()`)

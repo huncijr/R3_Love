@@ -1,3 +1,4 @@
+// GraphQL type definitions for users, calendar, and progress tracking
 export const userSchema = `
   type User {
     id: ID!
