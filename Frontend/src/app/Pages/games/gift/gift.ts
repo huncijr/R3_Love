@@ -23,6 +23,7 @@ import {
   ArrowLeft,
   Gift,
   RotateCcw,
+  AlertCircle,
 } from 'lucide-angular';
 import { UserService } from '../../../services/user.service';
 export interface QuizQuestion {
@@ -194,29 +195,6 @@ const ALL_QUESTIONS: QuizQuestion[] = [
 const SECTION_NAMES = ['General Info', 'Interests & Taste', 'Deep Dive'];
 const SECTION_ICONS = ['Ruler', 'Heart', 'Sparkles'];
 
-function generateRecommendation(answers: QuizAnswer[]): GiftRecommendation[] {
-  return [
-    {
-      title: 'Personalized Star Map',
-      description: 'A custom map of the stars on your anniversary date.',
-      priceRange: '$30 - $50',
-      reason: 'Romantic and meaningful for partners who love experiences.',
-    },
-    {
-      title: 'Premium Skincare Set',
-      description: 'High-quality Korean skincare routine set.',
-      priceRange: '$40 - $80',
-      reason: 'Based on their interest in self-care and aesthetics.',
-    },
-    {
-      title: 'Concert Tickets',
-      description: 'Tickets to see their favorite artist live.',
-      priceRange: '$60 - $150',
-      reason: 'Perfect for someone who values experiences and music.',
-    },
-  ];
-}
-
 @Component({
   selector: 'app-gift',
   standalone: true,
@@ -245,8 +223,10 @@ function generateRecommendation(answers: QuizAnswer[]): GiftRecommendation[] {
         Sparkles,
         Star,
         ArrowLeft,
+        ArrowRight,
         RotateCcw,
         Gift,
+        AlertCircle,
       }),
       multi: true,
     },
@@ -268,7 +248,14 @@ export class GiftFinder {
 
   isLoadingRecommendations = signal(false);
   loadingProgress = signal(0);
+
+  errorMessage = signal('');
   loadingMessage = signal('');
+
+  deepQuestions = signal<QuizQuestion[]>([]);
+  practicalQuestions = signal<QuizQuestion[]>([]);
+  isDeepPhase = signal(false);
+  isPracticalPhase = signal(false);
 
   LOADING_MESSAGES = [
     'Analyzing your answers...',
@@ -279,10 +266,9 @@ export class GiftFinder {
 
   constructor(private userService: UserService) {}
 
-  allCurrentQuestions = computed(() => {
-    if (this.isAiPhase()) {
-      return this.aiQuestions();
-    }
+  allCurrentQuestions = computed<QuizQuestion[]>(() => {
+    if (this.isDeepPhase()) return this.deepQuestions();
+    if (this.isPracticalPhase()) return this.practicalQuestions();
     return ALL_QUESTIONS.filter((q) => q.section === this.currentSection());
   });
 
@@ -290,25 +276,23 @@ export class GiftFinder {
 
   // Calculates overall quiz completion percentage across all sections
   progressPercent = computed(() => {
-    const staticTotal = ALL_QUESTIONS.length;
-    const aiTotal = this.aiQuestions().length;
-    const total = staticTotal + aiTotal;
+    const totalStatic = 9;
+    const totalDeep = 5;
+    const totalPractical = 5;
+    const total = totalStatic + totalDeep + totalPractical;
 
-    let answered = 0;
+    if (this.isDeepPhase()) {
+      return Math.round(((totalStatic + this.currentQuestionIndex() + 1) / total) * 100);
+    }
+    if (this.isPracticalPhase()) {
+      return Math.round(
+        ((totalStatic + totalDeep + this.currentQuestionIndex() + 1) / total) * 100,
+      );
+    }
+    if (this.isCompleted()) return 100;
 
-    if (!this.isAiPhase() && !this.isFinalPhase()) {
-      for (let s = 0; s < this.currentSection(); s++) {
-        answered += ALL_QUESTIONS.filter((q) => q.section === s).length;
-      }
-      answered += this.currentQuestionIndex();
-    } else {
-      answered = staticTotal;
-    }
-    if (this.isAiPhase()) {
-      answered += this.currentQuestionIndex();
-    }
-    if (total === 0) return 0;
-    return Math.round((answered / total) * 100);
+    const completedBefore = this.currentSection() * 3;
+    return Math.round(((completedBefore + this.currentQuestionIndex() + 1) / total) * 100);
   });
 
   // Calculates completion percentage within the current section only
@@ -332,8 +316,9 @@ export class GiftFinder {
 
   // Returns the display name of the current section
   sectionName = computed(() => {
-    if (this.isAiPhase()) return 'AI Deep Dive';
-    if (this.isFinalPhase()) return 'Results';
+    if (this.isDeepPhase()) return 'Deep Dive';
+    if (this.isPracticalPhase()) return 'Practical Details';
+    if (this.isFinalPhase()) return 'Result';
     return SECTION_NAMES[this.currentSection()];
   });
 
@@ -352,12 +337,16 @@ export class GiftFinder {
 
     if (this.currentQuestionIndex() < sectionQ.length - 1) {
       this.currentQuestionIndex.update((i) => i + 1);
-    } else if (!this.isAiPhase()) {
-      this.finishStaticPhase();
+    } else if (this.isDeepPhase()) {
+      this.finishDeepPhase();
+    } else if (this.isPracticalPhase()) {
+      this.finishPracticalPhase();
+    } else if (this.currentSection() < 2) {
+      this.currentSection.update((s) => s + 1);
+      this.currentQuestionIndex.set(0);
     } else {
-      this.finishAiPhase();
+      this.finishStaticPhase();
     }
-
     this.animationKey.update((k) => k + 1);
   }
 
@@ -366,7 +355,16 @@ export class GiftFinder {
     this.loadingProgress.set(0);
     this.loadingMessage.set('Analyzing your answers ...');
 
-    this.userService.generateFollowUpQuestions(this.answers()).subscribe({
+    const answerWithText = this.answers().map((answer) => {
+      const question = ALL_QUESTIONS.find((q) => q.id === answer.questionId);
+      return {
+        questionId: answer.questionId,
+        questionText: question?.text || answer.questionId,
+        value: answer.value,
+      };
+    });
+
+    this.userService.generateDeepQuestions(answerWithText).subscribe({
       next: (questions) => {
         this.isLoadingRecommendations.set(false);
         this.aiQuestions.set(questions);
@@ -375,13 +373,64 @@ export class GiftFinder {
         this.currentSection.set(0);
       },
       error: (err) => {
-        console.error('AI questions failed', err);
+        console.error('Deep questions failed', err);
         this.isLoadingRecommendations.set(false);
-        this.finishAiPhase();
+        this.errorMessage.set('Failed to generate follow-up questions. Please try again later.');
       },
     });
   }
 
+  private finishDeepPhase() {
+    this.isLoadingRecommendations.set(true);
+    this.loadingMessage.set('Preparing practical questions ...');
+
+    const allAnswers = this.answers().map((a) => {
+      const q = ALL_QUESTIONS.find((q) => (q.id = a.questionId));
+      return { questionId: a.questionId, questionText: q?.text || a.questionId, value: a.value };
+    });
+
+    this.userService.generatePracticalQuestions(allAnswers).subscribe({
+      next: (questions) => {
+        this.isLoadingRecommendations.set(false);
+        this.practicalQuestions.set(questions);
+        this.isPracticalPhase.set(true);
+        this.isDeepPhase.set(false);
+        this.currentQuestionIndex.set(0);
+      },
+      error: (err) => {
+        console.error('Practical questions failed', err);
+        this.errorMessage.set('Failed to generate practical questions. Please try again.');
+        this.isLoadingRecommendations.set(false);
+      },
+    });
+  }
+  private finishPracticalPhase() {
+    this.isLoadingRecommendations.set(true);
+    this.loadingMessage.set('Generating gift recommendations...');
+    const allQuestions = [
+      ...ALL_QUESTIONS.flat(),
+      ...this.deepQuestions(),
+      ...this.practicalQuestions(),
+    ];
+
+    const allAnswers = this.answers().map((a) => {
+      const q = allQuestions.find((q) => q.id === a.questionId);
+      return { questionId: a.questionId, questionText: q?.text || a.questionId, value: a.value };
+    });
+
+    this.userService.getGiftRecommendations(allAnswers).subscribe({
+      next: (recs) => {
+        this.isLoadingRecommendations.set(false);
+        this.recommendations.set(recs);
+        this.isCompleted.set(true);
+      },
+      error: (err) => {
+        console.error('Recommendation failed', err);
+        this.errorMessage.set('Failed to get recommendations. Please try again.');
+        this.isLoadingRecommendations.set(false);
+      },
+    });
+  }
   // Triggers the AI recommendation loading simulation with progress bar and cycling messages
   private finishAiPhase() {
     this.isLoadingRecommendations.set(true);
@@ -412,8 +461,7 @@ export class GiftFinder {
         clearInterval(progressInterval);
         this.isLoadingRecommendations.set(false);
         console.error(`AI recommendation failed`, err);
-        this.isCompleted.set(true);
-        this.recommendations.set(generateRecommendation(this.answers()));
+        this.errorMessage.set('Failed to get gift recommendations. Please try again later.');
       },
     });
   }
@@ -422,7 +470,7 @@ export class GiftFinder {
     this.setAnswer(value);
     setTimeout(() => {
       this.next();
-    }, 300);
+    }, 200);
   }
 
   onEnterKey(event: KeyboardEvent) {
@@ -454,8 +502,15 @@ export class GiftFinder {
     this.answers.set([]);
     this.isCompleted.set(false);
     this.recommendations.set([]);
-    this.isAiPhase.set(false);
+    this.isDeepPhase.set(false);
+    this.isPracticalPhase.set(false);
+    this.deepQuestions.set([]);
+    this.practicalQuestions.set([]);
     this.aiQuestions.set([]);
     this.isFinalPhase.set(false);
+    this.errorMessage.set(``);
+    this.showCustomInput.set(false);
+    this.customValue.set('');
+    this.animationKey.update((k) => k + 1);
   }
 }

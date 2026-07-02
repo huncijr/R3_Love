@@ -5,7 +5,8 @@ import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
 import { generateToken, verifyToken } from "../../middleware/Auth.js";
 import {
-  generateFollowUpQuestionsFromAI,
+  generateDeepQuestionsFromAI,
+  generatePracticalQuestionsFromAI,
   getGiftRecommendationsFromAI,
   QuizAnswer,
 } from "../ai/ai.service.js";
@@ -292,24 +293,23 @@ export const userResolver = {
       }
     },
 
-    generateFollowUpQuestions: async (
-      _parent: unknown,
-      args: { answers: QuizAnswer[] },
+    generateDeepQuestions: async (
+      _: any,
+      { answers }: { answers: QuizAnswer[] },
     ) => {
-      const questions = await generateFollowUpQuestionsFromAI(args.answers);
-      return questions;
+      return await generateDeepQuestionsFromAI(answers);
     },
-
-    getGiftRecommendations: async (
-      _parent: unknown,
-      args: { answer: { questionId: string; value: string }[] },
+    generatePracticalQuestions: async (
+      _: any,
+      { answers }: { answers: QuizAnswer[] },
     ) => {
-      try {
-        const recommendations = await getGiftRecommendationsFromAI(args.answer);
-        return recommendations;
-      } catch (error) {
-        errorHandler(error);
-      }
+      return await generatePracticalQuestionsFromAI(answers);
+    },
+    getGiftRecommendations: async (
+      _: any,
+      { answers }: { answers: QuizAnswer[] },
+    ) => {
+      return await getGiftRecommendationsFromAI(answers);
     },
   },
 };

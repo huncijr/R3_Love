@@ -10,7 +10,57 @@
       <h1 class="text-3xl font-bold text-neutral-text mb-2">Find the Perfect Gift</h1>
       <p class="text-muted">Answer a few questions and let we help you choose!</p>
     </div>
+    @if (errorMessage()) {
+      <div
+        hlmCard
+        class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-sm animate-ease-in-reveal"
+      >
+        <div
+          class="bg-white border-2 border-primary-main rounded-2xl shadow-2xl p-8 max-w-md mx-4 text-center space-y-4"
+        >
+          <div class="w-16 h-17 rounded-full bg-red-100 flex items-center justify-center mx-auto">
+            <lucide-icon name="alert-circle" class="w-8 h-8 text-red-500"></lucide-icon>
+          </div>
+          <h3 class="text-xl font-bold text-neutral-text">Oops!</h3>
+          <p class="text-muted">{{ errorMessage() }}</p>
+          <button hlmBtn class="w-full gap-2" (click)="restart()">
+            <lucide-icon name="rotate-ccw" class="w-5 h-5"> </lucide-icon>
+            Try Again !
+          </button>
+        </div>
+      </div>
+    }
     @if (isCompleted()) {
+      <div class="space-y-6 animate-ease-in-reveal">
+        <div class="text-center">
+          <lucide-icon
+            name="sparkles"
+            class="w-12 h-12 text-primary-main mx-auto mb-4"
+          ></lucide-icon>
+          <h2 class="text-2xl font-bold text-neutral-text mb-2">Gift Recommendations</h2>
+          <p class="text-muted">Based on all your ansers,here are the perfect gifts!</p>
+        </div>
+        @for (rec of recommendations(); track rec.title) {
+          <section
+            hlmCard
+            class="bg-white/80 backdrop-blur-md border border-primary-light/50 shadow-lg hover:shadow-xl transition-shadow"
+          >
+            <div hlmCardHeader>
+              <h3 hlmCardTitle class="text-lg text-primary-dark">{{ rec.title }}</h3>
+              <p hlmCardDescription>{{ rec.description }}</p>
+            </div>
+            <div hlmCardContent>
+              <div class="flex items-center gap-2 mb-2">
+                <span hlmBadge variant="outline">{{ rec.priceRange }}</span>
+              </div>
+              <p class="text-sm text-muted">{{ rec.reason }}</p>
+            </div>
+          </section>
+        }
+        <button hlmBtn class="w-full gap-2" (click)="restart()">
+          <lucide-icon name="rotate-ccw" class="w-4 h-4"></lucide-icon>
+        </button>
+      </div>
     } @else {
       <div class="space-y-6">
         <div class="space-y-3 mb-6">

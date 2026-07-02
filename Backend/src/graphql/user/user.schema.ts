@@ -67,8 +67,10 @@ export const userSchema = `
 
   input QuizAnswerInput {
     questionId: String!
+    questionText: String!
     value: String!
   }
+
 
     type Query {
     users: [User!]!
@@ -99,7 +101,8 @@ export const userSchema = `
 
     saveCalendarEvent(event: EventInput!): CalendarEvent!
     deleteCalendarEvent(id: ID!): Boolean!
-    getGiftRecommendations(answer: [QuizAnswerInput!]!): [GiftRecommendation!]!
-    generateFollowUpQuestions(answer: [QuizAnswerInput!]!): [AiQuestion!]!
+    generateDeepQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
+    generatePracticalQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
+    getGiftRecommendations(answers: [QuizAnswerInput!]!): [GiftRecommendation!]!
   }
 `;

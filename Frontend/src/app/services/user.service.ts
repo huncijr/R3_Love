@@ -225,7 +225,7 @@ export class UserService {
             }
           }
         `,
-        variables: { answer },
+        variables: { answers: answer },
       })
       .pipe(map((result) => result.data?.generateFollowUpQuestions ?? []));
   }
@@ -246,5 +246,47 @@ export class UserService {
         variables: { answer },
       })
       .pipe(map((result) => result.data?.getGiftRecommendations ?? []));
+  }
+
+  generateDeepQuestions(answers: { questionId: string; questionText: string; value: string }[]) {
+    return this.apollo
+      .mutate<{ generateDeepQuestions: any[] }>({
+        mutation: gql`
+          mutation GenerateDeepQuestions($answers: [QuizAnswerInput!]!) {
+            generateDeepQuestions(answers: $answers) {
+              id
+              text
+              type
+              options
+              image
+              placeholder
+            }
+          }
+        `,
+        variables: { answers },
+      })
+      .pipe(map((result) => result.data?.generateDeepQuestions ?? []));
+  }
+
+  generatePracticalQuestions(
+    answers: { questionId: string; questionText: string; value: string }[],
+  ) {
+    return this.apollo
+      .mutate<{ generatePracticalQuestions: any[] }>({
+        mutation: gql`
+          mutation GeneratePracticalQuestions($answers: [QuizAnswerInput!]!) {
+            generatePracticalQuestions(answers: $answers) {
+              id
+              text
+              type
+              options
+              image
+              placeholder
+            }
+          }
+        `,
+        variables: { answers },
+      })
+      .pipe(map((result) => result.data?.generatePracticalQuestions ?? []));
   }
 }
