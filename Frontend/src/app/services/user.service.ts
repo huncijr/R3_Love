@@ -72,14 +72,11 @@ const GET_USER_PROGRESS = gql`
   }
 `;
 
-// Frontend user shape matching the GraphQL User type
 export interface User {
   id: string;
   name: string;
   gender: string | null;
 }
-
-// Response shape returned by createUser and login mutations
 export interface CreateUserResponse {
   user: User;
   token: string;
@@ -166,7 +163,8 @@ export class UserService {
       ),
     );
   }
-  // Loads all custom calendar events created by the authenticated user
+
+  // Loads all custom calendar events created by the user
   getCalendarEvents() {
     return this.apollo
       .query<{ getCalendarEvents: any[] }>({
@@ -185,6 +183,7 @@ export class UserService {
       })
       .pipe(map((result) => result.data?.getCalendarEvents ?? []));
   }
+
   // Persists a new custom event to the user's calendar
   saveCalendarEvent(event: {
     title: string;
@@ -207,6 +206,45 @@ export class UserService {
         `,
         variables: { event },
       })
+
       .pipe(map((result) => result.data?.saveCalendarEvent));
+  }
+
+  generateFollowUpQuestions(answer: { questionId: string; value: string }[]) {
+    return this.apollo
+      .mutate<{ generateFollowUpQuestions: any[] }>({
+        mutation: gql`
+          mutation GenerateFollowUpQuestions($answers: [QuizAnswerInput!]!) {
+            generateFollowUpQuestions(answers: $answers) {
+              id
+              text
+              type
+              options
+              image
+              placeholder
+            }
+          }
+        `,
+        variables: { answer },
+      })
+      .pipe(map((result) => result.data?.generateFollowUpQuestions ?? []));
+  }
+
+  getGiftRecommendations(answer: { questionId: string; value: string }[]) {
+    return this.apollo
+      .mutate<{ getGiftRecommendations: any[] }>({
+        mutation: gql`
+          mutation GetGiftRecommendations($answers: [QuizAnswerInput!]!) {
+            getGiftRecommendations(answers: $answers) {
+              title
+              description
+              priceRange
+              reason
+            }
+          }
+        `,
+        variables: { answer },
+      })
+      .pipe(map((result) => result.data?.getGiftRecommendations ?? []));
   }
 }

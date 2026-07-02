@@ -17,7 +17,7 @@
           <div class="flex justify-between text-xs text-muted">
             <span class="mx-2" hlmBadge>{{ sectionName() }}</span>
             <span class="mx-2" hlmBadge variant="destructive"
-              >Question {{ currentQuestionIndex() + 1 }}of {{ questionsInSection().length }}</span
+              >Question {{ currentQuestionIndex() + 1 }}of {{ allCurrentQuestions().length }}</span
             >
           </div>
           <hlm-progress [value]="progressPercent()" class="h-2"></hlm-progress>

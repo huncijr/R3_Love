@@ -4,6 +4,11 @@ import { and, eq } from "drizzle-orm";
 import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
 import { generateToken, verifyToken } from "../../middleware/Auth.js";
+import {
+  generateFollowUpQuestionsFromAI,
+  getGiftRecommendationsFromAI,
+  QuizAnswer,
+} from "../ai/ai.service.js";
 
 // Extracts and verifies user ID from JWT token in request context
 const getUserIdFromContext = (token: string): string => {
@@ -134,6 +139,7 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+
     // Authenticates user and returns JWT token
     login: async (
       _parent: unknown,
@@ -167,6 +173,7 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+
     // Upserts calendar quiz answers and marks calendar module as completed
     saveCalendarQuiz: async (
       _parent: unknown,
@@ -282,6 +289,26 @@ export const userResolver = {
         return true;
       } catch (err) {
         errorHandler(err);
+      }
+    },
+
+    generateFollowUpQuestions: async (
+      _parent: unknown,
+      args: { answers: QuizAnswer[] },
+    ) => {
+      const questions = await generateFollowUpQuestionsFromAI(args.answers);
+      return questions;
+    },
+
+    getGiftRecommendations: async (
+      _parent: unknown,
+      args: { answer: { questionId: string; value: string }[] },
+    ) => {
+      try {
+        const recommendations = await getGiftRecommendationsFromAI(args.answer);
+        return recommendations;
+      } catch (error) {
+        errorHandler(error);
       }
     },
   },

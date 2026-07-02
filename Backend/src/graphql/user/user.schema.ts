@@ -41,12 +41,33 @@ export const userSchema = `
     createdAt: String!
   }
 
+  type AiQuestion {
+  id: String!
+  text: String!
+  type: String!
+  options: [String!]
+  image: String
+  placeholder: String
+  }
+
+  type GiftRecommendation {
+    title: String!
+    description: String!
+    priceRange: String!
+    reason: String!
+  }
+
   input EventInput {
     title: String!
     description: String
     startDate: String!
     allDay: Boolean
     color: String
+  }
+
+  input QuizAnswerInput {
+    questionId: String!
+    value: String!
   }
 
     type Query {
@@ -78,5 +99,7 @@ export const userSchema = `
 
     saveCalendarEvent(event: EventInput!): CalendarEvent!
     deleteCalendarEvent(id: ID!): Boolean!
+    getGiftRecommendations(answer: [QuizAnswerInput!]!): [GiftRecommendation!]!
+    generateFollowUpQuestions(answer: [QuizAnswerInput!]!): [AiQuestion!]!
   }
 `;

@@ -24,6 +24,7 @@ import {
   Gift,
   RotateCcw,
 } from 'lucide-angular';
+import { UserService } from '../../../services/user.service';
 export interface QuizQuestion {
   id: string;
   section: number;
@@ -261,6 +262,10 @@ export class GiftFinder {
   customValue = signal('');
   animationKey = signal(0);
 
+  aiQuestions = signal<QuizQuestion[]>([]);
+  isAiPhase = signal(false);
+  isFinalPhase = signal(false);
+
   isLoadingRecommendations = signal(false);
   loadingProgress = signal(0);
   loadingMessage = signal('');
@@ -272,32 +277,46 @@ export class GiftFinder {
     'Personalizing results just for you ...',
   ];
 
-  // Filters questions to show only those in the current section
-  questionsInSection = computed(() =>
-    ALL_QUESTIONS.filter((q) => q.section === this.currentSection()),
-  );
+  constructor(private userService: UserService) {}
 
-  // Returns the currently active question object
-  currentQuestion = computed(() => this.questionsInSection()[this.currentQuestionIndex()]);
+  allCurrentQuestions = computed(() => {
+    if (this.isAiPhase()) {
+      return this.aiQuestions();
+    }
+    return ALL_QUESTIONS.filter((q) => q.section === this.currentSection());
+  });
+
+  currentQuestion = computed(() => this.allCurrentQuestions()[this.currentQuestionIndex()]);
 
   // Calculates overall quiz completion percentage across all sections
   progressPercent = computed(() => {
-    const total = ALL_QUESTIONS.length;
+    const staticTotal = ALL_QUESTIONS.length;
+    const aiTotal = this.aiQuestions().length;
+    const total = staticTotal + aiTotal;
+
     let answered = 0;
-    for (let s = 0; s < this.currentSection(); s++) {
-      answered += ALL_QUESTIONS.filter((q) => q.section === s).length;
+
+    if (!this.isAiPhase() && !this.isFinalPhase()) {
+      for (let s = 0; s < this.currentSection(); s++) {
+        answered += ALL_QUESTIONS.filter((q) => q.section === s).length;
+      }
+      answered += this.currentQuestionIndex();
+    } else {
+      answered = staticTotal;
     }
-    answered += this.currentQuestionIndex();
+    if (this.isAiPhase()) {
+      answered += this.currentQuestionIndex();
+    }
+    if (total === 0) return 0;
     return Math.round((answered / total) * 100);
   });
 
   // Calculates completion percentage within the current section only
   sectionProgress = computed(() => {
-    const sectionQ = this.questionsInSection();
+    const sectionQ = this.allCurrentQuestions();
     return Math.round(((this.currentQuestionIndex() + 1) / sectionQ.length) * 100);
   });
 
-  // Retrieves the stored answer for a specific question ID
   getAnswerValue(qid: string): string {
     return this.answers().find((a) => a.questionId === qid)?.value || '';
   }
@@ -312,7 +331,11 @@ export class GiftFinder {
   }
 
   // Returns the display name of the current section
-  sectionName = computed(() => SECTION_NAMES[this.currentSection()]);
+  sectionName = computed(() => {
+    if (this.isAiPhase()) return 'AI Deep Dive';
+    if (this.isFinalPhase()) return 'Results';
+    return SECTION_NAMES[this.currentSection()];
+  });
 
   // Checks if the current question has a valid answer before allowing progression
   canProceed(): boolean {
@@ -323,22 +346,44 @@ export class GiftFinder {
   // Advances to the next question, section, or triggers completion
   next() {
     if (!this.canProceed()) return;
-    const sectionQ = this.questionsInSection();
+    const sectionQ = this.allCurrentQuestions();
     this.showCustomInput.set(false);
     this.customValue.set('');
+
     if (this.currentQuestionIndex() < sectionQ.length - 1) {
       this.currentQuestionIndex.update((i) => i + 1);
-    } else if (this.currentSection() < 2) {
-      this.currentSection.update((s) => s + 1);
-      this.currentQuestionIndex.set(0);
+    } else if (!this.isAiPhase()) {
+      this.finishStaticPhase();
     } else {
-      this.finishQuiz();
+      this.finishAiPhase();
     }
+
     this.animationKey.update((k) => k + 1);
   }
 
+  private finishStaticPhase() {
+    this.isLoadingRecommendations.set(true);
+    this.loadingProgress.set(0);
+    this.loadingMessage.set('Analyzing your answers ...');
+
+    this.userService.generateFollowUpQuestions(this.answers()).subscribe({
+      next: (questions) => {
+        this.isLoadingRecommendations.set(false);
+        this.aiQuestions.set(questions);
+        this.isAiPhase.set(true);
+        this.currentQuestionIndex.set(0);
+        this.currentSection.set(0);
+      },
+      error: (err) => {
+        console.error('AI questions failed', err);
+        this.isLoadingRecommendations.set(false);
+        this.finishAiPhase();
+      },
+    });
+  }
+
   // Triggers the AI recommendation loading simulation with progress bar and cycling messages
-  private finishQuiz() {
+  private finishAiPhase() {
     this.isLoadingRecommendations.set(true);
     this.loadingProgress.set(0);
 
@@ -353,17 +398,26 @@ export class GiftFinder {
       this.loadingProgress.update((p) => Math.min(p + 2, 95));
     }, 80);
 
-    setTimeout(() => {
-      clearInterval(msgInterval);
-      clearInterval(progressInterval);
-      this.loadingProgress.set(100);
-      this.isLoadingRecommendations.set(false);
-      this.isCompleted.set(true);
-      this.recommendations.set(generateRecommendation(this.answers()));
-    }, 3500);
+    this.userService.getGiftRecommendations(this.answers()).subscribe({
+      next: (recommendations) => {
+        clearInterval(msgInterval);
+        clearInterval(progressInterval);
+        this.loadingProgress.set(100);
+        this.isLoadingRecommendations.set(false);
+        this.isCompleted.set(true);
+        this.recommendations.set(recommendations);
+      },
+      error: (err) => {
+        clearInterval(msgInterval);
+        clearInterval(progressInterval);
+        this.isLoadingRecommendations.set(false);
+        console.error(`AI recommendation failed`, err);
+        this.isCompleted.set(true);
+        this.recommendations.set(generateRecommendation(this.answers()));
+      },
+    });
   }
 
-  // Stores the answer and auto-advances after a short delay for radio/select inputs
   onAnswerSelected(value: string) {
     this.setAnswer(value);
     setTimeout(() => {
@@ -371,7 +425,6 @@ export class GiftFinder {
     }, 300);
   }
 
-  // Allows pressing Enter to submit text/number inputs
   onEnterKey(event: KeyboardEvent) {
     if (event.key === 'Enter' && this.canProceed()) {
       this.next();
@@ -401,5 +454,8 @@ export class GiftFinder {
     this.answers.set([]);
     this.isCompleted.set(false);
     this.recommendations.set([]);
+    this.isAiPhase.set(false);
+    this.aiQuestions.set([]);
+    this.isFinalPhase.set(false);
   }
 }
