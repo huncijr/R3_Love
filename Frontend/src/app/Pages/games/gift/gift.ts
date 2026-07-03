@@ -24,6 +24,7 @@ import {
   Gift,
   RotateCcw,
   AlertCircle,
+  Book,
 } from 'lucide-angular';
 import { UserService } from '../../../services/user.service';
 export interface QuizQuestion {
@@ -227,6 +228,7 @@ const SECTION_ICONS = ['Ruler', 'Heart', 'Sparkles'];
         RotateCcw,
         Gift,
         AlertCircle,
+        Book,
       }),
       multi: true,
     },
@@ -257,11 +259,30 @@ export class GiftFinder {
   isDeepPhase = signal(false);
   isPracticalPhase = signal(false);
 
-  LOADING_MESSAGES = [
-    'Analyzing your answers...',
-    'Creating gift recommendations ...',
-    'Determining what they would love...',
-    'Personalizing results just for you ...',
+  private msgInterval?: ReturnType<typeof setInterval>;
+  private progressInterval?: ReturnType<typeof setInterval>;
+
+  stepLabel = computed(() => {
+    if (this.isDeepPhase()) return 'Extra Step +1';
+    if (this.isPracticalPhase()) return 'Extra Step +2';
+    if (this.isFinalPhase() || this.isCompleted()) return 'Extra Step +3';
+    return `Step ${this.currentSection() + 1} of 3`;
+  });
+
+  LOADING_MESSAGES_QUESTIONS = [
+    { threshold: 0, text: 'Analyzing your answers...' },
+    { threshold: 20, text: 'Crafting personalized questions...' },
+    { threshold: 40, text: 'Digging deeper into what they love...' },
+    { threshold: 60, text: 'Almost ready with the next questions...' },
+    { threshold: 80, text: 'Finalizing the questions...' },
+  ];
+
+  LOADING_MESSAGES_GIFTS = [
+    { threshold: 0, text: 'Analyzing your answers...' },
+    { threshold: 20, text: 'Creating gift recommendations...' },
+    { threshold: 40, text: 'Determining what they would love...' },
+    { threshold: 60, text: 'Almost there...' },
+    { threshold: 80, text: 'Personalizing results just for you...' },
   ];
 
   constructor(private userService: UserService) {}
@@ -351,9 +372,7 @@ export class GiftFinder {
   }
 
   private finishStaticPhase() {
-    this.isLoadingRecommendations.set(true);
-    this.loadingProgress.set(0);
-    this.loadingMessage.set('Analyzing your answers ...');
+    this.startLoading('Analyzing your answers...', this.LOADING_MESSAGES_QUESTIONS);
 
     const answerWithText = this.answers().map((answer) => {
       const question = ALL_QUESTIONS.find((q) => q.id === answer.questionId);
@@ -366,52 +385,48 @@ export class GiftFinder {
 
     this.userService.generateDeepQuestions(answerWithText).subscribe({
       next: (questions) => {
-        this.isLoadingRecommendations.set(false);
-        this.aiQuestions.set(questions);
-        this.isAiPhase.set(true);
+        this.stopLoading();
+        this.deepQuestions.set(questions);
+        this.isDeepPhase.set(true);
         this.currentQuestionIndex.set(0);
-        this.currentSection.set(0);
       },
       error: (err) => {
+        this.stopLoading();
         console.error('Deep questions failed', err);
-        this.isLoadingRecommendations.set(false);
-        this.errorMessage.set('Failed to generate follow-up questions. Please try again later.');
+        this.errorMessage.set('Failed to generate deep questions. Please try again later.');
       },
     });
   }
 
   private finishDeepPhase() {
-    this.isLoadingRecommendations.set(true);
-    this.loadingMessage.set('Preparing practical questions ...');
+    this.startLoading('Preparing practical questions...', this.LOADING_MESSAGES_QUESTIONS);
 
+    const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions()];
     const allAnswers = this.answers().map((a) => {
-      const q = ALL_QUESTIONS.find((q) => (q.id = a.questionId));
+      const q = allQuestions.find((q) => q.id === a.questionId);
       return { questionId: a.questionId, questionText: q?.text || a.questionId, value: a.value };
     });
 
     this.userService.generatePracticalQuestions(allAnswers).subscribe({
       next: (questions) => {
-        this.isLoadingRecommendations.set(false);
+        this.stopLoading();
         this.practicalQuestions.set(questions);
         this.isPracticalPhase.set(true);
         this.isDeepPhase.set(false);
         this.currentQuestionIndex.set(0);
       },
       error: (err) => {
+        this.stopLoading();
         console.error('Practical questions failed', err);
         this.errorMessage.set('Failed to generate practical questions. Please try again.');
-        this.isLoadingRecommendations.set(false);
       },
     });
   }
+
   private finishPracticalPhase() {
-    this.isLoadingRecommendations.set(true);
-    this.loadingMessage.set('Generating gift recommendations...');
-    const allQuestions = [
-      ...ALL_QUESTIONS.flat(),
-      ...this.deepQuestions(),
-      ...this.practicalQuestions(),
-    ];
+    this.startLoading('Generating gift recommendations...', this.LOADING_MESSAGES_GIFTS);
+
+    const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions(), ...this.practicalQuestions()];
 
     const allAnswers = this.answers().map((a) => {
       const q = allQuestions.find((q) => q.id === a.questionId);
@@ -420,51 +435,19 @@ export class GiftFinder {
 
     this.userService.getGiftRecommendations(allAnswers).subscribe({
       next: (recs) => {
-        this.isLoadingRecommendations.set(false);
+        this.stopLoading();
         this.recommendations.set(recs);
         this.isCompleted.set(true);
       },
       error: (err) => {
+        this.stopLoading();
         console.error('Recommendation failed', err);
         this.errorMessage.set('Failed to get recommendations. Please try again.');
-        this.isLoadingRecommendations.set(false);
       },
     });
   }
+
   // Triggers the AI recommendation loading simulation with progress bar and cycling messages
-  private finishAiPhase() {
-    this.isLoadingRecommendations.set(true);
-    this.loadingProgress.set(0);
-
-    let msgIdx = 0;
-    this.loadingMessage.set(this.LOADING_MESSAGES[0]);
-    const msgInterval = setInterval(() => {
-      msgIdx = (msgIdx + 1) % this.LOADING_MESSAGES.length;
-      this.loadingMessage.set(this.LOADING_MESSAGES[msgIdx]);
-    }, 800);
-
-    const progressInterval = setInterval(() => {
-      this.loadingProgress.update((p) => Math.min(p + 2, 95));
-    }, 80);
-
-    this.userService.getGiftRecommendations(this.answers()).subscribe({
-      next: (recommendations) => {
-        clearInterval(msgInterval);
-        clearInterval(progressInterval);
-        this.loadingProgress.set(100);
-        this.isLoadingRecommendations.set(false);
-        this.isCompleted.set(true);
-        this.recommendations.set(recommendations);
-      },
-      error: (err) => {
-        clearInterval(msgInterval);
-        clearInterval(progressInterval);
-        this.isLoadingRecommendations.set(false);
-        console.error(`AI recommendation failed`, err);
-        this.errorMessage.set('Failed to get gift recommendations. Please try again later.');
-      },
-    });
-  }
 
   onAnswerSelected(value: string) {
     this.setAnswer(value);
@@ -494,9 +477,53 @@ export class GiftFinder {
       this.customValue.set('');
     }
   }
+  private startLoading(initialMessage: string, messages: { threshold: number; text: string }[]) {
+    this.clearLoadingIntervals();
+    this.isLoadingRecommendations.set(true);
+    this.loadingProgress.set(0);
+    this.loadingMessage.set(initialMessage);
+
+    let lastMessageIndex = -1;
+
+    this.progressInterval = setInterval(() => {
+      this.loadingProgress.update((p) => Math.min(p + 2, 95));
+
+      const currentProgress = this.loadingProgress();
+      let messageIndex = -1;
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (currentProgress >= messages[i].threshold) {
+          messageIndex = i;
+          break;
+        }
+      }
+
+      if (messageIndex !== -1 && messageIndex !== lastMessageIndex) {
+        lastMessageIndex = messageIndex;
+        this.loadingMessage.set(messages[messageIndex].text);
+      }
+    }, 80);
+  }
+
+  private stopLoading() {
+    this.clearLoadingIntervals();
+    this.isLoadingRecommendations.set(false);
+    this.loadingProgress.set(100);
+  }
+
+  private clearLoadingIntervals() {
+    if (this.msgInterval) {
+      clearInterval(this.msgInterval);
+      this.msgInterval = undefined;
+    }
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+      this.progressInterval = undefined;
+    }
+  }
 
   // Resets all quiz state to allow retaking the gift finder
   restart() {
+    this.clearLoadingIntervals();
     this.currentSection.set(0);
     this.currentQuestionIndex.set(0);
     this.answers.set([]);
@@ -508,9 +535,11 @@ export class GiftFinder {
     this.practicalQuestions.set([]);
     this.aiQuestions.set([]);
     this.isFinalPhase.set(false);
-    this.errorMessage.set(``);
+    this.errorMessage.set('');
     this.showCustomInput.set(false);
     this.customValue.set('');
+    this.isLoadingRecommendations.set(false);
+    this.loadingProgress.set(0);
     this.animationKey.update((k) => k + 1);
   }
 }

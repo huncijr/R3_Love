@@ -230,7 +230,7 @@ export class UserService {
       .pipe(map((result) => result.data?.generateFollowUpQuestions ?? []));
   }
 
-  getGiftRecommendations(answer: { questionId: string; value: string }[]) {
+  getGiftRecommendations(answers: { questionId: string; value: string }[]) {
     return this.apollo
       .mutate<{ getGiftRecommendations: any[] }>({
         mutation: gql`
@@ -243,7 +243,7 @@ export class UserService {
             }
           }
         `,
-        variables: { answer },
+        variables: { answers: answers },
       })
       .pipe(map((result) => result.data?.getGiftRecommendations ?? []));
   }

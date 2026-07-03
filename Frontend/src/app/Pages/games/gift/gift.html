@@ -63,60 +63,63 @@
       </div>
     } @else {
       <div class="space-y-6">
-        <div class="space-y-3 mb-6">
-          <div class="flex justify-between text-xs text-muted">
-            <span class="mx-2" hlmBadge>{{ sectionName() }}</span>
-            <span class="mx-2" hlmBadge variant="destructive"
-              >Question {{ currentQuestionIndex() + 1 }}of {{ allCurrentQuestions().length }}</span
-            >
-          </div>
-          <hlm-progress [value]="progressPercent()" class="h-2"></hlm-progress>
-        </div>
-        @for (key of [animationKey()]; track key) {
-          <section
-            hlmCard
-            class="bg-white/80 backdrop-blur-md border border-primary-light/50 shadow-lg"
+        @if (isLoadingRecommendations()) {
+          <div
+            class="flex flex-col items-center justify-center py-16 space-y-6 animate-ease-in-reveal"
           >
-            <div class="animate-ease-in-reveal">
-              <div hlmCardHeader class="pb-2">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-xl bg-primary-light/50 flex items-center justify-center"
-                  >
-                    <lucide-icon
-                      [name]="currentQuestion().image || 'star'"
-                      class="w-5 h-5 text-primary-main"
-                    ></lucide-icon>
-                  </div>
-                  <div>
-                    <span class="text-xs text-muted uppercase tracking-wide"
-                      >Step {{ currentSection() + 1 }} of 3</span
-                    >
-                    <h3 hlmCardTitle class="text-lg text-neutral-text leading-tight">
-                      {{ currentQuestion().text }}
-                    </h3>
-                  </div>
-                </div>
+            <div
+              class="w-12 h-12 rounded-full border-4 border-primary-light border-t-primary-main animate-spin"
+            ></div>
+            <div class="space-y-2 text-center">
+              <p class="text-lg font-medium text-neutral-text">{{ loadingMessage() }}</p>
+              <div class="w-64 bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div
+                  class="bg-primary-main h-full rounded-full transition-all duration-100"
+                  [style.width.%]="loadingProgress()"
+                ></div>
               </div>
-              <div hlmCardContent class="pt-4">
-                @if (isLoadingRecommendations()) {
-                  <div
-                    class="flex flex-col items-center justify-center py-16 space-y-6 animate-ease-in-reveal"
-                  >
+            </div>
+          </div>
+        } @else {
+          <div class="space-y-3 mb-6">
+            <div class="flex justify-between text-xs text-muted">
+              <span class="mx-2" hlmBadge>{{ sectionName() }}</span>
+              <span class="mx-2" hlmBadge variant="destructive"
+                >Question {{ currentQuestionIndex() + 1 }}of
+                {{ allCurrentQuestions().length }}</span
+              >
+            </div>
+            <hlm-progress [value]="progressPercent()" class="h-2">
+              <span hlmProgressIndicator></span>
+            </hlm-progress>
+          </div>
+          @for (key of [animationKey()]; track key) {
+            <section
+              hlmCard
+              class="bg-white/80 backdrop-blur-md border border-primary-light/50 shadow-lg"
+            >
+              <div class="animate-ease-in-reveal">
+                <div hlmCardHeader class="pb-2">
+                  <div class="flex items-center gap-3">
                     <div
-                      class="w-12 h-12 rounded-full border-4 border-primary-light border-t-primary-main animate-spin"
-                    ></div>
-                    <div class="space-y-2 text-center">
-                      <p class="text-lg font-medium text-neutral-text">{{ loadingMessage() }}</p>
-                      <div class="w-64 bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div
-                          class="bg-primary-main h-full rounded-full transition-all duration-100"
-                          [style.width.%]="loadingProgress()"
-                        ></div>
-                      </div>
+                      class="w-10 h-10 rounded-xl bg-primary-light/50 flex items-center justify-center"
+                    >
+                      <lucide-icon
+                        [name]="currentQuestion().image || 'star'"
+                        class="w-5 h-5 text-primary-main"
+                      ></lucide-icon>
+                    </div>
+                    <div>
+                      <span class="text-xs text-muted uppercase tracking-wide">{{
+                        stepLabel()
+                      }}</span>
+                      <h3 hlmCardTitle class="text-lg text-neutral-text leading-tight">
+                        {{ currentQuestion().text }}
+                      </h3>
                     </div>
                   </div>
-                } @else {
+                </div>
+                <div hlmCardContent class="pt-4">
                   @if (currentQuestion().type === 'text' || currentQuestion().type === 'number') {
                     <div class="space-y-2">
                       <label hlmLabel>{{ currentQuestion().placeholder || 'Your answer' }}</label>
@@ -231,10 +234,10 @@
                       }
                     </div>
                   }
-                }
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          }
         }
       </div>
     }
