@@ -11,11 +11,17 @@ export interface QuizAnswer {
   value: string;
 }
 
+export interface StoreLocation {
+  name: string;
+  address: string;
+}
 export interface GiftRecommendation {
   title: string;
   description: string;
   priceRange: string;
   reason: string;
+  onlineLinks?: string[];
+  stores?: StoreLocation[];
 }
 
 dotenv.config();

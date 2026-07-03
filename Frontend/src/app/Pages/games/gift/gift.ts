@@ -8,6 +8,9 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmSelectImports } from '../../../ui/select/src';
+import { getNames } from 'country-list';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../../../enviroments/enviroment';
 
 import {
   LucideAngularModule,
@@ -25,6 +28,8 @@ import {
   RotateCcw,
   AlertCircle,
   Book,
+  Pin,
+  SquareArrowOutUpRight,
 } from 'lucide-angular';
 import { UserService } from '../../../services/user.service';
 export interface QuizQuestion {
@@ -42,11 +47,17 @@ export interface QuizAnswer {
   value: string;
 }
 
+interface storeLocation {
+  name: string;
+  address: string;
+}
 export interface GiftRecommendation {
   title: string;
   description: string;
   priceRange: string;
   reason: string;
+  onlineLinks?: string[];
+  stores?: storeLocation[];
 }
 
 const ALL_QUESTIONS: QuizQuestion[] = [
@@ -229,6 +240,8 @@ const SECTION_ICONS = ['Ruler', 'Heart', 'Sparkles'];
         Gift,
         AlertCircle,
         Book,
+        SquareArrowOutUpRight,
+        Pin,
       }),
       multi: true,
     },
@@ -259,6 +272,28 @@ export class GiftFinder {
   isDeepPhase = signal(false);
   isPracticalPhase = signal(false);
 
+  isLocationPhase = signal(false);
+  selectedCountry = signal<string>('');
+  countries = Object.entries(getNames()).map(([code, name]) => ({ code, name }));
+
+  currentRecIndex = signal(0);
+  swipeDirection = signal<'left' | 'right' | null>(null);
+
+  currentRecommendation = computed(() => this.recommendations()[this.currentRecIndex()]);
+  hasLocationData = computed(() => {
+    const rec = this.currentRecommendation();
+    return !!rec.onlineLinks && rec.onlineLinks.length > 0;
+  });
+
+  hasOnlineLinks = computed(() => {
+    const rec = this.currentRecommendation();
+    return !!rec?.stores && rec.stores.length > 0;
+  });
+
+  showQuestionCard = computed(
+    () => !this.isLocationPhase() && !this.isLoadingRecommendations() && !this.isCompleted(),
+  );
+
   private msgInterval?: ReturnType<typeof setInterval>;
   private progressInterval?: ReturnType<typeof setInterval>;
 
@@ -285,7 +320,10 @@ export class GiftFinder {
     { threshold: 80, text: 'Personalizing results just for you...' },
   ];
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private sanitizer: DomSanitizer,
+  ) {}
 
   allCurrentQuestions = computed<QuizQuestion[]>(() => {
     if (this.isDeepPhase()) return this.deepQuestions();
@@ -423,15 +461,22 @@ export class GiftFinder {
     });
   }
 
-  private finishPracticalPhase() {
+  finishLocationPhase() {
+    this.isLocationPhase.set(false);
     this.startLoading('Generating gift recommendations...', this.LOADING_MESSAGES_GIFTS);
-
-    const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions(), ...this.practicalQuestions()];
-
+    const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions()];
     const allAnswers = this.answers().map((a) => {
       const q = allQuestions.find((q) => q.id === a.questionId);
       return { questionId: a.questionId, questionText: q?.text || a.questionId, value: a.value };
     });
+
+    if (this.selectedCountry()) {
+      allAnswers.push({
+        questionId: 'location',
+        questionText: 'Where are you from',
+        value: this.selectedCountry()!,
+      });
+    }
 
     this.userService.getGiftRecommendations(allAnswers).subscribe({
       next: (recs) => {
@@ -447,8 +492,50 @@ export class GiftFinder {
     });
   }
 
-  // Triggers the AI recommendation loading simulation with progress bar and cycling messages
+  private finishPracticalPhase() {
+    this.isLocationPhase.set(true);
+  }
 
+  getFlagEmoji(countryCode: string): string {
+    const codePoints = countryCode
+      .toUpperCase()
+      .split('')
+      .map((char) => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+  }
+
+  getFirstStoreQuery(stores?: storeLocation[]): string {
+    if (!stores || stores.length === 0) return '';
+    const store = stores[0];
+    return `${store.name} ${store.address}`;
+  }
+
+  getMapUrl(query: string): SafeResourceUrl {
+    const url = `https://www.google.com/maps/embed/v1/place?key=${environment.googleMapsApiKey}&q=${encodeURIComponent(query)}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  nextRecommendation() {
+    if (this.currentRecIndex() < this.recommendations.length - 1) {
+      this.swipeDirection.set('left');
+      setTimeout(() => {
+        this.currentRecIndex.update((i) => i + 1);
+        this.swipeDirection.set(null);
+      }, 150);
+    }
+  }
+
+  previousRecommendation() {
+    if (this.currentRecIndex() > 0) {
+      this.swipeDirection.set('right');
+      setTimeout(() => {
+        this.currentRecIndex.update((i) => i - 1);
+        this.swipeDirection.set(null);
+      }, 150);
+    }
+  }
+
+  // Triggers the AI recommendation loading simulation with progress bar and cycling messages
   onAnswerSelected(value: string) {
     this.setAnswer(value);
     setTimeout(() => {
