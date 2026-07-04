@@ -72,6 +72,45 @@ const GET_USER_PROGRESS = gql`
   }
 `;
 
+const GET_GIFT_RECOMMENDATIONS_HISTORY = gql`
+  query GetGiftRecommendationsHistory {
+    getGiftRecommendationsHistory {
+      id
+      answers {
+        questionId
+        questionText
+        value
+      }
+      recommendations {
+        title
+        description
+        priceRange
+        reason
+        onlineLinks
+        stores {
+          name
+          address
+        }
+      }
+      createdAt
+    }
+  }
+`;
+
+const SAVE_GIFT_RECOMMENDATIONS = gql`
+  mutation SaveGiftRecommendations($input: SaveGiftRecommendationsInput!) {
+    saveGiftRecommendations(input: $input) {
+      id
+      recommendations {
+        title
+        description
+        priceRange
+        reason
+      }
+    }
+  }
+`;
+
 export interface User {
   id: string;
   name: string;
@@ -293,5 +332,18 @@ export class UserService {
         variables: { answers },
       })
       .pipe(map((result) => result.data?.generatePracticalQuestions ?? []));
+  }
+
+  getGiftRecommendationsHistory() {
+    return this.apollo.query<{ getGiftRecommendationsHistory: any }>({
+      query: GET_GIFT_RECOMMENDATIONS_HISTORY,
+    });
+  }
+
+  saveGiftRecommendations(input: any) {
+    return this.apollo.mutate<{ saveGiftRecommendations: any }>({
+      mutation: SAVE_GIFT_RECOMMENDATIONS,
+      variables: { input },
+    });
   }
 }

@@ -29,6 +29,29 @@ export const userSchema = `
     token: String!
   }
 
+  type QuizAnswer{ 
+    questionId: String!
+    questionText: String!
+    value: String!
+  }
+
+  type SavedGiftRecommendations {
+    id: ID!
+    userId: ID!
+    answers: [QuizAnswer!]!
+    recommendations: [GiftRecommendation!]!
+    createdAt: String!
+    updatedAt: String!
+
+  }
+
+  input SaveGiftRecommendationsInput{
+    answers: [QuizAnswerInput!]!
+    recommendations: [GiftRecommendationInput!]!
+  
+  }
+
+
 
   type CalendarEvent {
     id: ID!
@@ -50,6 +73,11 @@ export const userSchema = `
   placeholder: String
   }
 
+  input StoreLocationInput{
+    name: String!
+    address: String!
+  }
+
   type StoreLocation {
   name: String!
   address: String!
@@ -62,6 +90,15 @@ export const userSchema = `
     reason: String!
     onlineLinks: [String!]
     stores: [StoreLocation!]
+  }
+
+  input GiftRecommendationInput{
+    title: String!
+    description: String!
+    priceRange: String!
+    reason: String!
+    onlineLinks: [String!]
+    stores: [StoreLocationInput!]
   }
 
   input EventInput {
@@ -85,6 +122,8 @@ export const userSchema = `
     getCalendarQuiz: CalendarQuiz
     getUserProgress: UserProgress
     getCalendarEvents: [CalendarEvent!]
+    getGiftRecommendationsHistory: SavedGiftRecommendations
+
   }
 
 
@@ -111,5 +150,6 @@ export const userSchema = `
     generateDeepQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
     generatePracticalQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
     getGiftRecommendations(answers: [QuizAnswerInput!]!): [GiftRecommendation!]!
+    saveGiftRecommendations(input: SaveGiftRecommendationsInput!): SavedGiftRecommendations!
   }
 `;

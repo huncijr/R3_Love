@@ -1,4 +1,5 @@
 import { sql } from "drizzle-orm";
+import { jsonb } from "drizzle-orm/pg-core";
 import {
   pgTable,
   uuid,
@@ -65,3 +66,16 @@ export const calendarEvents = pgTable("CalendarEvents", {
 
 export type CalendarEvents = typeof calendarEvents.$inferSelect;
 export type NewCalendarEvents = typeof calendarEvents.$inferInsert;
+
+export const giftRecommendations = pgTable("GiftRecommendations", {
+  id: uuid("id")
+    .default(sql`gen_random_uuid()`)
+    .primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  answers: jsonb("answers").notNull(),
+  recommendations: jsonb("recommendations").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp().defaultNow().notNull(),
+});

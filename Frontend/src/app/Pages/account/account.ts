@@ -87,6 +87,26 @@ export class Account implements OnInit {
       });
   }
 
+  private syncGiftRecommendation() {
+    const saved = localStorage.getItem('gift-recommendations');
+    if (!saved) return;
+
+    const data = JSON.parse(saved);
+    this.userService
+      .saveGiftRecommendations({
+        answers: data.answers,
+        recommendations: data.recommendations,
+      })
+      .subscribe({
+        next: () => {
+          localStorage.removeItem('gift-recommendations');
+        },
+        error: (err) => {
+          console.error('Failed to sync gift recommendations', err);
+        },
+      });
+  }
+
   currentUser = this.userContext.currentUser;
 
   username = signal('');
@@ -228,6 +248,7 @@ export class Account implements OnInit {
           this.userContext.login(response.user, response.token);
           this.toastr.success('Account created successfully!', 'Success');
           this.syncCalendarQuiz();
+          this.syncGiftRecommendation();
         },
         error: (err) => {
           this.isLoading.set(false);

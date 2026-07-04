@@ -1,6 +1,11 @@
 import { db } from "../../db/index.js";
-import { calendarEvents, calendarQuiz, user } from "../../db/schema.js";
-import { and, eq } from "drizzle-orm";
+import {
+  calendarEvents,
+  calendarQuiz,
+  giftRecommendations,
+  user,
+} from "../../db/schema.js";
+import { and, desc, eq } from "drizzle-orm";
 import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
 import { generateToken, verifyToken } from "../../middleware/Auth.js";
@@ -104,6 +109,24 @@ export const userResolver = {
           startDate: event.startDate.toISOString(),
           createdAt: event.createdAt.toISOString(),
         }));
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+    getGiftRecommendationsHistory: async (
+      _parent: any,
+      _args: any,
+      context: any,
+    ) => {
+      const userId = getUserIdFromContext(context.token);
+      try {
+        const rows = await db
+          .select()
+          .from(giftRecommendations)
+          .where(eq(giftRecommendations.userId, userId))
+          .orderBy(desc(giftRecommendations.createdAt))
+          .limit(1);
+        return rows[0] || null;
       } catch (error) {
         errorHandler(error);
       }
@@ -310,6 +333,35 @@ export const userResolver = {
       { answers }: { answers: QuizAnswer[] },
     ) => {
       return await getGiftRecommendationsFromAI(answers);
+    },
+
+    saveGiftRecommendations: async (
+      _parent: any,
+      { input }: { input: any },
+      context: any,
+    ) => {
+      const userId = getUserIdFromContext(context.token);
+      try {
+        await db
+          .delete(giftRecommendations)
+          .where(eq(giftRecommendations.userId, userId));
+        const [saved] = await db
+          .insert(giftRecommendations)
+          .values({
+            userId,
+            answers: input.answers,
+            recommendations: input.recommendations,
+          })
+          .returning();
+        await db
+          .update(user)
+          .set({ giftDone: true })
+          .where(eq(user.id, userId));
+
+        return saved;
+      } catch (error) {
+        errorHandler(error);
+      }
     },
   },
 };

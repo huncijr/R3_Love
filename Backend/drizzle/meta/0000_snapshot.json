@@ -1,5 +1,5 @@
 {
-  "id": "f0b38caf-a2a9-4e27-9c5f-d6238108875f",
+  "id": "594ca30e-fe28-498b-8f6a-0b6a43842ea3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -143,6 +143,71 @@
         "CalendarQuiz_user_id_Users_id_fk": {
           "name": "CalendarQuiz_user_id_Users_id_fk",
           "tableFrom": "CalendarQuiz",
+          "tableTo": "Users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.GiftRecommendations": {
+      "name": "GiftRecommendations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ansers": {
+          "name": "ansers",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recommendations": {
+          "name": "recommendations",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "GiftRecommendations_user_id_Users_id_fk": {
+          "name": "GiftRecommendations_user_id_Users_id_fk",
+          "tableFrom": "GiftRecommendations",
           "tableTo": "Users",
           "columnsFrom": [
             "user_id"

@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -11,7 +11,10 @@ import { HlmSelectImports } from '../../../ui/select/src';
 import { getNames } from 'country-list';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '../../../../enviroments/enviroment';
-
+import { UserService } from '../../../services/user.service';
+import { AuthService } from '../../../services/Auth/auth';
+import { UserContext } from '../../../services/UserContext/user-context';
+import { Router } from '@angular/router';
 import {
   LucideAngularModule,
   LUCIDE_ICONS,
@@ -31,7 +34,7 @@ import {
   Pin,
   SquareArrowOutUpRight,
 } from 'lucide-angular';
-import { UserService } from '../../../services/user.service';
+
 export interface QuizQuestion {
   id: string;
   section: number;
@@ -247,7 +250,7 @@ const SECTION_ICONS = ['Ruler', 'Heart', 'Sparkles'];
     },
   ],
 })
-export class GiftFinder {
+export class GiftFinder implements OnInit {
   currentSection = signal(0);
   currentQuestionIndex = signal(0);
   answers = signal<QuizAnswer[]>([]);
@@ -280,6 +283,10 @@ export class GiftFinder {
   currentRecIndex = signal(0);
   cardAnimationKey = signal(0);
   isAnimating = signal(false);
+
+  showGuestBlur = signal(false);
+  isSaving = false;
+  finalAnswers = signal<any[]>([]);
 
   currentRecommendation = computed(() => this.recommendations()[this.currentRecIndex()]);
 
@@ -327,14 +334,73 @@ export class GiftFinder {
 
   constructor(
     private userService: UserService,
+    private userContext: UserContext,
+    private authService: AuthService,
     private sanitizer: DomSanitizer,
+    private router: Router,
   ) {}
+  ngOnInit() {
+    const pendingAnswers = localStorage.getItem('gift_pending_answers');
+    const pendingRecommendations = localStorage.getItem('gift_pending_recommendations');
+
+    if (this.authService.isLoggedIn()) {
+      if (pendingAnswers && pendingRecommendations) {
+        const cleanAnswers = this.stripTypenames(JSON.parse(pendingAnswers));
+        const cleanRecommendations = this.stripTypenames(JSON.parse(pendingRecommendations));
+        this.userService
+          .saveGiftRecommendations({
+            answers: cleanAnswers,
+            recommendations: cleanRecommendations,
+          })
+          .subscribe({
+            next: () => {
+              localStorage.removeItem('gift_pending_answers');
+              localStorage.removeItem('gift_pending_recommendations');
+              this.loadHistory();
+            },
+            error: (err) => {
+              console.error('Pending save failed', err);
+            },
+          });
+      } else {
+        this.loadHistory();
+      }
+    } else if (pendingAnswers && pendingRecommendations) {
+      this.finalAnswers.set(JSON.parse(pendingAnswers));
+      this.answers.set(JSON.parse(pendingAnswers));
+      this.recommendations.set(JSON.parse(pendingRecommendations));
+      this.isCompleted.set(true);
+      this.showGuestBlur.set(true);
+      document.body.classList.add('overflow-hidden');
+    }
+  }
 
   allCurrentQuestions = computed<QuizQuestion[]>(() => {
     if (this.isDeepPhase()) return this.deepQuestions();
     if (this.isPracticalPhase()) return this.practicalQuestions();
     return ALL_QUESTIONS.filter((q) => q.section === this.currentSection());
   });
+
+  goToAccount() {
+    this.router.navigate(['/account']);
+    document.body.classList.remove('overflow-hidden');
+  }
+
+  // Recursively removes Apollo __typename fields from objects/arrays
+  private stripTypenames<T>(obj: T): T {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.stripTypenames(item)) as unknown as T;
+    }
+    if (obj !== null && typeof obj === 'object') {
+      const cleaned: any = {};
+      for (const key of Object.keys(obj)) {
+        if (key === '__typename') continue;
+        cleaned[key] = this.stripTypenames((obj as any)[key]);
+      }
+      return cleaned as T;
+    }
+    return obj;
+  }
 
   currentQuestion = computed(() => this.allCurrentQuestions()[this.currentQuestionIndex()]);
 
@@ -486,12 +552,36 @@ export class GiftFinder {
       });
     }
 
+    this.finalAnswers.set(allAnswers);
+
     this.userService.getGiftRecommendations(allAnswers).subscribe({
       next: (recs) => {
         this.stopLoading();
         console.log(recs);
         this.recommendations.set(recs);
         this.isCompleted.set(true);
+
+        if (this.authService.isLoggedIn()) {
+          const cleanAnswers = this.stripTypenames(allAnswers);
+          const cleanRecommendations = this.stripTypenames(recs);
+          this.userService
+            .saveGiftRecommendations({
+              answers: cleanAnswers,
+              recommendations: cleanRecommendations,
+            })
+            .subscribe({
+              next: () => {
+                this.showGuestBlur.set(false);
+              },
+              error: (saveErr) => {
+                console.error('Save failed', saveErr);
+              },
+            });
+        } else {
+          localStorage.setItem('gift_pending_answers', JSON.stringify(allAnswers));
+          localStorage.setItem('gift_pending_recommendations', JSON.stringify(recs));
+          this.showGuestBlur.set(true);
+        }
       },
       error: (err) => {
         this.stopLoading();
@@ -658,5 +748,24 @@ export class GiftFinder {
     this.cardAnimationKey.set(0);
     this.selectedCountry.set('');
     this.animationKey.update((k) => k + 1);
+  }
+
+  loadHistory() {
+    if (this.recommendations().length > 0) return;
+    this.userService.getGiftRecommendationsHistory().subscribe({
+      next: (res) => {
+        const history = res.data?.getGiftRecommendationsHistory;
+        if (history) {
+          this.finalAnswers.set(history.answers);
+          this.answers.set(history.answers);
+          this.recommendations.set(history.recommendations);
+          this.isCompleted.set(true);
+          this.showGuestBlur.set(false);
+        }
+      },
+      error: (err) => {
+        console.error('History load failed', err);
+      },
+    });
   }
 }
