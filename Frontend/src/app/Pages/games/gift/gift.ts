@@ -274,20 +274,25 @@ export class GiftFinder {
 
   isLocationPhase = signal(false);
   selectedCountry = signal<string>('');
+
   countries = Object.entries(getNames()).map(([code, name]) => ({ code, name }));
 
   currentRecIndex = signal(0);
-  swipeDirection = signal<'left' | 'right' | null>(null);
+  cardAnimationKey = signal(0);
+  isAnimating = signal(false);
 
   currentRecommendation = computed(() => this.recommendations()[this.currentRecIndex()]);
+
   hasLocationData = computed(() => {
     const rec = this.currentRecommendation();
-    return !!rec.onlineLinks && rec.onlineLinks.length > 0;
+    console.log(rec);
+    return !!rec?.stores && rec.stores.length > 0;
   });
 
   hasOnlineLinks = computed(() => {
     const rec = this.currentRecommendation();
-    return !!rec?.stores && rec.stores.length > 0;
+    console.log(rec);
+    return !!rec?.onlineLinks && rec.onlineLinks.length > 0;
   });
 
   showQuestionCard = computed(
@@ -464,23 +469,27 @@ export class GiftFinder {
   finishLocationPhase() {
     this.isLocationPhase.set(false);
     this.startLoading('Generating gift recommendations...', this.LOADING_MESSAGES_GIFTS);
-    const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions()];
+    const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions(), ...this.practicalQuestions()];
     const allAnswers = this.answers().map((a) => {
       const q = allQuestions.find((q) => q.id === a.questionId);
       return { questionId: a.questionId, questionText: q?.text || a.questionId, value: a.value };
     });
 
     if (this.selectedCountry()) {
+      const selectedCountryName =
+        this.countries.find((c) => c.code === this.selectedCountry())?.name ||
+        this.selectedCountry();
       allAnswers.push({
         questionId: 'location',
         questionText: 'Where are you from',
-        value: this.selectedCountry()!,
+        value: selectedCountryName,
       });
     }
 
     this.userService.getGiftRecommendations(allAnswers).subscribe({
       next: (recs) => {
         this.stopLoading();
+        console.log(recs);
         this.recommendations.set(recs);
         this.isCompleted.set(true);
       },
@@ -515,24 +524,42 @@ export class GiftFinder {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
-  nextRecommendation() {
-    if (this.currentRecIndex() < this.recommendations.length - 1) {
-      this.swipeDirection.set('left');
-      setTimeout(() => {
-        this.currentRecIndex.update((i) => i + 1);
-        this.swipeDirection.set(null);
-      }, 150);
+  // Builds a Google Maps search link for a store name and address
+  getGoogleMapsSearchUrl(store: storeLocation): string {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.name + ' ' + store.address)}`;
+  }
+
+  getDomainFromUrl(url: string): string {
+    try {
+      const parsed = new URL(url);
+      const hostname = parsed.hostname;
+      return hostname.replace(/^www\./, '');
+    } catch (error) {
+      return 'Link';
     }
   }
 
-  previousRecommendation() {
-    if (this.currentRecIndex() > 0) {
-      this.swipeDirection.set('right');
-      setTimeout(() => {
-        this.currentRecIndex.update((i) => i - 1);
-        this.swipeDirection.set(null);
-      }, 150);
+  // Moves to the next recommendation with a short animation lock
+  nextRecommendation() {
+    if (this.currentRecIndex() < this.recommendations().length - 1 && !this.isAnimating()) {
+      this.goToRecommendation(this.currentRecIndex() + 1);
     }
+  }
+
+  // Moves to the previous recommendation with a short animation lock
+  previousRecommendation() {
+    if (this.currentRecIndex() > 0 && !this.isAnimating()) {
+      this.goToRecommendation(this.currentRecIndex() - 1);
+    }
+  }
+
+  // Jumps to a specific recommendation and replays the entrance animation
+  goToRecommendation(index: number) {
+    if (index === this.currentRecIndex() || this.isAnimating()) return;
+    this.isAnimating.set(true);
+    this.currentRecIndex.set(index);
+    this.cardAnimationKey.update((k) => k + 1);
+    setTimeout(() => this.isAnimating.set(false), 250);
   }
 
   // Triggers the AI recommendation loading simulation with progress bar and cycling messages
@@ -627,6 +654,9 @@ export class GiftFinder {
     this.customValue.set('');
     this.isLoadingRecommendations.set(false);
     this.loadingProgress.set(0);
+    this.currentRecIndex.set(0);
+    this.cardAnimationKey.set(0);
+    this.selectedCountry.set('');
     this.animationKey.update((k) => k + 1);
   }
 }

@@ -240,6 +240,11 @@ export class UserService {
               description
               priceRange
               reason
+              onlineLinks
+              stores {
+                name
+                address
+              }
             }
           }
         `,

@@ -1,11 +1,7 @@
 @keyframes easeInReveal {
   0% {
     opacity: 0;
-    transform: translateY(-20px);
-  }
-  70% {
-    opacity: 0.7;
-    transform: translateY(-10px);
+    transform: translateY(-12px);
   }
   100% {
     opacity: 1;
@@ -13,66 +9,21 @@
   }
 }
 
-@keyframes sliteOutLeft {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
+@keyframes fadeScaleIn {
+  0% {
     opacity: 0;
+    transform: scale(0.98);
   }
-  to {
-    transform: translateX(0);
+  100% {
     opacity: 1;
+    transform: scale(1);
   }
-}
-
-@keyframes slideOutRight {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.swipe-right {
-  animation: slideOutLeft 0.15s ease-in forwards;
-}
-
-.swipe-left {
-  animation: slideOutRight 0.15s ease-in forwards;
-}
-
-.swipe-in-left {
-  animation: slideInLeft 0.15s ease-in forwards;
-}
-
-.swipe-in-right {
-  animation: slideInRight 0.15s ease-in forwards;
 }
 
 .animate-ease-in-reveal {
-  animation: easeInReveal 0.2s ease-in forwards;
+  animation: easeInReveal 0.25s ease-out forwards;
+}
+
+.animate-fade-scale-in {
+  animation: fadeScaleIn 0.25s ease-out forwards;
 }

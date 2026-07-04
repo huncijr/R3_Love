@@ -50,11 +50,18 @@ export const userSchema = `
   placeholder: String
   }
 
+  type StoreLocation {
+  name: String!
+  address: String!
+  }
+
   type GiftRecommendation {
     title: String!
     description: String!
     priceRange: String!
     reason: String!
+    onlineLinks: [String!]
+    stores: [StoreLocation!]
   }
 
   input EventInput {
