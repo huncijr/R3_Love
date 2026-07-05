@@ -122,7 +122,7 @@ export const userSchema = `
     getCalendarQuiz: CalendarQuiz
     getUserProgress: UserProgress
     getCalendarEvents: [CalendarEvent!]
-    getGiftRecommendationsHistory: SavedGiftRecommendations
+    getGiftRecommendationsHistory: [SavedGiftRecommendations!]!
 
   }
 

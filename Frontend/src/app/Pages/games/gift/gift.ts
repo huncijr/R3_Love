@@ -15,6 +15,7 @@ import { UserService } from '../../../services/user.service';
 import { AuthService } from '../../../services/Auth/auth';
 import { UserContext } from '../../../services/UserContext/user-context';
 import { Router } from '@angular/router';
+
 import {
   LucideAngularModule,
   LUCIDE_ICONS,
@@ -34,6 +35,7 @@ import {
   Pin,
   SquareArrowOutUpRight,
 } from 'lucide-angular';
+import { CdkAriaLive } from '../../../../../node_modules/@angular/cdk/types/_a11y-module-chunk';
 
 export interface QuizQuestion {
   id: string;
@@ -61,6 +63,13 @@ export interface GiftRecommendation {
   reason: string;
   onlineLinks?: string[];
   stores?: storeLocation[];
+}
+
+interface GiftRecommendationSet {
+  id: string;
+  answers: any;
+  recommendations: GiftRecommendation[];
+  createdAt: string;
 }
 
 const ALL_QUESTIONS: QuizQuestion[] = [
@@ -268,6 +277,7 @@ export class GiftFinder implements OnInit {
   loadingProgress = signal(0);
 
   errorMessage = signal('');
+  validationError = signal('');
   loadingMessage = signal('');
 
   deepQuestions = signal<QuizQuestion[]>([]);
@@ -289,6 +299,22 @@ export class GiftFinder implements OnInit {
   finalAnswers = signal<any[]>([]);
 
   currentRecommendation = computed(() => this.recommendations()[this.currentRecIndex()]);
+
+  recommendationHistory = signal<GiftRecommendationSet[]>([]);
+  showHistory = signal(false);
+  isHistoryLoading = signal(false);
+  selectedHistorySet = signal<GiftRecommendationSet | null>(null);
+
+  selectedRecIndex = signal(0);
+  selectedRecommendation = computed(() => {
+    const set = this.selectedHistorySet();
+    if (!set) return null;
+    return set.recommendations[this.selectedRecIndex()] || null;
+  });
+
+  hasAnyRecommendations = computed(
+    () => this.recommendations().length > 0 || this.recommendationHistory().length > 0,
+  );
 
   hasLocationData = computed(() => {
     const rec = this.currentRecommendation();
@@ -342,6 +368,10 @@ export class GiftFinder implements OnInit {
   ngOnInit() {
     const pendingAnswers = localStorage.getItem('gift_pending_answers');
     const pendingRecommendations = localStorage.getItem('gift_pending_recommendations');
+    const showHistory = localStorage.getItem('gift_show_history') === 'true';
+    if (showHistory) {
+      this.showHistory.set(true);
+    }
 
     if (this.authService.isLoggedIn()) {
       if (pendingAnswers && pendingRecommendations) {
@@ -402,6 +432,28 @@ export class GiftFinder implements OnInit {
     return obj;
   }
 
+  private validateAnswer(value: string): string | null {
+    const q = this.currentQuestion();
+    const trimmed = value.trim();
+
+    if (q.id === 'g3') {
+      const age = Number(trimmed);
+      if (Number.isNaN(age) || age < 12 || age > 99) {
+        return 'Please enter an age between 12 and 99';
+      }
+    }
+    if (
+      q.type === 'text' ||
+      q.type === 'text_with_options' ||
+      (q.type === 'number' && q.id !== 'g3')
+    ) {
+      if (trimmed.length > 100) {
+        return 'Please keep your answer under 100 characters';
+      }
+    }
+    return null;
+  }
+
   currentQuestion = computed(() => this.allCurrentQuestions()[this.currentQuestionIndex()]);
 
   // Calculates overall quiz completion percentage across all sections
@@ -437,6 +489,10 @@ export class GiftFinder implements OnInit {
 
   // Stores or updates an answer for the current question
   setAnswer(value: string) {
+    const error = this.validateAnswer(value);
+    this.validationError.set(error || '');
+    if (error) return;
+
     const qid = this.currentQuestion().id;
     this.answers.update((list) => {
       const filtered = list.filter((a) => a.questionId !== qid);
@@ -455,7 +511,7 @@ export class GiftFinder implements OnInit {
   // Checks if the current question has a valid answer before allowing progression
   canProceed(): boolean {
     const val = this.getAnswerValue(this.currentQuestion().id);
-    return val.trim().length > 0;
+    return val.trim().length > 0 && this.validationError() === '';
   }
 
   // Advances to the next question, section, or triggers completion
@@ -572,6 +628,7 @@ export class GiftFinder implements OnInit {
             .subscribe({
               next: () => {
                 this.showGuestBlur.set(false);
+                this.loadHistory();
               },
               error: (saveErr) => {
                 console.error('Save failed', saveErr);
@@ -675,11 +732,21 @@ export class GiftFinder implements OnInit {
 
   // Saves the custom text input as the answer and hides the input field
   submitCustom() {
-    if (this.customValue().trim()) {
-      this.onAnswerSelected(this.customValue().trim());
-      this.showCustomInput.set(false);
-      this.customValue.set('');
-    }
+    const value = this.customValue().trim();
+    if (!value) return;
+
+    const error = this.validateAnswer(value);
+    this.validationError.set(error || '');
+    if (error) return;
+
+    this.onAnswerSelected(value);
+    this.showCustomInput.set(false);
+    this.customValue.set('');
+  }
+
+  continueToHistory() {
+    this.showHistory.set(true);
+    localStorage.setItem('gift_show_history', 'true');
   }
   private startLoading(initialMessage: string, messages: { threshold: number; text: string }[]) {
     this.clearLoadingIntervals();
@@ -725,6 +792,27 @@ export class GiftFinder implements OnInit {
     }
   }
 
+  openHistorySet(set: GiftRecommendationSet) {
+    this.selectedHistorySet.set(set);
+  }
+
+  closeHistory() {
+    this.selectedHistorySet.set(null);
+  }
+  previousSelectedRecommendation() {
+    if (this.selectedRecIndex() > 0) {
+      this.selectedRecIndex.update((i) => i - 1);
+    }
+  }
+
+  nextSelectedRecommendation() {
+    const set = this.selectedHistorySet();
+    if (!set) return;
+    if (this.selectedRecIndex() < set.recommendations.length - 1) {
+      this.selectedRecIndex.update((i) => i + 1);
+    }
+  }
+
   // Resets all quiz state to allow retaking the gift finder
   restart() {
     this.clearLoadingIntervals();
@@ -748,20 +836,31 @@ export class GiftFinder implements OnInit {
     this.cardAnimationKey.set(0);
     this.selectedCountry.set('');
     this.animationKey.update((k) => k + 1);
+    localStorage.removeItem('gift_show_history');
   }
 
   loadHistory() {
-    if (this.recommendations().length > 0) return;
+    this.isHistoryLoading.set(true);
+    console.log('loadHistory called, recommendations length:', this.recommendations().length);
+
     this.userService.getGiftRecommendationsHistory().subscribe({
       next: (res) => {
-        const history = res.data?.getGiftRecommendationsHistory;
-        if (history) {
-          this.finalAnswers.set(history.answers);
-          this.answers.set(history.answers);
-          this.recommendations.set(history.recommendations);
+        const history: GiftRecommendationSet[] = res.data?.getGiftRecommendationsHistory || [];
+        console.log('history loaded:', history);
+        this.recommendationHistory.set(history);
+
+        if (history.length > 0 && this.recommendations().length === 0) {
+          const latest = history[0];
+          console.log('loading latest session:', latest);
+
+          this.finalAnswers.set(latest.answers);
+          this.answers.set(latest.answers);
+          this.recommendations.set(latest.recommendations);
           this.isCompleted.set(true);
           this.showGuestBlur.set(false);
+          this.showHistory.set(true);
         }
+        this.isHistoryLoading.set(false);
       },
       error: (err) => {
         console.error('History load failed', err);

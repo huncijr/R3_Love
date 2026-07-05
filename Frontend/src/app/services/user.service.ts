@@ -93,6 +93,7 @@ const GET_GIFT_RECOMMENDATIONS_HISTORY = gql`
         }
       }
       createdAt
+      updatedAt
     }
   }
 `;

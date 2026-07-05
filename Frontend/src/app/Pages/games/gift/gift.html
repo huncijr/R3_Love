@@ -1,425 +1,608 @@
 <div class="min-h-screen bg-linear-to-br from-primary via-secondary to-input py-8 px-5">
-  <div class="max-w-2xl mx-auto border border-border rounded-xl bg-background mt-2">
-    <div class="text-center mb-8 animate-fade-in-up">
+  @if (isHistoryLoading()) {
+    <div class="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
       <div
-        class="inline-flex items-center gap-2 bg-primary-main/10 text-primary-dark mt-3 px-4 py-2 rounded-full text-sm font-medium mb-4"
-      >
-        <lucide-icon name="gift" class="w-4 h-4 text-white"></lucide-icon>
-        Gift Finder
-      </div>
-      <h1 class="text-3xl font-bold text-neutral-text mb-2">Find the Perfect Gift</h1>
-      <p class="text-muted">Answer a few questions and let we help you choose!</p>
+        class="w-12 h-12 rounded-full border-4 border-primary-light border-t-primary-main animate-spin"
+      ></div>
     </div>
-    @if (errorMessage()) {
+  }
+  @if (showHistory() && hasAnyRecommendations()) {
+    <button
+      (click)="restart()"
+      class="w-full mb-6 p-6 rounded-2xl border-2 border-dashed border-primary-main bg-primary-light/10 hover:bg-primary-light/30 transition-all group"
+    >
+      <div class="flex flex-col items-center gap-3">
+        <lucide-icon
+          name="gift"
+          class="w-12 h-12 text-primary-main group-hover:scale-110 transition-transform"
+        ></lucide-icon>
+        <span class="text-lg font-medium BBH-Bogle treacking-wider text-neutral-text"
+          >Generate new gift ideas</span
+        >
+      </div>
+    </button>
+
+    <div hlmCard class="bg-white/90 border-2 border-primary-light shadow-xl">
+      <div hlmCardHeader class="text-center">
+        <h2 hlmCardTitle class="text-2xl BBH-Bogle tracking-wider">Your Gift Session</h2>
+      </div>
+      <div hlmCardContent>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          @for (set of recommendationHistory(); track set.id; let i = $index) {
+            <button
+              type="button"
+              class="relative text-left p-4 rounded-xl border border-primary-light/50 bg-primary-light/10 hover:bg-primary-light/30 transition-all"
+              (click)="openHistorySet(set)"
+            >
+              <div
+                class="absolute top-3 right-3 text-primary-light group-hover:text-primary-main transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 21s-4-3.5-4-7a3 3 0 0 1 6 0c0 3.5-4 7-4 7z" fill="currentColor" />
+                  <path d="M12 21s4-3.5 4-7a3 3 0 0 0-6 0c0 3.5 4 7 4 7z" fill="currentColor" />
+                  <path d="M12 14v-3" />
+                  <path d="M12 8l-2-2" />
+                  <path d="M12 8l2-2" />
+                </svg>
+              </div>
+              <div class="flex items-center gap-3">
+                <lucide-icon name="gift" class="w-6 h-6 text-primary-main"></lucide-icon>
+                <div>
+                  <h3 class="font-semibold text-neutral-tex Tauri">Session {{ i + 1 }}</h3>
+                  <p class="text-xs text-muted Nunito-sans">{{ set.createdAt | date: 'medium' }}</p>
+                </div>
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+    @if (selectedHistorySet(); as set) {
       <div
-        hlmCard
-        class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-sm animate-ease-in-reveal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black-/40 backdrop-blur-sm p-4"
+        (click)="closeHistory()"
       >
         <div
-          class="bg-white border-2 border-primary-main rounded-2xl shadow-2xl p-8 max-w-md mx-4 text-center space-y-4"
+          hlmCard
+          class="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white/95 border-2 border-primary-light shadow-2xl rounded-2xl p-6"
+          (click)="$event.stopPropagation()"
         >
-          <div class="w-16 h-17 rounded-full bg-red-100 flex items-center justify-center mx-auto">
-            <lucide-icon name="alert-circle" class="w-8 h-8 text-red-500"></lucide-icon>
-          </div>
-          <h3 class="text-xl font-bold text-neutral-text">Oops!</h3>
-          <p class="text-muted">{{ errorMessage() }}</p>
-          <button hlmBtn class="w-full gap-2" (click)="restart()">
-            <lucide-icon name="rotate-ccw" class="w-5 h-5"> </lucide-icon>
-            Try Again !
+          <button
+            type="button"
+            class="absolute top-4 right-4 p-2 rounded-full bg-primary-light/30 text-primary-main hover:bg-primary-light/50 transition-colors"
+            (click)="closeHistory()"
+          >
+            <lucide-icon name="X" class="w-6 h-6"></lucide-icon>
           </button>
+          <div hlmCardContent class="space-y-6">
+            <div class="relative flex items-center justify-center gap-4">
+              <button
+                type="button"
+                class="p-3 rounded-full bg-white shadow-lg border border-primary-light text-primary-main hover:bg-primary-light/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                (click)="previousSelectedRecommendation()"
+                [disabled]="selectedRecIndex() === 0"
+              >
+                <lucide-icon name="arrow-left" class="w-6 h-6"></lucide-icon>
+              </button>
+
+              <section
+                hlmCard
+                class="bg-white/90 backdrop-blur-md border-2 border-primary-light shadow-xl w-full max-w-lg overflow-hidden"
+              >
+                <div hlmCardHeader class="pb-2 text-center">
+                  <h3 hlmCardTitle class="text-xl text-primary-dark Tauri">
+                    {{ selectedRecommendation()?.title }}
+                  </h3>
+                  <div class="flex justify-center mt-2">
+                    <span hlmBadge variant="outline" class="text-base px-3 py-1">
+                      {{ selectedRecommendation()?.priceRange }}
+                    </span>
+                  </div>
+                </div>
+
+                <div hlmCardContent class="space-y-4">
+                  <p class="text-muted text-center Nunito-sans">
+                    {{ selectedRecommendation()?.description }}
+                  </p>
+                  <p class="text-sm text-muted bg-primary-light/20 p-3 rounded-lg Nunito-sans">
+                    <strong>Why is this gift?</strong> {{ selectedRecommendation()?.reason }}
+                  </p>
+                </div>
+              </section>
+
+              <button
+                type="button"
+                class="p-3 rounded-full bg-white shadow-lg border border-primary-light text-primary-main hover:bg-primary-light/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                (click)="nextSelectedRecommendation()"
+                [disabled]="
+                  selectedRecIndex() === (selectedHistorySet()?.recommendations?.length || 0) - 1
+                "
+              >
+                <lucide-icon name="arrow-right" class="w-6 h-6"></lucide-icon>
+              </button>
+            </div>
+
+            <div class="flex justify-center gap-2 mt-4">
+              @for (rec of selectedHistorySet()?.recommendations; track rec.title; let i = $index) {
+                <button
+                  type="button"
+                  class="w-2.5 h-2.5 rounded-full transition-all"
+                  [class.bg-primary-main]="i === selectedRecIndex()"
+                  [class.bg-primary-light]="i !== selectedRecIndex()"
+                  [class.scale-125]="i === selectedRecIndex()"
+                  (click)="selectedRecIndex.set(i)"
+                ></button>
+              }
+            </div>
+          </div>
         </div>
       </div>
     }
-    @if (isCompleted()) {
-      @if (showGuestBlur()) {
+  } @else if (!isHistoryLoading()) {
+    <div class="max-w-2xl mx-auto border border-border rounded-xl bg-background mt-2">
+      <div class="text-center mb-8 animate-fade-in-up">
         <div
-          class="fixed inset-0 z-50 flex flex-col items-center justify-center rounded-2xl backdrop-blur-md p-6 text-center"
+          class="inline-flex items-center gap-2 bg-primary-main/10 text-primary-dark mt-3 px-4 py-2 rounded-full text-sm font-medium mb-4"
+        >
+          <lucide-icon name="gift" class="w-4 h-4 text-white"></lucide-icon>
+          Gift Finder
+        </div>
+        <h1 class="text-3xl font-bold text-neutral-text mb-2 Tauri">Find the Perfect Gift</h1>
+        <p class="text-muted">Answer a few questions and let we help you choose!</p>
+      </div>
+      @if (errorMessage()) {
+        <div
+          hlmCard
+          class="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-sm animate-ease-in-reveal"
         >
           <div
-            hlmCard
-            class="max-w-md w-full bg-white border-2 border-primary-light rounded-2xl p-8 text-center space-y-5"
+            class="bg-white border-2 border-primary-main rounded-2xl shadow-2xl p-8 max-w-md mx-4 text-center space-y-4"
           >
-            <div
-              class="w-16 h-16 rounded-full bg-primary-light/30 flex items-center justify-center mx-auto"
-            >
-              <lucide-icon name="gift" class="w-8 h-8 text-primary-main"></lucide-icon>
+            <div class="w-16 h-17 rounded-full bg-red-100 flex items-center justify-center mx-auto">
+              <lucide-icon name="alert-circle" class="w-8 h-8 text-red-500"></lucide-icon>
             </div>
-            <h3 class="text-2xl font-bold text-neutral-text mb-2">Your gift ideas are ready</h3>
-            <p class="text-neutral-muted mb-6">
-              Create an account to reveal them and save them forever.
-            </p>
-            <button
-              hlmBtn
-              class="bg-primary-main text-white px-6 py-2 rounded-full"
-              (click)="goToAccount()"
-            >
-              Create an account
+            <h3 class="text-xl font-bold text-neutral-text">Oops!</h3>
+            <p class="text-muted">{{ errorMessage() }}</p>
+            <button hlmBtn class="w-full gap-2" (click)="restart()">
+              <lucide-icon name="rotate-ccw" class="w-5 h-5"> </lucide-icon>
+              Try Again !
             </button>
           </div>
         </div>
-      }
-
-      <div
-        [class.blur-md]="showGuestBlur()"
-        class="transition-all duration-500 space-y-6 animate-ease-in-reveal"
-      >
-        <div class="text-center">
-          <lucide-icon
-            name="sparkles"
-            class="w-12 h-12 text-primary-main mx-auto mb-4"
-          ></lucide-icon>
-          <h2 class="text-2xl font-bold text-neutral-text mb-2">
-            Gift Recommendations {{ currentRecIndex() + 1 }} of {{ recommendations().length }}
-          </h2>
-        </div>
-
-        <div class="relative flex items-center justify-center gap-4">
-          <button
-            type="button"
-            class="p-3 rounded-full bg-white shadow-lg border border-primary-light text-primary-main hover:bg-primary-light/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            (click)="previousRecommendation()"
-            [disabled]="currentRecIndex() === 0 || isAnimating()"
-            aria-label="Previous recommendation"
-          >
-            <lucide-icon name="arrow-left" class="w-6 h-6"></lucide-icon>
-          </button>
-
-          <section
-            hlmCard
-            class="bg-white/90 backdrop-blur-md border-2 border-primary-light shadow-xl w-full max-w-lg overflow-hidden animate-fade-scale-in"
-          >
-            <div hlmCardHeader class="pb-2 text-center">
-              <h3 hlmCardTitle class="text-xl text-primary-dark">
-                {{ currentRecommendation().title }}
-              </h3>
-              <div class="flex justify-center mt-2">
-                <span hlmBadge variant="outline" class="text-base px-3 py-1">
-                  {{ currentRecommendation().priceRange }}
-                </span>
-              </div>
-            </div>
-
-            <div hlmCardContent class="space-y-4">
-              <p class="text-muted text-center">{{ currentRecommendation().description }}</p>
-
-              @if (hasLocationData()) {
-                <div>
-                  <h4 class="font-medium text-neutral-text mb-2">Nearby stores</h4>
-                  <ul class="space-y-2">
-                    @for (store of currentRecommendation().stores; track store.name) {
-                      <li class="text-sm text-muted flex items-start gap-2">
-                        <lucide-icon
-                          name="pin"
-                          class="w-4 h-4 text-primary-main mt-0.5"
-                        ></lucide-icon>
-                        <a
-                          [href]="getGoogleMapsSearchUrl(store)"
-                          target="_blank"
-                          class="hover:text-primary-main hover:underline"
-                        >
-                          <strong class="text-neutral-text">{{ store.name }}</strong>
-                          <br />
-                          {{ store.address }}
-                        </a>
-                      </li>
-                      <iframe
-                        [src]="getMapUrl(store.address)"
-                        width="100%"
-                        height="300"
-                        style="border: 0; border-radius: 1rem"
-                        allowfullscreen
-                        loading="lazy"
-                      ></iframe>
-                    }
-                  </ul>
-                </div>
-              }
-
-              @if (hasOnlineLinks()) {
-                <div>
-                  <h4 class="font-medium text-neutral-text mb-2">Buy online</h4>
-                  <div class="flex flex-wrap gap-2">
-                    @for (link of currentRecommendation().onlineLinks; track link) {
-                      <a
-                        [href]="link"
-                        target="_blank"
-                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary-light/30 text-primary-dark text-sm hover:bg-primary-light/50 transition-colors"
-                      >
-                        <lucide-icon name="square-arrow-out-up-right" class="w-3 h-3"></lucide-icon>
-                        <span hlmBadge variant="secondary" class="text-xs">{{
-                          getDomainFromUrl(link)
-                        }}</span>
-                      </a>
-                    }
-                  </div>
-                </div>
-              }
-
-              <p class="text-sm text-muted bg-primary-light/20 p-3 rounded-lg">
-                <strong>Why is this gift?</strong> {{ currentRecommendation().reason }}
-              </p>
-            </div>
-          </section>
-
-          <button
-            type="button"
-            class="p-3 rounded-full bg-white shadow-lg border border-primary-light text-primary-main hover:bg-primary-light/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            (click)="nextRecommendation()"
-            [disabled]="currentRecIndex() === recommendations().length - 1 || isAnimating()"
-            aria-label="Next recommendation"
-          >
-            <lucide-icon name="arrow-right" class="w-6 h-6"></lucide-icon>
-          </button>
-        </div>
-
-        <div class="flex justify-center gap-2 mb-4">
-          @for (rec of recommendations(); track rec.title; let i = $index) {
-            <button
-              type="button"
-              class="w-2.5 h-2.5 rounded-full transition-all"
-              [class.bg-primary-main]="i === currentRecIndex()"
-              [class.bg-primary-light]="i !== currentRecIndex()"
-              [class.scale-125]="i === currentRecIndex()"
-              (click)="goToRecommendation(i)"
-              [attr.aria-label]="'Go to recommendation ' + (i + 1)"
-            ></button>
-          }
-        </div>
-
-        @if (currentRecIndex() === recommendations().length - 1) {
-          <button hlmBtn class="w-full gap-2">
-            <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
-            Continue
-          </button>
-        }
-      </div>
-    } @else {
-      <div class="space-y-6">
-        @if (isLoadingRecommendations()) {
+      } @else if (hasAnyRecommendations()) {
+        @if (showGuestBlur()) {
           <div
-            class="flex flex-col items-center justify-center py-16 space-y-6 animate-ease-in-reveal"
+            class="fixed inset-0 z-50 flex flex-col items-center justify-center rounded-2xl backdrop-blur-md p-6 text-center"
           >
             <div
-              class="w-12 h-12 rounded-full border-4 border-primary-light border-t-primary-main animate-spin"
-            ></div>
-            <div class="space-y-2 text-center">
-              <p class="text-lg font-medium text-neutral-text">{{ loadingMessage() }}</p>
-              <div class="w-64 bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div
-                  class="bg-primary-main h-full rounded-full transition-all duration-100"
-                  [style.width.%]="loadingProgress()"
-                ></div>
+              hlmCard
+              class="max-w-md w-full bg-white border-2 border-primary-light rounded-2xl p-8 text-center space-y-5"
+            >
+              <div
+                class="w-16 h-16 rounded-full bg-primary-light/30 flex items-center justify-center mx-auto"
+              >
+                <lucide-icon name="gift" class="w-8 h-8 text-primary-main"></lucide-icon>
               </div>
+              <h3 class="text-2xl font-bold text-neutral-text mb-2 Tauri">
+                Your gift ideas are ready
+              </h3>
+              <p class="text-neutral-muted mb-6 Nunito-sans">
+                Create an account to reveal them and save them forever.
+              </p>
+              <button
+                hlmBtn
+                class="bg-primary-main text-white px-6 py-2 rounded-full Nunito-sans"
+                (click)="goToAccount()"
+              >
+                Create an account
+              </button>
             </div>
           </div>
-        } @else {
-          <div class="space-y-3 mb-6">
-            <div class="flex justify-between text-xs text-muted">
-              <span class="mx-2" hlmBadge>{{ sectionName() }}</span>
-              <span class="mx-2" hlmBadge variant="destructive"
-                >Question {{ currentQuestionIndex() + 1 }}of
-                {{ allCurrentQuestions().length }}</span
-              >
-            </div>
-            <hlm-progress [value]="progressPercent()" class="h-2">
-              <span hlmProgressIndicator></span>
-            </hlm-progress>
+        }
+
+        <div
+          [class.blur-md]="showGuestBlur()"
+          class="transition-all duration-500 space-y-6 animate-ease-in-reveal"
+        >
+          <div class="text-center">
+            <lucide-icon
+              name="sparkles"
+              class="w-12 h-12 text-primary-main mx-auto mb-4"
+            ></lucide-icon>
+            <h2 class="text-2xl font-bold text-neutral-text mb-2 BBH-Bogle tracking-widest">
+              Gift Recommendations {{ currentRecIndex() + 1 }} of {{ recommendations().length }}
+            </h2>
           </div>
-          @if (showQuestionCard()) {
-            @for (key of [animationKey()]; track key) {
-              <section
-                hlmCard
-                class="bg-white/80 backdrop-blur-md border border-primary-light/50 shadow-lg"
-              >
-                <div class="animate-ease-in-reveal">
-                  <div hlmCardHeader class="pb-2">
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="w-10 h-10 rounded-xl bg-primary-light/50 flex items-center justify-center"
-                      >
-                        <lucide-icon
-                          [name]="currentQuestion().image || 'star'"
-                          class="w-5 h-5 text-primary-main"
-                        ></lucide-icon>
-                      </div>
-                      <div>
-                        <span class="text-xs text-muted uppercase tracking-wide">{{
-                          stepLabel()
-                        }}</span>
-                        <h3 hlmCardTitle class="text-lg text-neutral-text leading-tight">
-                          {{ currentQuestion().text }}
-                        </h3>
-                      </div>
+
+          <div class="relative flex items-center justify-center gap-4">
+            <button
+              type="button"
+              class="p-3 rounded-full bg-white shadow-lg border border-primary-light text-primary-main hover:bg-primary-light/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              (click)="previousRecommendation()"
+              [disabled]="currentRecIndex() === 0 || isAnimating()"
+              aria-label="Previous recommendation"
+            >
+              <lucide-icon name="arrow-left" class="w-6 h-6"></lucide-icon>
+            </button>
+
+            <section
+              hlmCard
+              class="bg-white/90 backdrop-blur-md border-2 border-primary-light shadow-xl w-full max-w-lg overflow-hidden animate-fade-scale-in"
+            >
+              <div hlmCardHeader class="pb-2 text-center">
+                <h3 hlmCardTitle class="text-xl text-primary-dark Tauri">
+                  {{ currentRecommendation().title }}
+                </h3>
+                <div class="flex justify-center mt-2">
+                  <span hlmBadge variant="outline" class="text-base px-3 py-1">
+                    {{ currentRecommendation().priceRange }}
+                  </span>
+                </div>
+              </div>
+
+              <div hlmCardContent class="space-y-4">
+                <p class="text-muted text-center Nunito-sans">
+                  {{ currentRecommendation().description }}
+                </p>
+
+                @if (hasLocationData()) {
+                  <div>
+                    <h4 class="font-medium text-neutral-text mb-2 BBH-Bogle tracking-widest">
+                      Nearby stores
+                    </h4>
+                    <ul class="space-y-2">
+                      @for (store of currentRecommendation().stores; track store.name) {
+                        <li class="text-sm text-muted flex items-start gap-2 Nunito-sans">
+                          <lucide-icon
+                            name="pin"
+                            class="w-4 h-4 text-primary-main mt-0.5"
+                          ></lucide-icon>
+                          <a
+                            [href]="getGoogleMapsSearchUrl(store)"
+                            target="_blank"
+                            class="hover:text-primary-main hover:underline"
+                          >
+                            <strong class="text-neutral-text">{{ store.name }}</strong>
+                            <br />
+                            {{ store.address }}
+                          </a>
+                        </li>
+                        <iframe
+                          [src]="getMapUrl(store.address)"
+                          width="100%"
+                          height="300"
+                          style="border: 0; border-radius: 1rem"
+                          allowfullscreen
+                          loading="lazy"
+                        ></iframe>
+                      }
+                    </ul>
+                  </div>
+                }
+
+                @if (hasOnlineLinks()) {
+                  <div>
+                    <h4
+                      class="font-medium text-neutral-text text-lg tracking-wider mb-2 BBH-Bogle tracking-wider"
+                    >
+                      Buy online
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                      @for (link of currentRecommendation().onlineLinks; track link) {
+                        <a
+                          [href]="link"
+                          target="_blank"
+                          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary-light/30 text-primary-dark text-sm hover:bg-primary-light/50 transition-colors"
+                        >
+                          <lucide-icon
+                            name="square-arrow-out-up-right"
+                            class="w-3 h-3"
+                          ></lucide-icon>
+                          <span hlmBadge variant="secondary" class="text-xs">{{
+                            getDomainFromUrl(link)
+                          }}</span>
+                        </a>
+                      }
                     </div>
                   </div>
-                  <div hlmCardContent class="pt-4">
-                    @if (currentQuestion().type === 'text' || currentQuestion().type === 'number') {
-                      <div class="space-y-2">
-                        <label hlmLabel>{{ currentQuestion().placeholder || 'Your answer' }}</label>
-                        <input
-                          hlmInput
-                          [type]="currentQuestion().type"
-                          [ngModel]="getAnswerValue(currentQuestion().id)"
-                          (ngModelChange)="setAnswer($event)"
-                          class="w-full"
-                          (keydown)="onEnterKey($event)"
-                          [placeholder]="currentQuestion().placeholder || ''"
-                        />
-                        <button
-                          hlmBtn
-                          class="w-full gap-2"
-                          (click)="next()"
-                          [disabled]="!canProceed()"
+                }
+
+                <p class="text-sm text-muted bg-primary-light/20 p-3 rounded-lg Nunito-sans">
+                  <strong>Why is this gift?</strong> {{ currentRecommendation().reason }}
+                </p>
+              </div>
+            </section>
+
+            <button
+              type="button"
+              class="p-3 rounded-full bg-white shadow-lg border border-primary-light text-primary-main hover:bg-primary-light/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              (click)="nextRecommendation()"
+              [disabled]="currentRecIndex() === recommendations().length - 1 || isAnimating()"
+              aria-label="Next recommendation"
+            >
+              <lucide-icon name="arrow-right" class="w-6 h-6"></lucide-icon>
+            </button>
+          </div>
+
+          <div class="flex justify-center gap-2 mb-4">
+            @for (rec of recommendations(); track rec.title; let i = $index) {
+              <button
+                type="button"
+                class="w-2.5 h-2.5 rounded-full transition-all"
+                [class.bg-primary-main]="i === currentRecIndex()"
+                [class.bg-primary-light]="i !== currentRecIndex()"
+                [class.scale-125]="i === currentRecIndex()"
+                (click)="goToRecommendation(i)"
+                [attr.aria-label]="'Go to recommendation ' + (i + 1)"
+              ></button>
+            }
+          </div>
+
+          @if (currentRecIndex() === recommendations().length - 1) {
+            <button hlmBtn class="w-full gap-2 Nunito-sans" (click)="continueToHistory()">
+              <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
+              Continue
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="space-y-6">
+          @if (isLoadingRecommendations()) {
+            <div
+              class="flex flex-col items-center justify-center py-16 space-y-6 animate-ease-in-reveal"
+            >
+              <div class="space-y-2 text-center">
+                <p class="text-lg font-medium text-neutral-text Nunito-sans">
+                  {{ loadingMessage() }}
+                </p>
+                <div class="w-64 bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    class="bg-primary-main h-full rounded-full transition-all duration-100"
+                    [style.width.%]="loadingProgress()"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="space-y-3 mb-6">
+              <div class="flex justify-between text-xs text-muted">
+                <span class="mx-2" hlmBadge>{{ sectionName() }}</span>
+                <span class="mx-2" hlmBadge variant="destructive"
+                  >Question {{ currentQuestionIndex() + 1 }}of
+                  {{ allCurrentQuestions().length }}</span
+                >
+              </div>
+              <hlm-progress [value]="progressPercent()" class="h-2">
+                <span hlmProgressIndicator></span>
+              </hlm-progress>
+            </div>
+            @if (showQuestionCard()) {
+              @for (key of [animationKey()]; track key) {
+                <section
+                  hlmCard
+                  class="bg-white/80 backdrop-blur-md border border-primary-light/50 shadow-lg"
+                >
+                  <div class="animate-ease-in-reveal">
+                    <div hlmCardHeader class="pb-2">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-10 h-10 rounded-xl bg-primary-light/50 flex items-center justify-center"
                         >
-                          Continue
-                          <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
-                        </button>
-                      </div>
-                    }
-                    @if (currentQuestion().type === 'select') {
-                      <div class="space-y-2">
-                        <hlm-select
-                          [ngModel]="getAnswerValue(currentQuestion().id)"
-                          (ngModelChange)="onAnswerSelected($event)"
-                        >
-                          <hlm-select-trigger class="w-full">
-                            <hlm-select-value
-                              [placeholder]="currentQuestion().placeholder || 'Select an option'"
-                            />
-                          </hlm-select-trigger>
-                          <hlm-select-content>
-                            @for (opt of currentQuestion().options; track opt) {
-                              <hlm-select-item [value]="opt">{{ opt }}</hlm-select-item>
-                            }
-                          </hlm-select-content>
-                        </hlm-select>
-                      </div>
-                    }
-                    @if (currentQuestion().type === 'radio') {
-                      <div class="space-y-2">
-                        @for (opt of currentQuestion().options; track opt) {
-                          <label
-                            class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                          <lucide-icon
+                            [name]="currentQuestion().image || 'star'"
+                            class="w-5 h-5 text-primary-main"
+                          ></lucide-icon>
+                        </div>
+                        <div>
+                          <span class="text-xs text-muted uppercase tracking-wide Nunito-sans">{{
+                            stepLabel()
+                          }}</span>
+                          <h3
+                            hlmCardTitle
+                            class="text-lg text-neutral-text leading-tight Tauri font-bold"
                           >
-                            <input
-                              type="radio"
-                              [name]="currentQuestion().id"
-                              [value]="opt"
-                              [checked]="getAnswerValue(currentQuestion().id) === opt"
-                              (change)="onAnswerSelected(opt)"
-                              class="w-4 h-4 accent-primary-main"
-                            />
-                            <span class="text-sm text-neutral-text">{{ opt }}</span>
-                          </label>
-                        }
+                            {{ currentQuestion().text }}
+                          </h3>
+                        </div>
                       </div>
-                    }
-                    @if (currentQuestion().type === 'text_with_options') {
-                      <div class="space-y-3">
-                        @for (opt of currentQuestion().options; track opt) {
-                          <label
-                            class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
-                            [class.bg-primary-light]="getAnswerValue(currentQuestion().id) === opt"
-                            [class.border-ring]="getAnswerValue(currentQuestion().id) === opt"
-                          >
-                            <input
-                              type="radio"
-                              [name]="currentQuestion().id"
-                              [value]="opt"
-                              [checked]="getAnswerValue(currentQuestion().id) === opt"
-                              (change)="onAnswerSelected(opt)"
-                              class="w-4 h-4 accent-primary-main"
-                            />
-                            <span class="text-sm text-neutral-text">{{ opt }}</span>
-                          </label>
-                        }
-                        <label
-                          class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
-                        >
-                          <input
-                            type="radio"
-                            [name]="currentQuestion().id"
-                            value="__other__"
-                            [checked]="showCustomInput()"
-                            (change)="showCustomInput.set(true)"
-                            class="w-4 h-4 accent-primary-main"
-                          />
-                          <span class="text-sm text-neutral-text">Other</span>
-                        </label>
-                        @if (showCustomInput()) {
+                    </div>
+                    <div hlmCardContent class="pt-4">
+                      @if (
+                        currentQuestion().type === 'text' || currentQuestion().type === 'number'
+                      ) {
+                        <div class="space-y-2">
+                          <label hlmLabel class="Nunito-sans tracking-wider">{{
+                            currentQuestion().placeholder || 'Your answer'
+                          }}</label>
                           <input
                             hlmInput
-                            type="text"
-                            [ngModel]="customValue()"
-                            (ngModelChange)="customValue.set($event)"
-                            (keydown)="onCustomEnter($event)"
+                            [type]="currentQuestion().type"
+                            [ngModel]="getAnswerValue(currentQuestion().id)"
+                            (ngModelChange)="setAnswer($event)"
                             class="w-full"
-                            [placeholder]="currentQuestion().placeholder || 'Your answer'"
+                            (keydown)="onEnterKey($event)"
+                            [placeholder]="currentQuestion().placeholder || ''"
+                            [attr.maxlength]="currentQuestion().type === 'number' ? undefined : 100"
                           />
+                          @if (validationError()) {
+                            <p class="text-sm text-red-500">{{ validationError() }}</p>
+                          }
                           <button
                             hlmBtn
-                            class="w-full"
-                            (click)="submitCustom()"
-                            [disabled]="!customValue().trim()"
+                            class="w-full gap-2 Nunito-sans"
+                            (click)="next()"
+                            [disabled]="!canProceed()"
                           >
                             Continue
+                            <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
                           </button>
-                        }
-                      </div>
-                    }
+                        </div>
+                      }
+                      @if (currentQuestion().type === 'select') {
+                        <div class="space-y-2">
+                          <hlm-select
+                            [ngModel]="getAnswerValue(currentQuestion().id)"
+                            (ngModelChange)="onAnswerSelected($event)"
+                          >
+                            <hlm-select-trigger class="w-full">
+                              <hlm-select-value
+                                [placeholder]="currentQuestion().placeholder || 'Select an option'"
+                              />
+                            </hlm-select-trigger>
+                            <hlm-select-content>
+                              @for (opt of currentQuestion().options; track opt) {
+                                <hlm-select-item [value]="opt" class="Nunito-sans">{{
+                                  opt
+                                }}</hlm-select-item>
+                              }
+                            </hlm-select-content>
+                          </hlm-select>
+                        </div>
+                      }
+                      @if (currentQuestion().type === 'radio') {
+                        <div class="space-y-2">
+                          @for (opt of currentQuestion().options; track opt) {
+                            <label
+                              class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                            >
+                              <input
+                                type="radio"
+                                [name]="currentQuestion().id"
+                                [value]="opt"
+                                [checked]="getAnswerValue(currentQuestion().id) === opt"
+                                (change)="onAnswerSelected(opt)"
+                                class="w-4 h-4 accent-primary-main"
+                              />
+                              <span class="text-sm text-neutral-text Nunito-sans">{{ opt }}</span>
+                            </label>
+                          }
+                        </div>
+                      }
+                      @if (currentQuestion().type === 'text_with_options') {
+                        <div class="space-y-3">
+                          @for (opt of currentQuestion().options; track opt) {
+                            <label
+                              class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                              [class.bg-primary-light]="
+                                getAnswerValue(currentQuestion().id) === opt
+                              "
+                              [class.border-ring]="getAnswerValue(currentQuestion().id) === opt"
+                            >
+                              <input
+                                type="radio"
+                                [name]="currentQuestion().id"
+                                [value]="opt"
+                                [checked]="getAnswerValue(currentQuestion().id) === opt"
+                                (change)="onAnswerSelected(opt)"
+                                class="w-4 h-4 accent-primary-main"
+                              />
+                              <span class="text-sm text-neutral-text">{{ opt }}</span>
+                            </label>
+                          }
+                          <label
+                            class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
+                          >
+                            <input
+                              type="radio"
+                              [name]="currentQuestion().id"
+                              value="__other__"
+                              [checked]="showCustomInput()"
+                              (change)="showCustomInput.set(true)"
+                              class="w-4 h-4 accent-primary-main"
+                            />
+                            <span class="text-sm text-neutral-text Nunito-sans">Other</span>
+                          </label>
+                          @if (showCustomInput()) {
+                            <input
+                              hlmInput
+                              type="text"
+                              [ngModel]="customValue()"
+                              (ngModelChange)="customValue.set($event)"
+                              (keydown)="onCustomEnter($event)"
+                              class="w-full"
+                              [placeholder]="currentQuestion().placeholder || 'Your answer'"
+                              maxlength="100"
+                            />
+                            @if (validationError()) {
+                              <p class="text-sm text-red-500">{{ validationError() }}</p>
+                            }
+                            <button
+                              hlmBtn
+                              class="w-full Nunito-sans"
+                              (click)="submitCustom()"
+                              [disabled]="!customValue().trim()"
+                            >
+                              Continue
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
                   </div>
+                </section>
+              }
+            }
+            @if (isLocationPhase()) {
+              <section
+                hlmCard
+                class="bg-white/80 backdrop-blur-md border border-primary-light/50 shados-lg animate-ease-in-reveal"
+              >
+                <div hlmCardHeader class="pb-2">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-10 rounded-xl bg-primary-light/50 flex items-center justify-center"
+                    >
+                      <lucide-icon name="pin" class="w-5 h-5 text-primary-main"></lucide-icon>
+                    </div>
+                    <div>
+                      <span class="text-xs text-muted uppercase tracking-wide Nunito-sans"
+                        >Location</span
+                      >
+                      <h3 hlmCardTitle class="text-lg text-neutral-text leading-tight Tauri">
+                        Where are you from?
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div hlmCardContent class="pt-4 space-y-4">
+                  <p class="text-muted Nunito-sans">
+                    This helps us show nearby stores where you can buy the gift.
+                  </p>
+                  <select
+                    [(ngModel)]="selectedCountry"
+                    (ngModelChange)="selectedCountry.set($event)"
+                    class="w-full p-3 rounded-lg border border-border bg-white"
+                  >
+                    <option value="">Prefer not to say</option>
+                    @for (country of countries; track country.code) {
+                      <option [value]="country.code">
+                        @if (selectedCountry()) {
+                          <span class="fi fi-{{ selectedCountry() | lowercase }}"></span>
+                        }
+                        {{ country.name }}
+                      </option>
+                    }
+                  </select>
+                  <button hlmBtn class="w-full gap-2 Nunito-sans" (click)="finishLocationPhase()">
+                    <lucide-icon name="sparkles" class="w-4 h-4"></lucide-icon>
+                    See recommendations
+                  </button>
                 </div>
               </section>
             }
           }
-          @if (isLocationPhase()) {
-            <section
-              hlmCard
-              class="bg-white/80 backdrop-blur-md border border-primary-light/50 shados-lg animate-ease-in-reveal"
-            >
-              <div hlmCardHeader class="pb-2">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-xl bg-primary-light/50 flex items-center justify-center"
-                  >
-                    <lucide-icon name="pin" class="w-5 h-5 text-primary-main"></lucide-icon>
-                  </div>
-                  <div>
-                    <span class="text-xs text-muted uppercase tracking-wide">Location</span>
-                    <h3 hlmCardTitle class="text-lg text-neutral-text leading-tight">
-                      Where are you from?
-                    </h3>
-                  </div>
-                </div>
-              </div>
-              <div hlmCardContent class="pt-4 space-y-4">
-                <p class="text-muted">
-                  This helps us show nearby stores where you can buy the gift.
-                </p>
-                <select
-                  [(ngModel)]="selectedCountry"
-                  (ngModelChange)="selectedCountry.set($event)"
-                  class="w-full p-3 rounded-lg border border-border bg-white"
-                >
-                  <option value="">Prefer not to say</option>
-                  @for (country of countries; track country.code) {
-                    <option [value]="country.code">
-                      @if (selectedCountry()) {
-                        <span class="fi fi-{{ selectedCountry() | lowercase }}"></span>
-                      }
-                      {{ country.name }}
-                    </option>
-                  }
-                </select>
-                <button hlmBtn class="w-full gap-2" (click)="finishLocationPhase()">
-                  <lucide-icon name="sparkles" class="w-4 h-4"></lucide-icon>
-                  See recommendations
-                </button>
-              </div>
-            </section>
-          }
-        }
-      </div>
-    }
-  </div>
+        </div>
+      }
+    </div>
+  }
 </div>

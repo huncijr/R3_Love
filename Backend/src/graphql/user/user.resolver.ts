@@ -124,9 +124,8 @@ export const userResolver = {
           .select()
           .from(giftRecommendations)
           .where(eq(giftRecommendations.userId, userId))
-          .orderBy(desc(giftRecommendations.createdAt))
-          .limit(1);
-        return rows[0] || null;
+          .orderBy(desc(giftRecommendations.createdAt));
+        return rows;
       } catch (error) {
         errorHandler(error);
       }
@@ -342,9 +341,6 @@ export const userResolver = {
     ) => {
       const userId = getUserIdFromContext(context.token);
       try {
-        await db
-          .delete(giftRecommendations)
-          .where(eq(giftRecommendations.userId, userId));
         const [saved] = await db
           .insert(giftRecommendations)
           .values({
