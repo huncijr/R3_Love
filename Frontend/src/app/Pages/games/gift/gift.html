@@ -9,29 +9,67 @@
   @if (showHistory() && hasAnyRecommendations()) {
     <button
       (click)="restart()"
-      class="w-full mb-6 p-6 rounded-2xl border-2 border-dashed border-primary-main bg-primary-light/10 hover:bg-primary-light/30 transition-all group"
+      class="animate-fade-in-soft cursor-pointer relative w-full mb-6 min-h-[160px] rounded-2xl border-2 border-dashed border-primary-main bg-primary-light/10 hover:bg-primary-light/30 transition-all group overflow-hidden"
     >
-      <div class="flex flex-col items-center gap-3">
-        <lucide-icon
-          name="gift"
-          class="w-12 h-12 text-primary-main group-hover:scale-110 transition-transform"
-        ></lucide-icon>
-        <span class="text-lg font-medium BBH-Bogle treacking-wider text-neutral-text"
-          >Generate new gift ideas</span
+      <svg
+        viewBox="0 0 120 120"
+        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-50 opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-500"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect x="10" y="30" width="100" height="25" rx="3" fill="#dc2626" />
+        <rect x="10" y="30" width="100" height="5" rx="2" fill="#b91c1c" opacity="0.3" />
+        <rect x="10" y="52" width="100" height="58" rx="3" fill="#ef4444" />
+        <rect x="53" y="30" width="14" height="80" rx="1" fill="#facc15" />
+        <rect x="10" y="75" width="100" height="12" rx="1" fill="#facc15" />
+        <rect x="53" y="30" width="14" height="80" rx="1" fill="url(#ribbonShadow)" opacity="0.2" />
+        <path
+          d="M50 32 C30 10, 10 20, 15 35 C20 48, 45 38, 50 32 Z"
+          fill="#facc15"
+          stroke="#eab308"
+          stroke-width="1"
+        />
+        <path
+          d="M70 32 C90 10, 110 20, 105 35 C100 48, 75 38, 70 32 Z"
+          fill="#facc15"
+          stroke="#eab308"
+          stroke-width="1"
+        />
+        <rect x="54" y="26" width="12" height="12" rx="4" fill="#fde047" />
+        <defs>
+          <linearGradient id="ribbonShadow" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#000" stop-opacity="0.1" />
+            <stop offset="100%" stop-color="#000" stop-opacity="0.3" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <!-- Szöveg -->
+      <div class="relative z-10 flex flex-col items-center justify-center h-full gap-2 py-8">
+        <span
+          class="text-2xl font-bold BBH-Bogle tracking-widest text-neutral-text/60 group-hover:text-neutral-text/90 drop-shadow-sm group-hover:scale-105 transition-all duration-500"
         >
+          Generate new gift ideas
+        </span>
+        <span
+          class="text-sm text-muted Nunito-sans group-hover:scale-105 transition-all duration-500"
+        >
+          Click to start a new gift finder session
+        </span>
       </div>
     </button>
 
-    <div hlmCard class="bg-white/90 border-2 border-primary-light shadow-xl">
+    <div hlmCard class="bg-white/90 border-2 border-primary-light shadow-xl animate-fade-in-delay">
       <div hlmCardHeader class="text-center">
-        <h2 hlmCardTitle class="text-2xl BBH-Bogle tracking-wider">Your Gift Session</h2>
+        <h2 hlmCardTitle class="text-2xl BBH-Bogle tracking-wider animate-fade-in-slow">
+          Your Gift Session
+        </h2>
       </div>
       <div hlmCardContent>
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
           @for (set of recommendationHistory(); track set.id; let i = $index) {
             <button
               type="button"
-              class="relative text-left p-4 rounded-xl border border-primary-light/50 bg-primary-light/10 hover:bg-primary-light/30 transition-all"
+              class="cursor-pointer relative text-left p-5 rounded-2xl border-2 border-primary-light bg-white/80 hover:bg-primary-light/20 hover:border-primary-main hover:shadow-lg hover:-translate-y-1 transition-all group overflow-hidden"
               (click)="openHistorySet(set)"
             >
               <div
@@ -42,24 +80,33 @@
                   width="28"
                   height="28"
                   viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  fill="currentColor"
+                  stroke="none"
                 >
-                  <path d="M12 21s-4-3.5-4-7a3 3 0 0 1 6 0c0 3.5-4 7-4 7z" fill="currentColor" />
-                  <path d="M12 21s4-3.5 4-7a3 3 0 0 0-6 0c0 3.5 4 7 4 7z" fill="currentColor" />
-                  <path d="M12 14v-3" />
-                  <path d="M12 8l-2-2" />
-                  <path d="M12 8l2-2" />
+                  <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  />
                 </svg>
               </div>
-              <div class="flex items-center gap-3">
-                <lucide-icon name="gift" class="w-6 h-6 text-primary-main"></lucide-icon>
-                <div>
-                  <h3 class="font-semibold text-neutral-tex Tauri">Session {{ i + 1 }}</h3>
-                  <p class="text-xs text-muted Nunito-sans">{{ set.createdAt | date: 'medium' }}</p>
+
+              <div class="flex items-start gap-3 pr-8">
+                <div
+                  class="w-12 h-12 rounded-xl bg-primary-light/40 flex items-center justify-center shrink-0"
+                >
+                  <lucide-icon name="gift" class="w-6 h-6 text-primary-main"></lucide-icon>
+                </div>
+                <div class="min-w-0">
+                  <h3 class="font-bold text-neutral-text Tauri text-lg">Session {{ i + 1 }}</h3>
+                  <p class="text-xs text-muted Nunito-sans mb-2">
+                    {{ set.createdAt | date: 'medium' }}
+                  </p>
+                  <p class="text-sm text-neutral-text font-medium truncate Nunito-sans">
+                    {{ set.recommendations[0]?.title || 'No title' }}
+                  </p>
+                  <p class="text-xs text-primary-dark line-clamp-2 Nunito-sans mt-2">
+                    <strong>Why this gift?</strong>
+                    {{ set.recommendations[0]?.reason || 'No reason available' }}
+                  </p>
                 </div>
               </div>
             </button>
@@ -69,7 +116,7 @@
     </div>
     @if (selectedHistorySet(); as set) {
       <div
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black-/40 backdrop-blur-sm p-4"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-ease-in-reveal"
         (click)="closeHistory()"
       >
         <div
@@ -82,8 +129,14 @@
             class="absolute top-4 right-4 p-2 rounded-full bg-primary-light/30 text-primary-main hover:bg-primary-light/50 transition-colors"
             (click)="closeHistory()"
           >
-            <lucide-icon name="X" class="w-6 h-6"></lucide-icon>
+            <lucide-icon name="x" class="w-5 h-5 cursor-pointer"></lucide-icon>
           </button>
+
+          <div hlmCardHeader class="text-center pb-2">
+            <h2 hlmCardTitle class="text-2xl BBH-Bogle tracking-wider">Session Details</h2>
+            <p class="text-sm text-muted Nunito-sans">{{ set.createdAt | date: 'medium' }}</p>
+          </div>
+
           <div hlmCardContent class="space-y-6">
             <div class="relative flex items-center justify-center gap-4">
               <button
@@ -92,7 +145,7 @@
                 (click)="previousSelectedRecommendation()"
                 [disabled]="selectedRecIndex() === 0"
               >
-                <lucide-icon name="arrow-left" class="w-6 h-6"></lucide-icon>
+                <lucide-icon name="arrow-left" class="w-6 h-6 cursor-pointer"></lucide-icon>
               </button>
 
               <section
@@ -114,6 +167,67 @@
                   <p class="text-muted text-center Nunito-sans">
                     {{ selectedRecommendation()?.description }}
                   </p>
+
+                  @if (selectedHasLocationData()) {
+                    <div>
+                      <h4 class="font-medium text-neutral-text mb-2 BBH-Bogle tracking-widest">
+                        Nearby stores
+                      </h4>
+                      <ul class="space-y-3">
+                        @for (store of selectedRecommendation()?.stores; track store.name) {
+                          <li class="text-sm text-muted flex items-start gap-2 Nunito-sans">
+                            <lucide-icon
+                              name="pin"
+                              class="w-4 h-4 text-primary-main mt-0.5"
+                            ></lucide-icon>
+                            <a
+                              [href]="getGoogleMapsSearchUrl(store)"
+                              target="_blank"
+                              class="hover:text-primary-main hover:underline"
+                            >
+                              <strong class="text-neutral-text">{{ store.name }}</strong
+                              ><br />
+                              {{ store.address }}
+                            </a>
+                          </li>
+                          <iframe
+                            [src]="getMapUrl(store.address)"
+                            width="100%"
+                            height="300"
+                            style="border: 0; border-radius: 1rem"
+                            allowfullscreen
+                            loading="lazy"
+                          ></iframe>
+                        }
+                      </ul>
+                    </div>
+                  }
+                  @if (selectedHasOnlineLinks()) {
+                    <div>
+                      <h4
+                        class="font-medium text-neutral-text text-lg tracking-wider mb-2 BBH-Bogle tracking-wider"
+                      >
+                        Buy online
+                      </h4>
+                      <div class="flex flex-wrap gap-2">
+                        @for (link of selectedRecommendation()?.onlineLinks; track link) {
+                          <a
+                            [href]="link"
+                            target="_blank"
+                            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary-light/30 text-primary-dark text-sm hover:bg-primary-light/50 transition-colors"
+                          >
+                            <lucide-icon
+                              name="square-arrow-out-up-right"
+                              class="w-3 h-3"
+                            ></lucide-icon>
+                            <span hlmBadge variant="secondary" class="text-xs">{{
+                              getDomainFromUrl(link)
+                            }}</span>
+                          </a>
+                        }
+                      </div>
+                    </div>
+                  }
                   <p class="text-sm text-muted bg-primary-light/20 p-3 rounded-lg Nunito-sans">
                     <strong>Why is this gift?</strong> {{ selectedRecommendation()?.reason }}
                   </p>
@@ -128,7 +242,7 @@
                   selectedRecIndex() === (selectedHistorySet()?.recommendations?.length || 0) - 1
                 "
               >
-                <lucide-icon name="arrow-right" class="w-6 h-6"></lucide-icon>
+                <lucide-icon name="arrow-right" class="w-6 h-6 cursor-pointer"></lucide-icon>
               </button>
             </div>
 
@@ -232,7 +346,7 @@
               [disabled]="currentRecIndex() === 0 || isAnimating()"
               aria-label="Previous recommendation"
             >
-              <lucide-icon name="arrow-left" class="w-6 h-6"></lucide-icon>
+              <lucide-icon name="arrow-left" class="w-6 h-6 cursor-pointer"></lucide-icon>
             </button>
 
             <section
@@ -330,7 +444,7 @@
               [disabled]="currentRecIndex() === recommendations().length - 1 || isAnimating()"
               aria-label="Next recommendation"
             >
-              <lucide-icon name="arrow-right" class="w-6 h-6"></lucide-icon>
+              <lucide-icon name="arrow-right" class="w-6 h-6 cursor-pointer"></lucide-icon>
             </button>
           </div>
 
@@ -350,7 +464,7 @@
 
           @if (currentRecIndex() === recommendations().length - 1) {
             <button hlmBtn class="w-full gap-2 Nunito-sans" (click)="continueToHistory()">
-              <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
+              <lucide-icon name="arrow-right" class="w-4 h-4 cursor-pointer"></lucide-icon>
               Continue
             </button>
           }

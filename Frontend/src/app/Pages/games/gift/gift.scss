@@ -30,6 +30,29 @@
   }
 }
 
+@keyframes fadeInSoft {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-soft {
+  animation: fadeInSoft 0.5s ease-out forwards;
+}
+
+.animate-fade-in-slow {
+  animation: fadeInSoft 0.9s ease-out forwards;
+}
+
+.animate-fade-in-delay {
+  animation: fadeInSoft 0.7s ease-out forwards;
+}
+
 .animate-ease-in-reveal {
   animation: easeInReveal 0.25s ease-out forwards;
 }

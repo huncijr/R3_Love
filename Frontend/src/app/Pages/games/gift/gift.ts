@@ -34,6 +34,7 @@ import {
   Book,
   Pin,
   SquareArrowOutUpRight,
+  X,
 } from 'lucide-angular';
 import { CdkAriaLive } from '../../../../../node_modules/@angular/cdk/types/_a11y-module-chunk';
 
@@ -254,6 +255,7 @@ const SECTION_ICONS = ['Ruler', 'Heart', 'Sparkles'];
         Book,
         SquareArrowOutUpRight,
         Pin,
+        X,
       }),
       multi: true,
     },
@@ -306,10 +308,21 @@ export class GiftFinder implements OnInit {
   selectedHistorySet = signal<GiftRecommendationSet | null>(null);
 
   selectedRecIndex = signal(0);
+
   selectedRecommendation = computed(() => {
     const set = this.selectedHistorySet();
     if (!set) return null;
     return set.recommendations[this.selectedRecIndex()] || null;
+  });
+
+  selectedHasLocationData = computed(() => {
+    const rec = this.selectedRecommendation();
+    return !!rec?.stores && rec.stores.length > 0;
+  });
+
+  selectedHasOnlineLinks = computed(() => {
+    const rec = this.selectedRecommendation();
+    return !!rec?.onlineLinks && rec.onlineLinks.length > 0;
   });
 
   hasAnyRecommendations = computed(
@@ -836,6 +849,9 @@ export class GiftFinder implements OnInit {
     this.cardAnimationKey.set(0);
     this.selectedCountry.set('');
     this.animationKey.update((k) => k + 1);
+    this.showHistory.set(false);
+    this.selectedHistorySet.set(null);
+    this.recommendationHistory.set([]);
     localStorage.removeItem('gift_show_history');
   }
 
