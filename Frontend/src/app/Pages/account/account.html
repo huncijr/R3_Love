@@ -11,10 +11,17 @@
             <lucide-icon name="user-star" class="w-8 h-8 text-white"></lucide-icon>
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-medium text-muted">Welcome back,</span>
-            <h2 class="text-2xl md:text-3xl font-bold test-primary-dark leading-tight">
-              {{ currentUser()?.name }}
-            </h2>
+            <span class="text-xl font-medium text-muted">Welcome back,</span>
+            <div class="flex gap-2">
+              <h2 class="text-2xl md:text-3xl font-bold test-primary-dark leading-tight">
+                {{ currentUser()?.name }}
+              </h2>
+              @if (currentUser()?.country) {
+                <span class="inline-flex items-center text-xl text-muted">
+                  {{ getCountryFlag(currentUser()?.country) }}
+                </span>
+              }
+            </div>
             <span
               class="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full text-xs font-bold w-fit"
               [class.bg-blue-100]="currentUser()?.gender === 'Male'"
@@ -34,11 +41,36 @@
               {{ currentUser()?.gender }}
             </span>
           </div>
-          @if (currentUser()?.country) {
-            <span class="inline-flex items-center gap-1.5 mt-1 text-xs text-muted">
-              {{ currentUser()?.country }}
-            </span>
-          }
+          <div class="flex justify-end items-end w-full mr-4">
+            <button
+              hlmBtn
+              variant="secondary"
+              [hlmDropdownMenuTrigger]="accountMenu"
+              class="cursor-pointer rounded-full p-2.5 border border-border bg-white/80 hover:bg-primary-light/40 hover:border-primary-main hover:text-primary-main transition-all shadow-sm"
+              aria-label="Account options"
+            >
+              <lucide-icon name="ellipsis-vertical" class="w-7 j-7"></lucide-icon>
+            </button>
+          </div>
+          <ng-template #accountMenu>
+            <hlm-dropdown-menu class="w-48">
+              <hlm-dropdown-menu-group>
+                <button hlmDropdownMenuItem (triggered)="signOut()" class="cursor-pointer">
+                  <lucide-icon name="log-out" class="w-4 h-4 mr-2"> </lucide-icon>
+                  Sign out
+                </button>
+                <hlm-dropdown-menu-separator></hlm-dropdown-menu-separator>
+                <button
+                  hlmDropdownMenuItem
+                  (triggered)="deleteAccount()"
+                  class="cursor-pointer text-red-600 hover:text-red-800 focus:text-red-800"
+                >
+                  <lucide-icon name="trash-2" class="w-4 h-4 mr-2 text-red-500"></lucide-icon>
+                  Delete Account
+                </button>
+              </hlm-dropdown-menu-group>
+            </hlm-dropdown-menu>
+          </ng-template>
         </div>
         <div class="w-full h-0.5 mt-1" style="background-color: var(--border)"></div>
       </div>

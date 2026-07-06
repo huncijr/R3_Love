@@ -18,12 +18,17 @@ import {
   Gamepad2,
   MoveRight,
   UserStar,
+  EllipsisVertical,
+  LogOut,
+  Trash2,
 } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmSwitch } from '../../ui/switch/src';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
+import { getCode } from 'country-list';
+import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
 
 @Component({
   selector: 'app-account',
@@ -36,6 +41,7 @@ import { UserContext } from '../../services/UserContext/user-context';
     HlmInput,
     HlmSwitch,
     RouterLink,
+    HlmDropdownMenuImports,
   ],
   templateUrl: './account.html',
   providers: [
@@ -53,6 +59,9 @@ import { UserContext } from '../../services/UserContext/user-context';
         Gift,
         MoveRight,
         UserStar,
+        EllipsisVertical,
+        LogOut,
+        Trash2,
       }),
     },
   ],
@@ -277,6 +286,28 @@ export class Account implements OnInit {
     this.toastr.info('You have been logged out', 'Logout');
   }
 
+  signOut() {
+    this.logout();
+  }
+  deleteAccount() {
+    const confirmed = confirm(
+      'Are you sure you want to delete your account? This action cannot be undone.',
+    );
+    if (!confirmed) return;
+
+    this.userService.deleteUser().subscribe({
+      next: () => {
+        this.toastr.success('Your account has been deleted', 'Goodbye');
+        this.logout();
+      },
+      error: (err) => {
+        const errorMessage = err.message || 'Failed to delete account';
+        this.toastr.error(errorMessage, 'Error');
+        console.error('Delete account error', err);
+      },
+    });
+  }
+
   // Authenticates existing user and stores session token
   onLogin() {
     if (!this.username().trim() || !this.password().trim()) {
@@ -299,6 +330,18 @@ export class Account implements OnInit {
         console.error('Login error', err);
       },
     });
+  }
+
+  getCountryFlag(countryName: string | null | undefined): string {
+    if (!countryName) return ``;
+    const code = getCode(countryName);
+    if (!code) return ``;
+    const codePoints = code
+      .toUpperCase()
+      .split(``)
+      .map((char) => 127397 + char.charCodeAt(0));
+
+    return String.fromCodePoint(...codePoints);
   }
 
   // Switches between login and registration form views

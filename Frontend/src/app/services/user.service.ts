@@ -129,6 +129,13 @@ const DELETE_GIFT_RECOMMENDATIONS = gql`
     deleteGiftRecommendations(id: $id)
   }
 `;
+
+const DELETE_USER = gql`
+  mutation DeleteUser {
+    deleteUser
+  }
+`;
+
 export interface User {
   id: string;
   name: string;
@@ -164,6 +171,14 @@ export class UserService {
         variables: { name, password },
       })
       .pipe(map((result) => result.data!.login));
+  }
+
+  deleteUser(): Observable<boolean> {
+    return this.apollo
+      .mutate<{ deleteUser: boolean }>({
+        mutation: DELETE_USER,
+      })
+      .pipe(map((result) => result.data!.deleteUser));
   }
 
   updateUserCountry(country: string): Observable<User> {
