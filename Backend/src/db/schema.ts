@@ -17,6 +17,7 @@ export const user = pgTable("Users", {
   name: varchar("name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(),
   gender: varchar("gender", { length: 50 }),
+  country: varchar("country", { length: 255 }),
   calendarDone: boolean("calendar_done").default(false),
   giftDone: boolean("gift_done").default(false),
   gameDone: boolean("game_done").default(false),

@@ -4,6 +4,7 @@ export const userSchema = `
     id: ID!
     name: String!
     gender: String
+    country: String
     createdAt: String!
   }
 
@@ -145,11 +146,13 @@ export const userSchema = `
       partnerBirthday: String
     ): CalendarQuiz!
 
+    updateUserCountry(country: String!): User!
     saveCalendarEvent(event: EventInput!): CalendarEvent!
     deleteCalendarEvent(id: ID!): Boolean!
     generateDeepQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
     generatePracticalQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
     getGiftRecommendations(answers: [QuizAnswerInput!]!): [GiftRecommendation!]!
     saveGiftRecommendations(input: SaveGiftRecommendationsInput!): SavedGiftRecommendations!
+    deleteGiftRecommendations(id: ID!): Boolean!
   }
 `;

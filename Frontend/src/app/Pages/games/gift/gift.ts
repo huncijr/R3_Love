@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -35,8 +35,11 @@ import {
   Pin,
   SquareArrowOutUpRight,
   X,
+  Trash2,
+  Undo2,
 } from 'lucide-angular';
 import { CdkAriaLive } from '../../../../../node_modules/@angular/cdk/types/_a11y-module-chunk';
+import { ToastrService } from 'ngx-toastr';
 
 export interface QuizQuestion {
   id: string;
@@ -256,6 +259,8 @@ const SECTION_ICONS = ['Ruler', 'Heart', 'Sparkles'];
         SquareArrowOutUpRight,
         Pin,
         X,
+        Trash2,
+        Undo2,
       }),
       multi: true,
     },
@@ -290,7 +295,23 @@ export class GiftFinder implements OnInit {
   isLocationPhase = signal(false);
   selectedCountry = signal<string>('');
 
-  countries = Object.entries(getNames()).map(([code, name]) => ({ code, name }));
+  countries = [
+    { code: 'PREFER_NOT_TO_SAY', name: 'Prefer not to say' },
+    ...Object.entries(getNames()).map(([code, name]) => ({ code, name })),
+  ];
+  selectedCity = signal<string>('');
+  cityOptions = signal<string[]>([]);
+  isLoadingCities = signal(false);
+  cityError = signal<string | null>(null);
+  showCityDropdown = signal(false);
+  cityQuery = signal<string>('');
+  filteredCities = computed(() => {
+    const query = this.cityQuery().toLowerCase();
+    if (!query) return this.cityOptions().slice(0, 10);
+    return this.cityOptions()
+      .filter((city) => city.toLowerCase().includes(query))
+      .slice(0, 10);
+  });
 
   currentRecIndex = signal(0);
   cardAnimationKey = signal(0);
@@ -513,6 +534,8 @@ export class GiftFinder implements OnInit {
     });
   }
 
+  private toastr = inject(ToastrService);
+
   // Returns the display name of the current section
   sectionName = computed(() => {
     if (this.isDeepPhase()) return 'Deep Dive';
@@ -604,20 +627,37 @@ export class GiftFinder implements OnInit {
   finishLocationPhase() {
     this.isLocationPhase.set(false);
     this.startLoading('Generating gift recommendations...', this.LOADING_MESSAGES_GIFTS);
+
     const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions(), ...this.practicalQuestions()];
     const allAnswers = this.answers().map((a) => {
       const q = allQuestions.find((q) => q.id === a.questionId);
       return { questionId: a.questionId, questionText: q?.text || a.questionId, value: a.value };
     });
 
-    if (this.selectedCountry()) {
+    if (this.selectedCountry() && this.selectedCountry() !== 'PREFER_NOT_TO_SAY') {
       const selectedCountryName =
         this.countries.find((c) => c.code === this.selectedCountry())?.name ||
         this.selectedCountry();
+      const cityPart = this.selectedCity() ? `${this.selectedCity()}, ` : '';
       allAnswers.push({
         questionId: 'location',
         questionText: 'Where are you from',
-        value: selectedCountryName,
+        value: `${cityPart}${selectedCountryName}`,
+      });
+      if (this.userContext.isLoggedIn()) {
+        console.log(selectedCountryName);
+        this.userService.updateUserCountry(selectedCountryName).subscribe({
+          next: (updatedUser: any) => {
+            this.userContext.login(updatedUser, this.authService.getToken()!);
+          },
+          error: (err: any) => console.error('Failed to save country', err),
+        });
+      }
+    } else if (this.selectedCountry() === 'PREFER_NOT_TO_SAY') {
+      allAnswers.push({
+        questionId: 'location',
+        questionText: 'Where are you from',
+        value: 'Prefer not to say',
       });
     }
 
@@ -627,6 +667,7 @@ export class GiftFinder implements OnInit {
       next: (recs) => {
         this.stopLoading();
         console.log(recs);
+        this.currentRecIndex.set(0);
         this.recommendations.set(recs);
         this.isCompleted.set(true);
 
@@ -699,6 +740,59 @@ export class GiftFinder implements OnInit {
     }
   }
 
+  onCountryChange(code: string) {
+    this.selectedCountry.set(code);
+    this.selectedCity.set('');
+    this.cityOptions.set([]);
+    this.cityError.set(null);
+
+    if (code && code !== 'PREFER_NOT_TO_SAY') {
+      const countryName = this.countries.find((c) => c.code === code)?.name || code;
+      this.loadCities(countryName);
+    }
+  }
+
+  onCityInput(value: string) {
+    this.cityQuery.set(value);
+    this.selectedCity.set(value);
+    this.showCityDropdown.set(true);
+  }
+
+  selectCity(city: string): void {
+    this.cityQuery.set(city);
+    this.selectedCity.set(city);
+    this.showCityDropdown.set(false);
+  }
+
+  hideCityDropdown(): void {
+    setTimeout(() => this.showCityDropdown.set(false), 150);
+  }
+
+  async loadCities(countryName: string): Promise<void> {
+    this.cityQuery.set('');
+    this.showCityDropdown.set(false);
+    this.isLoadingCities.set(true);
+    this.cityError.set(null);
+    try {
+      const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ country: countryName }),
+      });
+      if (!res.ok) throw new Error('Failed to load cities');
+      const data = await res.json();
+      this.cityOptions.set(data.data || []);
+    } catch (error: any) {
+      this.cityError.set(error.message || 'Could not load cities');
+    } finally {
+      this.isLoadingCities.set(false);
+    }
+  }
+
+  goBackToHistory(): void {
+    this.showHistory.set(true);
+  }
+
   // Moves to the next recommendation with a short animation lock
   nextRecommendation() {
     if (this.currentRecIndex() < this.recommendations().length - 1 && !this.isAnimating()) {
@@ -711,6 +805,22 @@ export class GiftFinder implements OnInit {
     if (this.currentRecIndex() > 0 && !this.isAnimating()) {
       this.goToRecommendation(this.currentRecIndex() - 1);
     }
+  }
+
+  deleteSelectedRecommendation() {
+    const set = this.selectedHistorySet();
+    if (!set) return;
+    this.userService.deleteGiftRecommendations(set.id).subscribe({
+      next: () => {
+        this.closeHistory();
+        this.recommendations.set([]);
+        this.loadHistory();
+        this.toastr.success('Succesfully Deleted!', 'Success');
+      },
+      error: (err) => {
+        console.error('Failed to delete recommendation set:', err);
+      },
+    });
   }
 
   // Jumps to a specific recommendation and replays the entrance animation
@@ -851,7 +961,9 @@ export class GiftFinder implements OnInit {
     this.animationKey.update((k) => k + 1);
     this.showHistory.set(false);
     this.selectedHistorySet.set(null);
-    this.recommendationHistory.set([]);
+    this.selectedCity.set('');
+    this.cityOptions.set([]);
+    this.cityError.set(null);
     localStorage.removeItem('gift_show_history');
   }
 
@@ -862,13 +974,16 @@ export class GiftFinder implements OnInit {
     this.userService.getGiftRecommendationsHistory().subscribe({
       next: (res) => {
         const history: GiftRecommendationSet[] = res.data?.getGiftRecommendationsHistory || [];
-        console.log('history loaded:', history);
         this.recommendationHistory.set(history);
 
-        if (history.length > 0 && this.recommendations().length === 0) {
+        if (history.length === 0) {
+          this.recommendations.set([]);
+          this.isCompleted.set(false);
+          this.showHistory.set(false);
+          this.showGuestBlur.set(false);
+        } else if (this.recommendations().length === 0) {
           const latest = history[0];
           console.log('loading latest session:', latest);
-
           this.finalAnswers.set(latest.answers);
           this.answers.set(latest.answers);
           this.recommendations.set(latest.recommendations);

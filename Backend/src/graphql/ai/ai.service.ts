@@ -73,6 +73,7 @@ function cleanAIContent(content: string): string {
 function extractJSON(content: string): any[] {
   const cleaned = cleanAIContent(content);
   console.log("[Cleaned AI content]", cleaned);
+
   try {
     const parsed = JSON.parse(cleaned);
     if (Array.isArray(parsed)) return parsed;
@@ -82,11 +83,19 @@ function extractJSON(content: string): any[] {
       return parsed.questions;
     return [parsed];
   } catch {
-    const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
+    if (arrayMatch) {
+      try {
+        return JSON.parse(arrayMatch[0]);
+      } catch {
+        const fixed = arrayMatch[0]
+          .replace(/,\s*]/g, "]")
+          .replace(/,\s*}/g, "}");
+        return JSON.parse(fixed);
+      }
     }
   }
+
   throw new Error("AI response did not contain valid JSON");
 }
 

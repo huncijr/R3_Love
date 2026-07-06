@@ -23,10 +23,10 @@ CREATE TABLE "CalendarQuiz" (
 CREATE TABLE "GiftRecommendations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
-	"ansers" jsonb NOT NULL,
+	"answers" jsonb NOT NULL,
 	"recommendations" jsonb NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updatedAt" timestamp
+	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "Users" (
@@ -34,6 +34,7 @@ CREATE TABLE "Users" (
 	"name" varchar(255) NOT NULL,
 	"password" varchar(255) NOT NULL,
 	"gender" varchar(50),
+	"country" varchar(255),
 	"calendar_done" boolean DEFAULT false,
 	"gift_done" boolean DEFAULT false,
 	"game_done" boolean DEFAULT false,

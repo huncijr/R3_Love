@@ -22,8 +22,20 @@ const LOGIN = gql`
         id
         name
         gender
+        country
       }
       token
+    }
+  }
+`;
+
+const UPDATE_USER_COUNTRY = gql`
+  mutation UpdateUserCountry($country: String!) {
+    updateUserCountry(country: $country) {
+      id
+      name
+      gender
+      country
     }
   }
 `;
@@ -112,10 +124,16 @@ const SAVE_GIFT_RECOMMENDATIONS = gql`
   }
 `;
 
+const DELETE_GIFT_RECOMMENDATIONS = gql`
+  mutation DeleteGiftRecommendations($id: ID!) {
+    deleteGiftRecommendations(id: $id)
+  }
+`;
 export interface User {
   id: string;
   name: string;
   gender: string | null;
+  country?: string | null;
 }
 export interface CreateUserResponse {
   user: User;
@@ -146,6 +164,15 @@ export class UserService {
         variables: { name, password },
       })
       .pipe(map((result) => result.data!.login));
+  }
+
+  updateUserCountry(country: string): Observable<User> {
+    return this.apollo
+      .mutate<{ updateUserCountry: User }>({
+        mutation: UPDATE_USER_COUNTRY,
+        variables: { country },
+      })
+      .pipe(map((result) => result.data!.updateUserCountry));
   }
   // Sends calendar quiz answers to the backend (creates or updates record)
   saveCalendarQuiz(
@@ -338,6 +365,7 @@ export class UserService {
   getGiftRecommendationsHistory() {
     return this.apollo.query<{ getGiftRecommendationsHistory: any }>({
       query: GET_GIFT_RECOMMENDATIONS_HISTORY,
+      fetchPolicy: 'network-only',
     });
   }
 
@@ -345,6 +373,15 @@ export class UserService {
     return this.apollo.mutate<{ saveGiftRecommendations: any }>({
       mutation: SAVE_GIFT_RECOMMENDATIONS,
       variables: { input },
+    });
+  }
+
+  deleteGiftRecommendations(id: string) {
+    return this.apollo.mutate<{ deleteGiftRecommendations: boolean }>({
+      mutation: DELETE_GIFT_RECOMMENDATIONS,
+      variables: { id },
+      refetchQueries: [{ query: GET_GIFT_RECOMMENDATIONS_HISTORY }],
+      awaitRefetchQueries: true,
     });
   }
 }

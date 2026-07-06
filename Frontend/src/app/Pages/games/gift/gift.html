@@ -1,4 +1,17 @@
-<div class="min-h-screen bg-linear-to-br from-primary via-secondary to-input py-8 px-5">
+<div class="relative min-h-screen bg-linear-to-br from-primary via-secondary to-input py-8 px-5">
+  @if (!showHistory() && hasAnyRecommendations()) {
+    <button
+      hlmBtn
+      variant="destructive"
+      type="button"
+      (click)="goBackToHistory()"
+      class="cursor-pointer absolute top-4 right-4 z-50 p-3 rounded-full bg-white/90 backdrop-blur shadow-lg border border-primary-light text-primary-main hover:bg-primary-light/50 transition-all"
+      aria-label="Back to history"
+    >
+      <lucide-icon name="undo-2"></lucide-icon>
+      Back to gifts
+    </button>
+  }
   @if (isHistoryLoading()) {
     <div class="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
       <div
@@ -124,13 +137,21 @@
           class="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white/95 border-2 border-primary-light shadow-2xl rounded-2xl p-6"
           (click)="$event.stopPropagation()"
         >
-          <button
-            type="button"
-            class="absolute top-4 right-4 p-2 rounded-full bg-primary-light/30 text-primary-main hover:bg-primary-light/50 transition-colors"
-            (click)="closeHistory()"
-          >
-            <lucide-icon name="x" class="w-5 h-5 cursor-pointer"></lucide-icon>
-          </button>
+          <div class="flex">
+            <button
+              (click)="deleteSelectedRecommendation()"
+              class="absolute top-4 right-14 p-2 rounded-full bg-red-100 hover:bg-red-300 text-black transition-colors"
+            >
+              <lucide-icon name="trash-2" class="w-5 h-5 cursor-pointer"></lucide-icon>
+            </button>
+            <button
+              type="button"
+              class="absolute top-4 right-4 p-2 rounded-full bg-primary-light/30 text-primary-main hover:bg-primary-light/50 transition-colors"
+              (click)="closeHistory()"
+            >
+              <lucide-icon name="x" class="w-5 h-5 cursor-pointer"></lucide-icon>
+            </button>
+          </div>
 
           <div hlmCardHeader class="text-center pb-2">
             <h2 hlmCardTitle class="text-2xl BBH-Bogle tracking-wider">Session Details</h2>
@@ -293,7 +314,7 @@
             </button>
           </div>
         </div>
-      } @else if (hasAnyRecommendations()) {
+      } @else if (recommendations().length > 0) {
         @if (showGuestBlur()) {
           <div
             class="fixed inset-0 z-50 flex flex-col items-center justify-center rounded-2xl backdrop-blur-md p-6 text-center"
@@ -694,7 +715,7 @@
                   </p>
                   <select
                     [(ngModel)]="selectedCountry"
-                    (ngModelChange)="selectedCountry.set($event)"
+                    (ngModelChange)="onCountryChange($event)"
                     class="w-full p-3 rounded-lg border border-border bg-white"
                   >
                     <option value="">Prefer not to say</option>
@@ -707,6 +728,56 @@
                       </option>
                     }
                   </select>
+                  @if (selectedCountry() && selectedCountry() !== 'PREFER_NOT_TO_SAY') {
+                    <div class="mt-4 relative">
+                      <label class="block text-sm font-medium text-neutral-text mb-1">City</label>
+                      @if (isLoadingCities()) {
+                        <div class="flex items-center gap-2 text-sm text-muted">
+                          <div
+                            class="w-12 h-12 rounded-full border-4 border-primary-light border-t-primary-main animate-spin"
+                          ></div>
+                          Loading cities...
+                        </div>
+                      } @else if (cityError()) {
+                        <span class="text-sm text-red-500 mb-2">{{ cityError() }}</span>
+                        <input
+                          type="text"
+                          [(ngModel)]="selectedCity"
+                          (ngModelChange)="onCityInput($event)"
+                          (blur)="hideCityDropdown()"
+                          placeholder="Enter your city"
+                          class="w-full p-3 rounded-lg border border-border bg-white"
+                        />
+                      } @else {
+                        <div class="relative">
+                          <input
+                            type="text"
+                            [ngModel]="cityQuery()"
+                            (ngModelChange)="onCityInput($event)"
+                            (focus)="showCityDropdown.set(true)"
+                            (blur)="hideCityDropdown()"
+                            placeholder="Start typing your city..."
+                            class="w-full p-3 rounded-lg border border-border bg-white"
+                          />
+                          @if (showCityDropdown() && filteredCities().length > 0) {
+                            <div
+                              class="absolute z-10 w-full max-h-60 overflow-y-auto mt-1 bg-white border border-border rounded-lg shadow-lg"
+                            >
+                              @for (city of filteredCities(); track city) {
+                                <button
+                                  type="button"
+                                  (mousedown)="selectCity(city)"
+                                  class="w-full text-left px-4 py-2 hover:bg-primary-light/50 focus:bg-primary-light/50"
+                                >
+                                  {{ city }}
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
                   <button hlmBtn class="w-full gap-2 Nunito-sans" (click)="finishLocationPhase()">
                     <lucide-icon name="sparkles" class="w-4 h-4"></lucide-icon>
                     See recommendations

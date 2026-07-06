@@ -197,6 +197,28 @@ export const userResolver = {
       }
     },
 
+    updateUserCountry: async (
+      _: any,
+      args: { country: string },
+      context: any,
+    ) => {
+      try {
+        console.log(args.country);
+        const userId = getUserIdFromContext(context.token);
+        const [updatedUser] = await db
+          .update(user)
+          .set({ country: args.country })
+          .where(eq(user.id, userId))
+          .returning();
+
+        console.log(updatedUser);
+
+        return updatedUser;
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+
     // Upserts calendar quiz answers and marks calendar module as completed
     saveCalendarQuiz: async (
       _parent: unknown,
@@ -355,6 +377,26 @@ export const userResolver = {
           .where(eq(user.id, userId));
 
         return saved;
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+    deleteGiftRecommendations: async (
+      _parent: any,
+      args: { id: string },
+      context: any,
+    ) => {
+      const userId = getUserIdFromContext(context.token);
+      try {
+        await db
+          .delete(giftRecommendations)
+          .where(
+            and(
+              eq(giftRecommendations.id, args.id),
+              eq(giftRecommendations.userId, userId),
+            ),
+          );
+        return true;
       } catch (error) {
         errorHandler(error);
       }

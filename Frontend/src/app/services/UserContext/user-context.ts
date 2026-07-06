@@ -1,11 +1,14 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { AuthService } from '../Auth/auth';
+import { count, Observable, map } from 'rxjs';
+import { Apollo, gql } from 'apollo-angular';
 
 // Basic user data shape used across the application
 export interface User {
   id: string;
   name: string;
   gender: string | null;
+  country?: string | null;
 }
 
 @Injectable({
