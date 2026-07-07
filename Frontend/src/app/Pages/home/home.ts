@@ -7,6 +7,9 @@ import {
   HeartCrack,
   Sparkles,
   LUCIDE_ICONS,
+  Music,
+  Disc,
+  AudioLines,
   LucideAngularModule,
   LucideIconProvider,
 } from 'lucide-angular';
@@ -14,45 +17,22 @@ import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
 
 //for testing:
-const MOCK_SONGS: SpotifySong[] = [
-  {
-    title: 'Perfect',
-    artist: 'Ed Sheeran',
-    url: 'https://open.spotify.com/track/0tgVpDi06FyKpA1zm0rEO5',
-    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
-  },
-  {
-    title: 'All of Me',
-    artist: 'John Legend',
-    url: 'https://open.spotify.com/track/3U4isOIWM3VvDubwSI3y7a',
-    imageUrl: 'https://i.scdn.co/image/ab67616d0000b2731d97a275a5bb915dc92f0477',
-  },
-  {
-    title: 'Just the Way You Are',
-    artist: 'Bruno Mars',
-    url: 'https://open.spotify.com/track/7BqBn9nzAq8spo54e7HX',
-    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273f6b55ca93b332132b2e9a3c2',
-  },
-  {
-    title: 'A Thousand Years',
-    artist: 'Christina Perri',
-    url: 'https://open.spotify.com/track/6lanRgr6wXibZr8KgzXxBl',
-    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273c82a683c61e665677e7e8c06',
-  },
-  {
-    title: 'Make You Feel My Love',
-    artist: 'Adele',
-    url: 'https://open.spotify.com/track/1P4e3w2t6A0Z7Y3q8X9vW',
-    imageUrl: 'https://i.scdn.co/image/ab67616d0000b2736f5b8e09b9aef5b1e4e3e1b0',
-  },
-];
 @Component({
   selector: 'app-home',
   imports: [HlmCardImports, LucideAngularModule],
   providers: [
     {
       provide: LUCIDE_ICONS,
-      useValue: new LucideIconProvider({ Heart, CalendarDays, Clock, HeartCrack, Sparkles }),
+      useValue: new LucideIconProvider({
+        Heart,
+        CalendarDays,
+        Clock,
+        HeartCrack,
+        Sparkles,
+        Music,
+        Disc,
+        AudioLines,
+      }),
       multi: true,
     },
   ],

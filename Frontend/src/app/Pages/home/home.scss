@@ -13,3 +13,182 @@
   opacity: 0;
   animation: fadeInUp 0.5s ease-out forwards;
 }
+
+.status-card {
+  position: relative;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, #ffffff 0%, #fff5f9 100%);
+  overflow: hidden;
+}
+
+.status-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 35 60 60 T 120 60' fill='none' stroke='%23fbcfe8' stroke-width='1' opacity='0.5'/%3E%3Cpath d='M0 75 Q 30 50 60 75 T 120 75' fill='none' stroke='%23f9a8d4' stroke-width='1' opacity='0.35'/%3E%3Cpath d='M0 45 Q 30 20 60 45 T 120 45' fill='none' stroke='%23f472b6' stroke-width='1' opacity='0.25'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.status-card .content {
+  position: relative;
+  z-index: 1;
+}
+
+.events-card {
+  position: relative;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(251, 207, 232, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 40%),
+    linear-gradient(135deg, #ffffff 0%, #fff8fa 100%);
+  overflow: hidden;
+}
+
+.events-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, #f9a8d4 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.events-card .content {
+  position: relative;
+  z-index: 1;
+}
+
+.romantic-songs-card ul::-webkit-scrollbar-track {
+  background: #374511;
+  border-radius: 3px;
+}
+
+.romantic-songs-card ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.romantic-songs-card ul::-webkit-scrollbar-thumb {
+  background: #22c553;
+  border-radius: 3px;
+}
+
+.romantic-songs-card ul::-webkit-scrollbar-thumb:hover {
+  background: #16a34a;
+}
+
+.daily-insight-card {
+  position: relative;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(236, 72, 153, 0.22), transparent 50%),
+    radial-gradient(circle at 90% 20%, rgba(244, 114, 182, 0.28), transparent 55%),
+    radial-gradient(circle at 80% 85%, rgba(251, 207, 232, 0.32), transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(236, 72, 153, 0.18), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(255, 240, 247, 0.6), transparent 70%),
+    linear-gradient(135deg, #fff0f7 0%, #ffd6e8 50%, #fff0f7 100%);
+  overflow: hidden;
+}
+
+.daily-insight-card .hearts-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.daily-insight-card .heart {
+  position: absolute;
+  color: #ec4899;
+  pointer-events: none;
+  text-shadow: 0 0 8px rgba(236, 72, 153, 0.35);
+}
+
+.daily-insight-card .heart-xl {
+  font-size: 2.4rem;
+  opacity: 0.12;
+}
+.daily-insight-card .heart-lg {
+  font-size: 1.8rem;
+  opacity: 0.18;
+}
+.daily-insight-card .heart-md {
+  font-size: 1.2rem;
+  opacity: 0.26;
+}
+.daily-insight-card .heart-sm {
+  font-size: 0.75rem;
+  opacity: 0.35;
+}
+
+.daily-insight-card .heart-1 {
+  top: 5%;
+  left: 8%;
+}
+.daily-insight-card .heart-2 {
+  top: 12%;
+  right: 12%;
+}
+.daily-insight-card .heart-3 {
+  top: 30%;
+  left: 5%;
+}
+.daily-insight-card .heart-4 {
+  top: 42%;
+  right: 8%;
+}
+.daily-insight-card .heart-5 {
+  top: 62%;
+  left: 12%;
+}
+.daily-insight-card .heart-6 {
+  top: 75%;
+  right: 16%;
+}
+.daily-insight-card .heart-7 {
+  top: 86%;
+  left: 42%;
+}
+.daily-insight-card .heart-8 {
+  top: 92%;
+  left: 2%;
+}
+.daily-insight-card .heart-9 {
+  top: 54%;
+  left: 68%;
+}
+.daily-insight-card .heart-10 {
+  top: 90%;
+  right: 5%;
+}
+.daily-insight-card .heart-11 {
+  top: 36%;
+  left: 28%;
+}
+.daily-insight-card .heart-12 {
+  top: 92%;
+  left: 54%;
+}
+
+.daily-insight-card .content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Rózsaszín scrollbar a Daily Insight kártyában */
+.daily-insight-card ::-webkit-scrollbar {
+  width: 6px;
+}
+.daily-insight-card ::-webkit-scrollbar-track {
+  background: rgba(236, 72, 153, 0.15);
+  border-radius: 3px;
+}
+.daily-insight-card ::-webkit-scrollbar-thumb {
+  background: #ec4899;
+  border-radius: 3px;
+}
+.daily-insight-card ::-webkit-scrollbar-thumb:hover {
+  background: #be185d;
+}
