@@ -399,4 +399,19 @@ export class UserService {
       awaitRefetchQueries: true,
     });
   }
+
+  getDailyInsight() {
+    return this.apollo
+      .query<{ getDailyInsight: { didYouKnow: string; advice: string } }>({
+        query: gql`
+          query GetDailyInsight {
+            getDailyInsight {
+              didYouKnow
+              advice
+            }
+          }
+        `,
+      })
+      .pipe(map((result) => result.data?.getDailyInsight));
+  }
 }

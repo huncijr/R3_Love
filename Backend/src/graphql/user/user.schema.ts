@@ -52,7 +52,10 @@ export const userSchema = `
   
   }
 
-
+  type DailyInsight {
+    didYouKnow: String!
+    advice: String!
+  }
 
   type CalendarEvent {
     id: ID!
@@ -124,7 +127,7 @@ export const userSchema = `
     getUserProgress: UserProgress
     getCalendarEvents: [CalendarEvent!]
     getGiftRecommendationsHistory: [SavedGiftRecommendations!]!
-
+    getDailyInsight: DailyInsight!
   }
 
 

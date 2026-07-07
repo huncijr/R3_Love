@@ -1,10 +1,10 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideCalendar, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { provideHttpClient } from '@angular/common/http';
-import { Apollo, APOLLO_OPTIONS, provideApollo } from 'apollo-angular';
+import { provideApollo } from 'apollo-angular';
 import { ApolloClientOptions, ApolloLink, InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 import { environment } from '../enviroments/enviroment';
@@ -34,10 +34,6 @@ export function createApollo(httpLink: HttpLink, authService: AuthService): Apol
     link: authLink.concat(http),
     cache: new InMemoryCache(),
   };
-  return {
-    link: authLink.concat(http),
-    cache: new InMemoryCache(),
-  };
 }
 
 export const appConfig: ApplicationConfig = {
@@ -45,8 +41,11 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(),
-    { provide: APOLLO_OPTIONS, useFactory: createApollo, deps: [HttpLink, AuthService] },
-    Apollo,
+    provideApollo(() => {
+      const httpLink = inject(HttpLink);
+      const authService = inject(AuthService);
+      return createApollo(httpLink, authService);
+    }),
     ...provideCalendar({ provide: DateAdapter, useFactory: adapterFactory }),
     provideAnimations(),
     provideToastr({

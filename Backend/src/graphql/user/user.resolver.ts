@@ -10,6 +10,7 @@ import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
 import { generateToken, verifyToken } from "../../middleware/Auth.js";
 import {
+  generateDailyInsightFromAI,
   generateDeepQuestionsFromAI,
   generatePracticalQuestionsFromAI,
   getGiftRecommendationsFromAI,
@@ -126,6 +127,14 @@ export const userResolver = {
           .where(eq(giftRecommendations.userId, userId))
           .orderBy(desc(giftRecommendations.createdAt));
         return rows;
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+
+    getDailyInsight: async () => {
+      try {
+        return await generateDailyInsightFromAI();
       } catch (error) {
         errorHandler(error);
       }

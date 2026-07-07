@@ -21,6 +21,7 @@ import {
   EllipsisVertical,
   LogOut,
   Trash2,
+  X,
 } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 import { HlmBadge } from '@spartan-ng/helm/badge';
@@ -62,6 +63,7 @@ import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
         EllipsisVertical,
         LogOut,
         Trash2,
+        X,
       }),
     },
   ],
@@ -132,6 +134,7 @@ export class Account implements OnInit {
   showPassword = signal(true);
   showConfirmPassword = signal(true);
   isLoginMode = signal(false);
+  showDeleteConfirm = signal(false);
 
   calendarQuiz = signal<any>(null);
   userProgress = signal<{ calendarDone: boolean; giftDone: boolean; gameDone: boolean }>({
@@ -259,6 +262,7 @@ export class Account implements OnInit {
           this.isLoading.set(false);
           this.isSubmited.set(true);
           this.userContext.login(response.user, response.token);
+          this.resetForm();
           this.toastr.success('Account created successfully!', 'Success');
           this.syncCalendarQuiz();
           this.syncGiftRecommendation();
@@ -283,17 +287,15 @@ export class Account implements OnInit {
   // Clears user session and shows logout confirmation
   logout() {
     this.userContext.logout();
+    this.resetForm();
     this.toastr.info('You have been logged out', 'Logout');
   }
 
   signOut() {
     this.logout();
   }
-  deleteAccount() {
-    const confirmed = confirm(
-      'Are you sure you want to delete your account? This action cannot be undone.',
-    );
-    if (!confirmed) return;
+  confirmDeleteAccount() {
+    this.showDeleteConfirm.set(false);
 
     this.userService.deleteUser().subscribe({
       next: () => {
@@ -306,6 +308,21 @@ export class Account implements OnInit {
         console.error('Delete account error', err);
       },
     });
+  }
+
+  private resetForm() {
+    this.username.set('');
+    this.password.set('');
+    this.confirmPassword.set('');
+    this.gender.set('');
+  }
+
+  openDeleteConfirm() {
+    this.showDeleteConfirm.set(true);
+  }
+
+  cancelDeleteAccount() {
+    this.showDeleteConfirm.set(false);
   }
 
   // Authenticates existing user and stores session token

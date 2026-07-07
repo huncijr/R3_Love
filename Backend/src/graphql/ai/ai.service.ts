@@ -3,12 +3,18 @@ import {
   DEEP_QUESTIONS_PROMPT,
   PRACTICAL_QUESTIONS_PROMPT,
   RECOMMENDATION_SYSTEM_PROMPT,
+  DAILY_INSIGHT_PROMPT,
 } from "./system_prompt.js";
 
 export interface QuizAnswer {
   questionId: string;
   questionText: string;
   value: string;
+}
+
+export interface DailyInsight {
+  didYouKnow: string;
+  advice: string;
 }
 
 export interface StoreLocation {
@@ -99,6 +105,27 @@ function extractJSON(content: string): any[] {
   throw new Error("AI response did not contain valid JSON");
 }
 
+function extractObjectJSON<T>(content: string): T {
+  const cleaned = cleanAIContent(content);
+  console.log("Cleaned ai content", cleaned);
+  try {
+    return JSON.parse(cleaned) as T;
+  } catch (error) {
+    const objectMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (objectMatch) {
+      try {
+        return JSON.parse(objectMatch[0]) as T;
+      } catch (error) {
+        const fixed = objectMatch[0]
+          .replace(/,\s*]/g, "]")
+          .replace(/,\s*}/g, "}");
+        return JSON.parse(fixed) as T;
+      }
+    }
+  }
+  throw new Error("AI response did not contain valid JSON");
+}
+
 // Phase 1: Generates 5 deep contextual questions based on static answers
 export async function generateDeepQuestionsFromAI(
   answers: QuizAnswer[],
@@ -130,4 +157,13 @@ export async function getGiftRecommendationsFromAI(
     buildUserContent(answers),
   );
   return extractJSON(content);
+}
+
+export async function generateDailyInsightFromAI(): Promise<DailyInsight> {
+  console.log("here");
+  const content = await callAI(
+    DAILY_INSIGHT_PROMPT,
+    "Give me today's relationship insight",
+  );
+  return extractObjectJSON<DailyInsight>(content);
 }

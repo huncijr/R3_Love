@@ -4,6 +4,8 @@ import {
   CalendarDays,
   Clock,
   Heart,
+  HeartCrack,
+  Sparkles,
   LUCIDE_ICONS,
   LucideAngularModule,
   LucideIconProvider,
@@ -17,7 +19,7 @@ import { UserContext } from '../../services/UserContext/user-context';
   providers: [
     {
       provide: LUCIDE_ICONS,
-      useValue: new LucideIconProvider({ Heart, CalendarDays, Clock }),
+      useValue: new LucideIconProvider({ Heart, CalendarDays, Clock, HeartCrack, Sparkles }),
       multi: true,
     },
   ],
@@ -46,15 +48,25 @@ export class Home implements OnInit {
   isLoggedIn = computed(() => this.currentUser() !== null);
   hasPartner = computed(() => this.quizData() && this.quizData().isSingle === false);
 
+  private readonly DAILY_INSIGHT_KEY = 'dailyInsight';
+  daysUntilValentine = signal(0);
+  daysUntilGirlfriendDay = signal(0);
+
+  dailyInsight = signal<{ didYouKnow: string; advice: string } | null>(null);
+
   ngOnInit(): void {
+    this.loadDailyInsight();
     if (this.userContext.isLoggedIn()) {
       this.userService.getCalendarQuiz().subscribe({
         next: (quiz) => {
           this.quizData.set(quiz);
+          console.log(quiz);
           if (quiz && !quiz.isSingle && quiz.datingDate) {
             this.calculateDaysTogether(quiz.datingDate);
             this.calculateUpcomingDates(quiz.datingDate, quiz.partnerBirthday);
             this.funFact.set(this.getFunFact(this.daysTogether()));
+          } else if (quiz && quiz.isSingle) {
+            this.calculateSingleDays();
           }
         },
       });
@@ -65,6 +77,8 @@ export class Home implements OnInit {
         this.quizData.set(data);
         if (!data.isSingle && data.datingDate) {
           this.calculateDaysTogether(data.datingDate);
+        } else if (data.isSingle) {
+          this.calculateSingleDays();
         }
       }
     }
@@ -78,6 +92,36 @@ export class Home implements OnInit {
     if (datingDateStr) {
       this.daysUntilAnniversary.set(this.daysUntil(datingDateStr));
     }
+  }
+
+  private calculateSingleDays() {
+    const currentYear = new Date().getFullYear();
+    this.daysUntilValentine.set(this.daysUntil(`${currentYear}-02-14`));
+    this.daysUntilGirlfriendDay.set(this.daysUntil(`${currentYear}-08-01`));
+  }
+
+  private loadDailyInsight() {
+    const saved = sessionStorage.getItem(this.DAILY_INSIGHT_KEY);
+    console.log('saved', saved);
+    if (saved) {
+      try {
+        this.dailyInsight.set(JSON.parse(saved));
+        return;
+      } catch (error) {
+        sessionStorage.removeItem(this.DAILY_INSIGHT_KEY);
+      }
+    }
+
+    this.userService.getDailyInsight().subscribe({
+      next: (insight) => {
+        const value = insight ?? null;
+        this.dailyInsight.set(value);
+        if (value) {
+          sessionStorage.setItem(this.DAILY_INSIGHT_KEY, JSON.stringify(value));
+        }
+      },
+      error: () => this.dailyInsight.set(null),
+    });
   }
 
   // Helper to compute days until the next occurrence of a given date

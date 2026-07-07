@@ -62,7 +62,7 @@
                 <hlm-dropdown-menu-separator></hlm-dropdown-menu-separator>
                 <button
                   hlmDropdownMenuItem
-                  (triggered)="deleteAccount()"
+                  (triggered)="openDeleteConfirm()"
                   class="cursor-pointer text-red-600 hover:text-red-800 focus:text-red-800"
                 >
                   <lucide-icon name="trash-2" class="w-4 h-4 mr-2 text-red-500"></lucide-icon>
@@ -74,6 +74,7 @@
         </div>
         <div class="w-full h-0.5 mt-1" style="background-color: var(--border)"></div>
       </div>
+
       <div class="w-full animate-fade-in-up delay-100 mt-3">
         <div class="flex items-center">
           <lucide-icon
@@ -85,6 +86,7 @@
           </p>
         </div>
       </div>
+
       <div class="w-full flex animate-fade-in-up delay-100">
         <p class="text-lg md:text-xl font-medium px-2 text-primary archivo-black">
           Setup your account
@@ -399,5 +401,44 @@
         </button>
       </div>
     </section>
+  }
+  @if (showDeleteConfirm()) {
+    <div
+      hlmCard
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+    >
+      <div
+        class="w-full max-w-sm mx-4 p-6 rounded-2xl bg-white border border-border shadow-2xl text-center"
+      >
+        <div
+          class="mx-auto mb-4 w-14 h-14 rounded-full bg-red-100 flex items-center justify-center"
+        >
+          <lucide-icon name="trash-2" class="w-7 h-7 text-red-500"></lucide-icon>
+        </div>
+        <h3 class="text-xl font-bold text-neutral-text mb-2">Delete Account</h3>
+        <p class="text-muted mb-6">
+          Are you sure you want to delete your account? This action cannot be undone.
+        </p>
+        <div class="flex gap-3">
+          <button
+            hlmBtn
+            variant="outline"
+            class="flex-1 cursor-pointer"
+            (click)="cancelDeleteAccount()"
+          >
+            <lucide-icon name="X" class="w-6 h-6"></lucide-icon>
+            Cancel
+          </button>
+          <button
+            hlmBtn
+            class="flex-1 cursor-pointer bg-red-400 hover:bg-red-600 text-white"
+            (click)="confirmDeleteAccount()"
+          >
+            <lucide-icon name="Trash2" class="w-6 h-6"></lucide-icon>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   }
 </div>
