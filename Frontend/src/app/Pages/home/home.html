@@ -126,7 +126,34 @@
         hlmCard
         class="col-span-3 row-span-1 bg-white/70 backdrop-blur-md border-primary border shadow-sm overflow-hidden flex items-center justify-center"
       >
-        <span class="text-muted text-sm"></span>
+        @if (romanticSongs()) {
+          <section class="romantic-songs-card">
+            <h2 class="text-xl font-bold text-primary-dark mb-3">Romantic Songs</h2>
+            <ul class="space-y-2">
+              @for (song of romanticSongs(); track song.url) {
+                <li class="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                  <img
+                    [src]="song.imageUrl"
+                    alt="Song cover"
+                    class="w-12 h-12 rounded-md object-cover"
+                  />
+                  <div class="flex-1 min-w-0">
+                    <p class="font-semibold text-neutral-text truncate">{{ song.title }}</p>
+                    <p class="text-sm text-neutral-muted truncate">{{ song.artist }}</p>
+                  </div>
+                  <a
+                    [href]="song.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary-main hover:text-primary-dark text-sm whitespace-nowrap"
+                  >
+                    Open
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
       </section>
       <section
         hlmCard

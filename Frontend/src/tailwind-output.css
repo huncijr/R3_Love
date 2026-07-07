@@ -1255,6 +1255,9 @@
   .bg-clip-padding {
     background-clip: padding-box;
   }
+  .object-cover {
+    object-fit: cover;
+  }
   .p-0 {
     padding: calc(var(--spacing) * 0);
   }

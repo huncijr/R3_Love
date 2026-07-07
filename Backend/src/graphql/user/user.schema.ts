@@ -119,7 +119,6 @@ export const userSchema = `
     value: String!
   }
 
-
     type Query {
     users: [User!]!
     user(id: ID!): User
@@ -158,4 +157,15 @@ export const userSchema = `
     saveGiftRecommendations(input: SaveGiftRecommendationsInput!): SavedGiftRecommendations!
     deleteGiftRecommendations(id: ID!): Boolean!
   }
+`;
+export const spotifyTypeDefs = `#graphql
+type Song {
+  title: String!
+  artist: String!
+  url: String!
+  imageUrl: String!
+
+}
+  extend type Query{
+  getRomanticSongs: [Song!]!}
 `;

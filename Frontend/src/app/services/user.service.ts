@@ -414,4 +414,23 @@ export class UserService {
       })
       .pipe(map((result) => result.data?.getDailyInsight));
   }
+
+  getRomanticSongs() {
+    console.log('aaa');
+    return this.apollo.query<{
+      getRomanticSongs: { title: string; artist: string; url: string; imageUrl: string }[];
+    }>({
+      query: gql`
+        query GetRomanticSongs {
+          getRomanticSongs {
+            title
+            artist
+            url
+            imageUrl
+          }
+        }
+      `,
+      fetchPolicy: 'network-only',
+    });
+  }
 }

@@ -7,10 +7,11 @@ import {
 import dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Client } from "pg";
-import { userSchema } from "./graphql/user/user.schema";
+import { spotifyTypeDefs, userSchema } from "./graphql/user/user.schema";
 import { userResolver } from "./graphql/user/user.resolver";
 import { connectDatabase } from "./db";
 import { AppError } from "./middleware/ErrorHandler";
+import { spotifyResolver } from "./graphql/spotify/spotify.resolver";
 
 dotenv.config();
 
@@ -40,8 +41,8 @@ interface MyContext {
   token: string;
 }
 
-const typeDefs = userSchema;
-const resolvers = userResolver;
+const typeDefs = [userSchema, spotifyTypeDefs];
+const resolvers = [userResolver, spotifyResolver];
 
 const server = new ApolloServer({
   typeDefs,
