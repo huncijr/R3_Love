@@ -8,12 +8,11 @@
 @source "./**/*.{html,ts,scss}";
 
 @theme {
-  /* Project pink palette (see .clinerules style guide) */
-  --color-primary-light: #fbcfe8;
-  --color-primary-main: #ec4899;
-  --color-primary-dark: #be185d;
-  --color-neutral-bg: #fff5f7;
-  --color-neutral-text: #1f2937;
-  --color-neutral-muted: #4b5563;
-  --color-border-pink: #f472b6;
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-main: var(--color-primary-main);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-neutral-bg: var(--color-neutral-bg);
+  --color-neutral-text: var(--color-neutral-text);
+  --color-neutral-muted: var(--color-neutral-muted);
+  --color-border-pink: var(--color-border-pink);
 }

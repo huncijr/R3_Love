@@ -10,16 +10,24 @@ import {
   Music,
   Disc,
   AudioLines,
+  SquareArrowOutUpRight,
+  Play,
+  CircleSlash2,
   LucideAngularModule,
   LucideIconProvider,
+  Map,
 } from 'lucide-angular';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
+import { GiftRecommendation } from '../games/gift/gift';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../../enviroments/enviroment';
+import { HlmBadge } from '@spartan-ng/helm/badge';
 
 //for testing:
 @Component({
   selector: 'app-home',
-  imports: [HlmCardImports, LucideAngularModule],
+  imports: [HlmCardImports, LucideAngularModule, HlmBadge],
   providers: [
     {
       provide: LUCIDE_ICONS,
@@ -32,6 +40,10 @@ import { UserContext } from '../../services/UserContext/user-context';
         Music,
         Disc,
         AudioLines,
+        SquareArrowOutUpRight,
+        Play,
+        Map,
+        CircleSlash2,
       }),
       multi: true,
     },
@@ -40,6 +52,7 @@ import { UserContext } from '../../services/UserContext/user-context';
   styleUrl: './home.scss',
 })
 export class Home implements OnInit {
+  private sanitizer = inject(DomSanitizer);
   private userService = inject(UserService);
   private userContext = inject(UserContext);
   // Computes total days since the relationship started
@@ -50,6 +63,8 @@ export class Home implements OnInit {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     this.daysTogether.set(diffDays);
   }
+
+  private readonly RANDOM_GIFT_KEY = 'homeRandomGift';
 
   currentUser = this.userContext.currentUser;
   quizData = signal<any>(null);
@@ -71,9 +86,54 @@ export class Home implements OnInit {
     null,
   );
 
+  randomGift = signal<GiftRecommendation | null>(null);
+  partnerName = computed(() => this.quizData()?.partnerName || '');
+
+  giftMapUrl = computed<SafeResourceUrl | null>(() => {
+    const gift = this.randomGift();
+    if (!gift) return null;
+    const query = gift.stores?.[0]
+      ? `${gift.stores[0].name} ${gift.stores[0].address}`
+      : `${gift.title} gift shop near me`;
+
+    const url = `https://www.google.com/maps/embed/v1/search?key=${environment.googleMapsApiKey}&q=${encodeURIComponent(query)}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  });
+
+  buyOnlineUrl = computed(() => {
+    const gift = this.randomGift();
+    if (!gift) return '#';
+    if (gift.onlineLinks?.length) return gift.onlineLinks[0];
+    return `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(gift.title)}`;
+  });
+
+  buyForPartnerUrl = computed(() => {
+    const gift = this.randomGift();
+    if (!gift) return '#';
+    const name = this.partnerName();
+    const query = name ? `${gift.title} gift for ${name}` : gift.title;
+    return `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(query)}`;
+  });
+
+  truncatedDescription = computed(() => {
+    const desc = this.randomGift()?.description || '';
+    const max = 140;
+    return desc.length > max ? desc.slice(0, max) + '...' : desc;
+  });
+
+  formatLink(url: string): string {
+    try {
+      const u = new URL(url);
+      return u.hostname.replace(/^www\./, '');
+    } catch {
+      return url.length > 25 ? url.slice(0, 25) + '...' : url;
+    }
+  }
+
   ngOnInit(): void {
     this.loadDailyInsight();
     this.loadRomanticSongs();
+    this.loadRandomGift();
     if (this.userContext.isLoggedIn()) {
       this.userService.getCalendarQuiz().subscribe({
         next: (quiz) => {
@@ -116,6 +176,46 @@ export class Home implements OnInit {
     const currentYear = new Date().getFullYear();
     this.daysUntilValentine.set(this.daysUntil(`${currentYear}-02-14`));
     this.daysUntilGirlfriendDay.set(this.daysUntil(`${currentYear}-08-01`));
+  }
+
+  private loadRandomGift() {
+    const saved = sessionStorage.getItem(this.RANDOM_GIFT_KEY);
+    if (saved) {
+      try {
+        this.randomGift.set(JSON.parse(saved));
+        return;
+      } catch {
+        sessionStorage.removeItem(this.RANDOM_GIFT_KEY);
+      }
+    }
+
+    if (!this.userContext.isLoggedIn()) {
+      const pending = localStorage.getItem('gift_pending_recommendations');
+      if (pending) {
+        const recs: GiftRecommendation[] = JSON.parse(pending);
+        this.pickRandomGift(recs);
+      }
+      return;
+    }
+
+    this.userService.getGiftRecommendationsHistory().subscribe({
+      next: (res: any) => {
+        const history = res.data?.getGiftRecommendationsHistory || [];
+        if (history.length === 0) return;
+
+        const allRecommendations = history.flatMap((set: any) => set.recommendations || []);
+        this.pickRandomGift(allRecommendations);
+      },
+      error: (err) => console.error('Failed to load gift history', err),
+    });
+  }
+
+  private pickRandomGift(recommendations: GiftRecommendation[]) {
+    if (recommendations.length === 0) return;
+    const index = Math.floor(Math.random() * recommendations.length);
+    const gift = recommendations[index];
+    this.randomGift.set(gift);
+    sessionStorage.setItem(this.RANDOM_GIFT_KEY, JSON.stringify(gift));
   }
 
   private loadDailyInsight() {
