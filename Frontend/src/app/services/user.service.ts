@@ -3,8 +3,13 @@ import { Apollo, gql } from 'apollo-angular';
 import { map, Observable } from 'rxjs';
 
 const CREATE_USER = gql`
-  mutation CreateUser($name: String!, $password: String!, $gender: String!) {
-    createUser(name: $name, password: $password, gender: $gender) {
+  mutation CreateUser(
+    $name: String!
+    $password: String!
+    $gender: String!
+    $turnstileToken: String!
+  ) {
+    createUser(name: $name, password: $password, gender: $gender, turnstileToken: $turnstileToken) {
       user {
         id
         name
@@ -16,8 +21,8 @@ const CREATE_USER = gql`
 `;
 
 const LOGIN = gql`
-  mutation Login($name: String!, $password: String!) {
-    login(name: $name, password: $password) {
+  mutation Login($name: String!, $password: String!, $turnstileToken: String!) {
+    login(name: $name, password: $password, turnstileToken: $turnstileToken) {
       user {
         id
         name
@@ -155,20 +160,26 @@ export class UserService {
   constructor(private apollo: Apollo) {}
 
   // Registers a new user and returns the created user with auth token
-  createUser(name: string, password: string, gender: string): Observable<CreateUserResponse> {
+  createUser(
+    name: string,
+    password: string,
+    gender: string,
+    turnstileToken: string,
+  ): Observable<CreateUserResponse> {
+    console.log(turnstileToken);
     return this.apollo
       .mutate<{ createUser: CreateUserResponse }>({
         mutation: CREATE_USER,
-        variables: { name, password, gender },
+        variables: { name, password, gender, turnstileToken },
       })
       .pipe(map((result) => result.data!.createUser));
   }
   // Authenticates existing user and returns token for session management
-  login(name: string, password: string): Observable<CreateUserResponse> {
+  login(name: string, password: string, turnstileToken: string): Observable<CreateUserResponse> {
     return this.apollo
       .mutate<{ login: CreateUserResponse }>({
         mutation: LOGIN,
-        variables: { name, password },
+        variables: { name, password, turnstileToken },
       })
       .pipe(map((result) => result.data!.login));
   }

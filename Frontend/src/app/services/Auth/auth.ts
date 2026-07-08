@@ -24,7 +24,8 @@ export class AuthService {
   // Removes the JWT cookie and clears persisted user data
   clearToken(): void {
     document.cookie = `{this.TOKEN_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
-    localStorage.removeItem(this.USER_KEY);
+    localStorage.clear();
+    sessionStorage.clear();
   }
 
   // Saves user object to localStorage for app startup restoration

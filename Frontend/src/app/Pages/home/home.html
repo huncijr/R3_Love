@@ -1,11 +1,11 @@
 <div class="min-h-screen flex flex-col items-center gap-5 pt-10 px-4">
   @if (isLoggedIn()) {
     <div
-      class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-10 gap-4 animate-fade-in-up auto-rows-[180px]"
+      class="w-full max-w-5xl grid grid-cols-10 md:grid-cols-10 gap-4 animate-fade-in-up auto-rows-[170px] md:auto-rows-[180px]"
     >
       <section
         hlmCard
-        class="daily-insight-card col-span-1 md:col-span-2 md:row-span-2 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-hidden flex items-center justify-center"
+        class="daily-insight-card col-span-4 row-span-2 md:col-span-2 md:row-span-2 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-hidden flex items-center justify-center"
       >
         <div class="hearts-bg">
           <span class="heart heart-xl heart-1">❤</span>
@@ -55,35 +55,7 @@
 
       <section
         hlmCard
-        class="status-card col-span-4 row-span-1 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-hidden"
-      >
-        <div hlmCardContent class="content flex flex-col items-center justify-center h-full gap-2">
-          @if (hasPartner()) {
-            <div
-              class="w-12 h-12 rounded-full bg-primary-main flex items-center justify-center shadow-lg shadow-primary-main/20"
-            >
-              <lucide-icon name="heart" class="w-6 h-6 text-white"></lucide-icon>
-            </div>
-            <span class="text-xs font-medium text-muted">Together for</span>
-            <h2 class="text-3xl font-bold text-primary-dark leading-none">
-              {{ daysTogether() }} <span class="text-lg font-medium">days</span>
-            </h2>
-            <p class="text-xs text-neutral-text text-center px-4">{{ funFact() }}</p>
-          } @else {
-            <div
-              class="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center shadow-lg"
-            >
-              <lucide-icon name="heart-crack" class="w-6 h-6 text-primary-main"></lucide-icon>
-            </div>
-            <span class="text-lg font-bold text-muted"> Current Status </span>
-            <h2 class="text-2xl font-bold text-primary-dark leading-none">Single</h2>
-            <p class="text-xs text-neutral-text text-center px-4">Ready for love</p>
-          }
-        </div>
-      </section>
-      <section
-        hlmCard
-        class="events-card col-span-4 row-span-1 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-hidden"
+        class="events-card col-span-6 md:col-span-4 md:row-span-1 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-hidden"
       >
         <div hlmCardHeader class="pb-0 pt-3 px-4">
           <div class="flex items-center gap-2">
@@ -139,11 +111,40 @@
       </section>
 
       <section
-        class="col-span-3 row-span-1 bg-white/70 rounded-2xl backdrop-blur-md border-primary border shadow-sm overflow-hidden flex flex-col"
+        hlmCard
+        class="status-card col-span-6 row-span-1 md:col-span-4 md:row-span-1 backdrop-blur-md border border-primary-light/50 shadow-sm overflow-hidden"
+      >
+        <div hlmCardContent class="content flex flex-col items-center justify-center h-full gap-2">
+          @if (hasPartner()) {
+            <div
+              class="w-12 h-12 rounded-full bg-primary-main flex items-center justify-center shadow-lg shadow-primary-main/20"
+            >
+              <lucide-icon name="heart" class="w-6 h-6 text-white"></lucide-icon>
+            </div>
+            <span class="text-xs font-medium text-muted">Together for</span>
+            <h2 class="text-3xl font-bold text-primary-dark leading-none">
+              {{ daysTogether() }} <span class="text-lg font-medium">days</span>
+            </h2>
+            <p class="text-xs text-neutral-text text-center px-4">{{ funFact() }}</p>
+          } @else {
+            <div
+              class="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center shadow-lg"
+            >
+              <lucide-icon name="heart-crack" class="w-6 h-6 text-primary-main"></lucide-icon>
+            </div>
+            <span class="text-lg font-bold text-muted"> Current Status </span>
+            <h2 class="text-2xl font-bold text-primary-dark leading-none">Single</h2>
+            <p class="text-xs text-neutral-text text-center px-4">Ready for love</p>
+          }
+        </div>
+      </section>
+
+      <section
+        class="col-span-10 row-span-2 md:col-span-3 md:row-span-1 bg-white/70 rounded-2xl backdrop-blur-md border-primary border shadow-sm overflow-hidden flex flex-col"
       >
         @if (romanticSongs()) {
           <section
-            class="romantic-songs-card flex h-full w-full flex-col rounded-xl bg-gray-800 p-4 shadow-lg"
+            class="romantic-songs-card flex h-full w-full flex-col rounded-xl bg-gray-800 p-5 shadow-lg min-h-[360px] md:min-h-0"
           >
             <div class="flex justify-between pb-2">
               <div class="flex flex-col">
@@ -154,7 +155,7 @@
             </div>
             <div class="mb-2 h-px bg-gray-400"></div>
 
-            <ul class="flex-1 max-h-[220px] space-y-2 overflow-y-auto p-2">
+            <ul class="flex-1 max-h-[260px] md:max-h-[220px] space-y-2 overflow-y-auto p-2">
               @for (song of romanticSongs(); track song.url) {
                 <li
                   class="flex items-center gap-3 rounded-lg border border-gray-700 bg-gray-700 p-2 transition hover:border-gray-600"
@@ -184,9 +185,10 @@
           </section>
         }
       </section>
+
       <section
         hlmCard
-        class="gift-card col-span-12 md:col-span-5 row-span-2 backdrop-blur-md border border-primary-light/60 shadow-sm overflow-hidden flex flex-col"
+        class="gift-card row-span-3 col-span-10 md:col-span-5 md:row-span-2 backdrop-blur-md border border-primary-light/60 shadow-sm overflow-hidden flex flex-col"
       >
         @if (randomGift()) {
           <div hlmCardContent class="content flex flex-col h-full p-4 gap-3">
@@ -280,14 +282,19 @@
           </div>
         } @else {
           <div class="flex flex-col items-center justify-center h-full gap-2 p-4">
-            <lucide-icon name="circle-slash-2" class="w-6 h-6 text-primary-light"></lucide-icon>
+            <div class="border-2 rounded-lg p-2 border-gray-900/10">
+              <lucide-icon name="circle-slash-2" class="w-20 h-20 text-red-500"></lucide-icon>
+            </div>
             <span class="text-xs text-muted text-center">
               No gift recommendations yet.<br />Try the Gift Finder!
             </span>
           </div>
         }
       </section>
-      <section class="col-span-5 row-span-1 bg-white/80 backdrop-blur-md border rounded-lg">
+
+      <section
+        class="col-span-10 md:col-span-5 md:row-span-1 bg-white/80 backdrop-blur-md border rounded-lg"
+      >
         <div hlmCardContent class="flex flex-col h-full items-center justify-center">IDK PAGE</div>
       </section>
     </div>

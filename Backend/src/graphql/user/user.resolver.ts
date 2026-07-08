@@ -16,6 +16,7 @@ import {
   getGiftRecommendationsFromAI,
   QuizAnswer,
 } from "../ai/ai.service.js";
+import { verifyTurnstileToken } from "../../utils/turnstile.js";
 
 // Extracts and verifies user ID from JWT token in request context
 const getUserIdFromContext = (token: string): string => {
@@ -149,9 +150,14 @@ export const userResolver = {
         name: string;
         password: string;
         gender?: string;
+        turnstileToken: string;
       },
     ) => {
       try {
+        const isHuman = await verifyTurnstileToken(args.turnstileToken);
+        if (!isHuman) {
+          throw new AppError("Turnstile verification failed", 403);
+        }
         const hashedPassword = await bcrypt.hash(args.password, 10);
         const newUser = {
           name: args.name,
@@ -175,9 +181,13 @@ export const userResolver = {
     // Authenticates user and returns JWT token
     login: async (
       _parent: unknown,
-      args: { name: string; password: string },
+      args: { name: string; password: string; turnstileToken: string },
     ) => {
       try {
+        const isHuman = await verifyTurnstileToken(args.turnstileToken);
+        if (!isHuman) {
+          throw new AppError("Turnstile verification failed", 403);
+        }
         const result = await db
           .select()
           .from(user)

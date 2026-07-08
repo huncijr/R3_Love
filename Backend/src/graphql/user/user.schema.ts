@@ -135,10 +135,13 @@ export const userSchema = `
       name: String!
       password: String!
       gender: String
+      turnstileToken: String!
     ): AuthPayload!
 
-    login(name: String!
+    login(
+       name: String!
        password: String!
+       turnstileToken: String!
     ): AuthPayload
 
     saveCalendarQuiz(

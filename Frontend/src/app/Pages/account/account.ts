@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
@@ -30,6 +30,16 @@ import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
 import { getCode } from 'country-list';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
+import { environment } from '../../../enviroments/enviroment';
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (selector: string | HTMLElement, options: any) => string;
+      reset: (widgetId?: string) => void;
+    };
+    onTurnstileCallback?: (token: string) => void;
+  }
+}
 
 @Component({
   selector: 'app-account',
@@ -69,10 +79,24 @@ import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
   ],
   styleUrl: './account.scss',
 })
-export class Account implements OnInit {
+export class Account implements OnInit, AfterViewInit {
   private toastr = inject(ToastrService);
   private userService = inject(UserService);
   private userContext = inject(UserContext);
+
+  ngAfterViewInit(): void {
+    window.onTurnstileCallback = (token: string) => {
+      this.turnstileToken.set(token);
+    };
+    if (window.turnstile) {
+      window.turnstile.render('.cf-turnstile', {
+        sitekey: this.turnstileSiteKey,
+        callback: (token: string) => {
+          this.turnstileToken.set(token);
+        },
+      });
+    }
+  }
 
   // Syncs locally stored calendar quiz to backend after successful registration
   private syncCalendarQuiz() {
@@ -142,6 +166,9 @@ export class Account implements OnInit {
     giftDone: false,
     gameDone: false,
   });
+
+  turnstileToken = signal('');
+  turnstileSiteKey = environment.turnstileSiteKey;
 
   // Counts how many of the three game modules the user has completed
   completedCount = computed(() => {
@@ -257,24 +284,26 @@ export class Account implements OnInit {
 
     if (isUsernameValid && isPasswordValid && isPasswordMatch && this.gender()) {
       this.isLoading.set(true);
-      this.userService.createUser(this.username(), this.password(), this.gender()).subscribe({
-        next: (response) => {
-          this.isLoading.set(false);
-          this.isSubmited.set(true);
-          this.userContext.login(response.user, response.token);
-          this.resetForm();
-          this.toastr.success('Account created successfully!', 'Success');
-          this.syncCalendarQuiz();
-          this.syncGiftRecommendation();
-        },
-        error: (err) => {
-          this.isLoading.set(false);
-          this.isSubmited.set(false);
-          const errorMessage = err.message || 'Something went wrong';
-          this.toastr.error(errorMessage, 'Error');
-          console.error('GraphQL error', err);
-        },
-      });
+      this.userService
+        .createUser(this.username(), this.password(), this.gender(), this.turnstileToken())
+        .subscribe({
+          next: (response) => {
+            this.isLoading.set(false);
+            this.isSubmited.set(true);
+            this.userContext.login(response.user, response.token);
+            this.resetForm();
+            this.toastr.success('Account created successfully!', 'Success');
+            this.syncCalendarQuiz();
+            this.syncGiftRecommendation();
+          },
+          error: (err) => {
+            this.isLoading.set(false);
+            this.isSubmited.set(false);
+            const errorMessage = err.message || 'Something went wrong';
+            this.toastr.error(errorMessage, 'Error');
+            console.error('GraphQL error', err);
+          },
+        });
       this.isSubmited.set(true);
       console.log('Account created:', {
         username: this.username(),
@@ -288,12 +317,22 @@ export class Account implements OnInit {
   logout() {
     this.userContext.logout();
     this.resetForm();
+    this.calendarQuiz.set(null);
+    this.userProgress.set({ calendarDone: false, giftDone: false, gameDone: false });
     this.toastr.info('You have been logged out', 'Logout');
   }
 
   signOut() {
     this.logout();
   }
+
+  resetTurnstile() {
+    this.turnstileToken.set('');
+    if (window.turnstile) {
+      window.turnstile.reset();
+    }
+  }
+
   confirmDeleteAccount() {
     this.showDeleteConfirm.set(false);
 
@@ -332,7 +371,7 @@ export class Account implements OnInit {
       return;
     }
     this.isLoading.set(true);
-    this.userService.login(this.username(), this.password()).subscribe({
+    this.userService.login(this.username(), this.password(), this.turnstileToken()).subscribe({
       next: (response) => {
         this.isLoading.set(false);
         this.isSubmited.set(true);
