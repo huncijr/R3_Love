@@ -21,11 +21,61 @@
         [disabled]="isKissing()"
       >
         <lucide-icon name="hand-heart" class="h-5 w-5"></lucide-icon>
+        <span>Kiss</span>
       </button>
     </div>
   </div>
+
   <div
-    #canvasContainer
-    class="canvas-wrapper relative flex-1 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(236,72,153,0.2)]"
-  ></div>
+    class="scene-container relative flex-1 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(236,72,153,0.2)]"
+  >
+    <div class="backdrop"></div>
+    <div class="stage-platform"></div>
+
+    <div class="character-stage">
+      <div
+        class="character"
+        [class.male]="currentGender() === 'male'"
+        [class.female]="currentGender() === 'female'"
+        [class.kissing]="isKissing()"
+      >
+        <div class="hair male-hair" *ngIf="currentGender() === 'male'">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="hair female-hair" *ngIf="currentGender() === 'female'"></div>
+
+        <div class="shadow"></div>
+        <div class="head">
+          <div class="face">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="mouth"></div>
+            <div class="blush left"></div>
+            <div class="blush right"></div>
+          </div>
+        </div>
+        <div class="body"></div>
+        <div class="arm left">
+          <div class="hand"></div>
+        </div>
+        <div class="arm right">
+          <div class="hand"></div>
+        </div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+      </div>
+
+      <div class="hearts" [class.visible]="isKissing()">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+      </div>
+    </div>
+  </div>
 </div>
