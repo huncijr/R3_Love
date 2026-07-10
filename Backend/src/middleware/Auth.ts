@@ -20,3 +20,11 @@ export function verifyToken(token: string): { userId: string } {
   const decoded = jwt.verify(token, JWT_SECRET) as unknown;
   return decoded as { userId: string };
 }
+
+export function getUserIdFromContext(token: string | undefined): string {
+  if (!token) {
+    throw new Error("Unathorized");
+  }
+  const decoded = verifyToken(token);
+  return decoded.userId;
+}

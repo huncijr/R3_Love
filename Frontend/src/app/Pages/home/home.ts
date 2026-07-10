@@ -16,6 +16,10 @@ import {
   LucideAngularModule,
   LucideIconProvider,
   Map,
+  ChevronLeft,
+  ChevronRight,
+  Music2,
+  Square,
 } from 'lucide-angular';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
@@ -23,8 +27,15 @@ import { GiftRecommendation } from '../games/gift/gift';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '../../../enviroments/enviroment';
 import { HlmBadge } from '@spartan-ng/helm/badge';
+import { ActivatedRoute, Router } from '@angular/router';
 
-//for testing:
+export type RomanticSong = {
+  title: string;
+  artist: string;
+  url: string;
+  imageUrl: string;
+};
+
 @Component({
   selector: 'app-home',
   imports: [HlmCardImports, LucideAngularModule, HlmBadge],
@@ -44,6 +55,10 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
         Play,
         Map,
         CircleSlash2,
+        ChevronLeft,
+        ChevronRight,
+        Music2,
+        Square,
       }),
       multi: true,
     },
@@ -53,6 +68,8 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
 })
 export class Home implements OnInit {
   private sanitizer = inject(DomSanitizer);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private userService = inject(UserService);
   private userContext = inject(UserContext);
   // Computes total days since the relationship started
@@ -65,6 +82,7 @@ export class Home implements OnInit {
   }
 
   private readonly RANDOM_GIFT_KEY = 'homeRandomGift';
+  private readonly ROMANTIC_SONGS_KEY = 'romanticSongs';
 
   currentUser = this.userContext.currentUser;
   quizData = signal<any>(null);
@@ -82,9 +100,13 @@ export class Home implements OnInit {
 
   dailyInsight = signal<{ didYouKnow: string; advice: string } | null>(null);
 
-  romanticSongs = signal<{ title: string; artist: string; url: string; imageUrl: string }[] | null>(
-    null,
-  );
+  romanticSongs = signal<RomanticSong[] | null>(null);
+  currentSong = signal<RomanticSong | null>(null);
+  isPlaying = signal(false);
+
+  showSpotifyConnect = signal(false);
+  spotifyConnected = signal(false);
+  showMusicBar = signal(false);
 
   randomGift = signal<GiftRecommendation | null>(null);
   partnerName = computed(() => this.quizData()?.partnerName || '');
@@ -131,6 +153,25 @@ export class Home implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      const spotify = params['spotify'];
+      const code = params['code'];
+
+      if (spotify === 'success' && code) {
+        this.userService.exchangeSpotifyCode(code).subscribe({
+          next: () => {
+            this.spotifyConnected.set(true);
+            this.showSpotifyConnect.set(false);
+            this.router.navigate([], { queryParams: {} });
+          },
+          error: (err) => {
+            console.error('Spotify connect error', err);
+            this.spotifyConnected.set(false);
+          },
+        });
+      }
+    });
+
     this.loadDailyInsight();
     this.loadRomanticSongs();
     this.loadRandomGift();
@@ -258,15 +299,80 @@ export class Home implements OnInit {
   }
 
   loadRomanticSongs() {
+    const saved = sessionStorage.getItem(this.ROMANTIC_SONGS_KEY);
+    if (saved) {
+      try {
+        this.romanticSongs.set(JSON.parse(saved));
+        return;
+      } catch {
+        sessionStorage.removeItem(this.ROMANTIC_SONGS_KEY);
+      }
+    }
+
     this.userService.getRomanticSongs().subscribe({
       next: (result) => {
+        const songs = result.data?.getRomanticSongs ?? null;
         console.log(result);
-        this.romanticSongs.set(result.data?.getRomanticSongs ?? null);
+        this.romanticSongs.set(songs);
+        if (songs) {
+          sessionStorage.setItem(this.ROMANTIC_SONGS_KEY, JSON.stringify(songs));
+        }
       },
       error: (err) => {
         console.error('Failed to load romantic songs', err);
+        sessionStorage.removeItem(this.ROMANTIC_SONGS_KEY);
       },
     });
+  }
+
+  playSong(song: RomanticSong, event: Event) {
+    event.stopPropagation();
+    if (!this.spotifyConnected()) {
+      this.showSpotifyConnect.set(true);
+      return;
+    }
+    this.currentSong.set(song);
+    this.isPlaying.set(true);
+    window.open(song.url, '_blank');
+  }
+
+  stopSong(event: Event) {
+    event.stopPropagation();
+    this.isPlaying.set(false);
+  }
+
+  connectToSpotify() {
+    this.userService.getSpotifyAuthUrl().subscribe({
+      next: (url) => {
+        if (url) {
+          window.location.href = url;
+        }
+      },
+      error: (err) => console.error('Failed to get Spotify auth URL', err),
+    });
+  }
+
+  closeSpotifyConnect() {
+    this.showSpotifyConnect.set(false);
+  }
+  openSpotify(event: Event, song: RomanticSong) {
+    event.stopPropagation();
+    window.open(song.url, '_blank');
+  }
+
+  closeMusicBar(event: Event) {
+    event.stopPropagation();
+    this.showMusicBar.set(false);
+    this.isPlaying.set(false);
+    this.currentSong.set(null);
+  }
+
+  openCurrentSong(event: Event) {
+    event.stopPropagation();
+    const song = this.currentSong();
+    if (song) {
+      window.open(song.url, '_blank');
+    }
   }
 
   // Returns a fun relationship fact based on total days together

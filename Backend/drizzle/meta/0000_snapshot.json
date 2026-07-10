@@ -1,5 +1,5 @@
 {
-  "id": "3c9a7043-4ee2-47b9-a9a5-eb8be7aeb948",
+  "id": "f3763aac-c5a2-4740-8de7-cc1ae0378f4b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -281,6 +281,24 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "spotifyAccessToken": {
+          "name": "spotifyAccessToken",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spotifyRefreshToken": {
+          "name": "spotifyRefreshToken",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spotifyTokenExpiry": {
+          "name": "spotifyTokenExpiry",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

@@ -9,6 +9,71 @@ export interface SpotifySong {
   imageUrl: string;
 }
 
+export interface SpotifyTokens {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
+function getSpotifyCredentials() {
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+  const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
+
+  if (!clientId || !clientSecret || !redirectUri) {
+    throw new Error("Missing Spotify environment variables");
+  }
+  return { clientId, clientSecret, redirectUri };
+}
+
+export function getSpotifyAuthUrl(): string {
+  const { clientId, redirectUri } = getSpotifyCredentials();
+  const scope = [
+    "streaming",
+    "user-read-email",
+    "user-read-private",
+    "user-modify-playback-state",
+    "user-read-playback-state",
+  ].join(" ");
+  const params = new URLSearchParams({
+    response_type: "code",
+    client_id: clientId,
+    scope,
+    redirect_uri: redirectUri,
+    show_dialog: "true",
+  });
+  return `https://accounts.spotify.com/authorize?${params.toString()}`;
+}
+
+export async function exchangeSpotifyCode(
+  code: string,
+): Promise<SpotifyTokens> {
+  const { clientId, clientSecret, redirectUri } = getSpotifyCredentials();
+
+  const response = await fetch("https://accounts.spotify.com/api/token", {
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: redirectUri,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Spotify token exchange error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return {
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    expiresIn: data.expires_in,
+  };
+}
+
 async function getAccessToken(): Promise<string> {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;

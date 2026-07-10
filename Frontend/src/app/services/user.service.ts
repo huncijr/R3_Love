@@ -444,4 +444,27 @@ export class UserService {
       fetchPolicy: 'network-only',
     });
   }
+  getSpotifyAuthUrl() {
+    return this.apollo
+      .query<{ getSpotifyAuthUrl: string }>({
+        query: gql`
+          query GetSpotifyAuthUrl {
+            getSpotifyAuthUrl
+          }
+        `,
+        fetchPolicy: 'network-only',
+      })
+      .pipe(map((result) => result.data?.getSpotifyAuthUrl ?? ''));
+  }
+
+  exchangeSpotifyCode(code: string) {
+    return this.apollo.mutate<{ exhangeSpotifyCode: boolean }>({
+      mutation: gql`
+        mutation ExchangeSpotifyCode($code: String!) {
+          exchangeSpotifyCode(code: $code)
+        }
+      `,
+      variables: { code },
+    });
+  }
 }

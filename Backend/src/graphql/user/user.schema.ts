@@ -6,6 +6,9 @@ export const userSchema = `
     gender: String
     country: String
     createdAt: String!
+    spotifyAccessToken: String
+    spotifyRefreshToken: String
+    spotifyTokenExpiry: String
   }
 
   type UserProgress{
@@ -124,6 +127,8 @@ export const userSchema = `
     user(id: ID!): User
     getCalendarQuiz: CalendarQuiz
     getUserProgress: UserProgress
+    getSpotifyAuthUrl: String
+    getSpotifyAccessToken: String
     getCalendarEvents: [CalendarEvent!]
     getGiftRecommendationsHistory: [SavedGiftRecommendations!]!
     getDailyInsight: DailyInsight!
@@ -154,6 +159,7 @@ export const userSchema = `
     updateUserCountry(country: String!): User!
     saveCalendarEvent(event: EventInput!): CalendarEvent!
     deleteCalendarEvent(id: ID!): Boolean!
+    exchangeSpotifyCode(code: String!): Boolean
     generateDeepQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
     generatePracticalQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
     getGiftRecommendations(answers: [QuizAnswerInput!]!): [GiftRecommendation!]!

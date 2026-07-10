@@ -38,6 +38,9 @@ CREATE TABLE "Users" (
 	"calendar_done" boolean DEFAULT false,
 	"gift_done" boolean DEFAULT false,
 	"game_done" boolean DEFAULT false,
+	"spotifyAccessToken" text,
+	"spotifyRefreshToken" text,
+	"spotifyTokenExpiry" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint

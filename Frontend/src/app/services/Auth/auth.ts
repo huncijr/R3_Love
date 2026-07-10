@@ -1,8 +1,19 @@
 import { Injectable } from '@angular/core';
 
+const LOCAL_STORAGE_KEYS = [
+  'auth_token',
+  'calendar-quiz',
+  'gift-recommendations',
+  'gift_pending_recommendations',
+  'gift_pending_answers',
+  'gift_show_history',
+];
+
+const SESSION_STORAGE_KEYS = ['homeRandomGift', 'dailyInsight', 'romanticSongs'];
 @Injectable({
   providedIn: 'root',
 })
+
 // Handles JWT token storage in cookies and user data in localStorage
 export class AuthService {
   private readonly USER_KEY = 'auth_token';
@@ -24,8 +35,12 @@ export class AuthService {
   // Removes the JWT cookie and clears persisted user data
   clearToken(): void {
     document.cookie = `{this.TOKEN_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
-    localStorage.clear();
-    sessionStorage.clear();
+    this.clearAppData();
+  }
+
+  clearAppData(): void {
+    LOCAL_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    SESSION_STORAGE_KEYS.forEach((key) => sessionStorage.removeItem(key));
   }
 
   // Saves user object to localStorage for app startup restoration

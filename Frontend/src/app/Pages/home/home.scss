@@ -239,3 +239,39 @@
   position: relative;
   z-index: 1;
 }
+
+.playing-frame {
+  box-shadow:
+    0 0 0 4px #22c55e,
+    0 0 20px rgba(34, 197, 94, 0.4);
+  border-radius: 1rem;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+@keyframes audioLines {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-audio-lines {
+  animation: audioLines 0.8s ease-in-out infinite;
+}

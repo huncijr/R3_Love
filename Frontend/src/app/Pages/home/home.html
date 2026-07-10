@@ -141,10 +141,19 @@
 
       <section
         class="col-span-10 row-span-2 md:col-span-3 md:row-span-1 bg-white/70 rounded-2xl backdrop-blur-md border-primary border shadow-sm overflow-hidden flex flex-col"
+        [class.fixed-player]="currentSong()"
       >
+        @if (isPlaying()) {
+          <div
+            class="fixed inset-0 pointer-events-none z-50 border-[6px] border-green-500 rounded-none"
+            aria-hidden="true"
+          ></div>
+        }
+
         @if (romanticSongs()) {
           <section
             class="romantic-songs-card flex h-full w-full flex-col rounded-xl bg-gray-800 p-5 shadow-lg min-h-[360px] md:min-h-0"
+            [class.playing-frame]="isPlaying()"
           >
             <div class="flex justify-between pb-2">
               <div class="flex flex-col">
@@ -157,7 +166,10 @@
 
             <ul class="flex-1 max-h-[260px] md:max-h-[220px] space-y-2 overflow-y-auto p-2">
               @for (song of romanticSongs(); track song.url) {
-                <li
+                <a
+                  [href]="song.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="flex items-center gap-3 rounded-lg border border-gray-700 bg-gray-700 p-2 transition hover:border-gray-600"
                 >
                   <img
@@ -170,16 +182,24 @@
                     <p class="truncate text-sm font-semibold text-white">{{ song.title }}</p>
                     <p class="truncate text-xs text-gray-400">{{ song.artist }}</p>
                   </div>
-
-                  <a
-                    [href]="song.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="shrink-0 rounded-full bg-green-500 px-3 py-1 text-xs font-medium text-gray-900 transition hover:bg-green-400"
-                  >
-                    Open
-                  </a>
-                </li>
+                  @if (currentSong()?.url === song.url) {
+                    <button
+                      type="button"
+                      (click)="stopSong($event)"
+                      class="shrink-0 flex h-9 w-9 items-center justify-center rounded-full bg-red-500 text-white transition hover:bg-red-400"
+                    >
+                      <lucide-icon name="square" class="h-4 w-4"></lucide-icon>
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      (click)="playSong(song, $event)"
+                      class="shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-gray-900 transition hover:bg-green-400"
+                    >
+                      <lucide-icon name="play" class="h-4 w-4"></lucide-icon>
+                    </button>
+                  }
+                </a>
               }
             </ul>
           </section>

@@ -7,6 +7,7 @@ import {
   timestamp,
   boolean,
   integer,
+  text,
 } from "drizzle-orm/pg-core";
 
 // Users table: stores authentication and progress data
@@ -21,6 +22,9 @@ export const user = pgTable("Users", {
   calendarDone: boolean("calendar_done").default(false),
   giftDone: boolean("gift_done").default(false),
   gameDone: boolean("game_done").default(false),
+  spotifyAccessToken: text("spotifyAccessToken"),
+  spotifyRefreshToken: text("spotifyRefreshToken"),
+  sportifyTokenExpiry: timestamp("spotifyTokenExpiry"),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
