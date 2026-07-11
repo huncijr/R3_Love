@@ -7,6 +7,8 @@ import {
   getSpotifyAuthUrl,
 } from "./spotify.service";
 import { getUserIdFromContext } from "../../middleware/Auth";
+import { errorHandler } from "../../middleware/ErrorHandler";
+import * as spotifyService from "./spotify.service.js";
 
 export const spotifyResolver = {
   Query: {
@@ -14,6 +16,14 @@ export const spotifyResolver = {
       await getRomanticSongs();
     },
     getSpotifyAuthUrl: () => getSpotifyAuthUrl(),
+    isSpotifyConnected: async (_: any, __: any, context: any) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        return await spotifyService.isConnected(userId);
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
   },
   Mutation: {
     exchangeSpotifyCode: async (

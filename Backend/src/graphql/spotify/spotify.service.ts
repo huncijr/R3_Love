@@ -1,4 +1,8 @@
 import dotenv from "dotenv";
+import { errorHandler } from "../../middleware/ErrorHandler";
+import { db } from "../../db";
+import { user } from "../../db/schema";
+import { eq } from "drizzle-orm";
 
 dotenv.config();
 
@@ -125,4 +129,20 @@ export async function getRomanticSongs(): Promise<SpotifySong[]> {
     url: track.external_urls.spotify,
     imageUrl: track.album?.images?.[0]?.url ?? "",
   }));
+}
+
+export async function isConnected(userId: string): Promise<boolean> {
+  try {
+    const result = await db
+      .select({
+        spotifyAccessToken: user.spotifyAccessToken,
+      })
+      .from(user)
+      .where(eq(user.id, userId));
+    const foundUser = result[0];
+    return !!foundUser?.spotifyAccessToken;
+  } catch (error) {
+    errorHandler(error);
+    return false;
+  }
 }

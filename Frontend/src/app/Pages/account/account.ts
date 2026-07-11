@@ -22,6 +22,7 @@ import {
   LogOut,
   Trash2,
   X,
+  CircleCheckBig,
 } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 import { HlmBadge } from '@spartan-ng/helm/badge';
@@ -74,6 +75,7 @@ declare global {
         LogOut,
         Trash2,
         X,
+        CircleCheckBig,
       }),
     },
   ],
@@ -160,6 +162,8 @@ export class Account implements OnInit, AfterViewInit {
   isLoginMode = signal(false);
   showDeleteConfirm = signal(false);
 
+  spotifyConnected = signal(false);
+
   calendarQuiz = signal<any>(null);
   userProgress = signal<{ calendarDone: boolean; giftDone: boolean; gameDone: boolean }>({
     calendarDone: false,
@@ -211,6 +215,10 @@ export class Account implements OnInit, AfterViewInit {
     this.userService.getUserProgress().subscribe({
       next: (progress) => this.userProgress.set(progress),
       error: (err) => console.error('Failed to load progress', err),
+    });
+    this.userService.isSpotifyConnected().subscribe({
+      next: (connected) => this.spotifyConnected.set(connected),
+      error: (err) => console.error('Failed to check Spotify status', err),
     });
   }
 

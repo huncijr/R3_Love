@@ -20,6 +20,8 @@ import {
   ChevronRight,
   Music2,
   Square,
+  X,
+  Gift,
 } from 'lucide-angular';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
@@ -28,6 +30,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '../../../enviroments/enviroment';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { ToastrService } from 'ngx-toastr';
 
 export type RomanticSong = {
   title: string;
@@ -38,7 +42,7 @@ export type RomanticSong = {
 
 @Component({
   selector: 'app-home',
-  imports: [HlmCardImports, LucideAngularModule, HlmBadge],
+  imports: [HlmCardImports, LucideAngularModule, HlmBadge, HlmButton],
   providers: [
     {
       provide: LUCIDE_ICONS,
@@ -59,6 +63,8 @@ export type RomanticSong = {
         ChevronRight,
         Music2,
         Square,
+        X,
+        Gift,
       }),
       multi: true,
     },
@@ -72,6 +78,7 @@ export class Home implements OnInit {
   private router = inject(Router);
   private userService = inject(UserService);
   private userContext = inject(UserContext);
+  private toastr = inject(ToastrService);
   // Computes total days since the relationship started
   private calculateDaysTogether(datingDateStr: string) {
     const datingDate = new Date(datingDateStr);
@@ -162,6 +169,10 @@ export class Home implements OnInit {
           next: () => {
             this.spotifyConnected.set(true);
             this.showSpotifyConnect.set(false);
+            this.toastr.success('Spotify connected succesfully', 'Connected', {
+              positionClass: 'toast-top-right',
+              timeOut: 3000,
+            });
             this.router.navigate([], { queryParams: {} });
           },
           error: (err) => {
@@ -333,7 +344,7 @@ export class Home implements OnInit {
     }
     this.currentSong.set(song);
     this.isPlaying.set(true);
-    window.open(song.url, '_blank');
+    this.showMusicBar.set(true);
   }
 
   stopSong(event: Event) {
@@ -345,6 +356,7 @@ export class Home implements OnInit {
     this.userService.getSpotifyAuthUrl().subscribe({
       next: (url) => {
         if (url) {
+          console.log('Spotify auth URL received:', url);
           window.location.href = url;
         }
       },
@@ -354,10 +366,6 @@ export class Home implements OnInit {
 
   closeSpotifyConnect() {
     this.showSpotifyConnect.set(false);
-  }
-  openSpotify(event: Event, song: RomanticSong) {
-    event.stopPropagation();
-    window.open(song.url, '_blank');
   }
 
   closeMusicBar(event: Event) {

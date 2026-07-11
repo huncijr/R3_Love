@@ -275,3 +275,29 @@
 .animate-audio-lines {
   animation: audioLines 0.8s ease-in-out infinite;
 }
+.playing-glow-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border: 4px solid #22c55e;
+  animation: glow-pulse 2s infinite;
+}
+
+@keyframes glow-pulse {
+  0% {
+    box-shadow:
+      inset 0 0 10px #22c55e,
+      0 0 10px #22c55e;
+  }
+  50% {
+    box-shadow:
+      inset 0 0 25px #4ade80,
+      0 0 25px #4ade80;
+  }
+  100% {
+    box-shadow:
+      inset 0 0 10px #22c55e,
+      0 0 10px #22c55e;
+  }
+}

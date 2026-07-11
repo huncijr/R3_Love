@@ -22,24 +22,36 @@
                 </span>
               }
             </div>
-            <span
-              class="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full text-xs font-bold w-fit"
-              [class.bg-blue-100]="currentUser()?.gender === 'Male'"
-              [class.text-blue-700]="currentUser()?.gender === 'Male'"
-              [class.bg-pink-100]="currentUser()?.gender === 'Female'"
-              [class.text-pink-700]="currentUser()?.gender === 'Female'"
-              [class.bg-gray-100]="currentUser()?.gender === 'Other'"
-              [class.text-gray-700]="currentUser()?.gender === 'Other'"
-            >
-              @if (currentUser()?.gender === 'Male') {
-                <lucide-icon name="mars" class="w-3 h-3"></lucide-icon>
-              } @else if (currentUser()?.gender === 'Female') {
-                <lucide-icon name="venus" class="w-3 h-3"></lucide-icon>
-              } @else {
-                <lucide-icon name="user" class="w-3 h-3"></lucide-icon>
+            <div class="flex">
+              <span
+                class="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full text-xs font-bold w-fit"
+                [class.bg-blue-100]="currentUser()?.gender === 'Male'"
+                [class.text-blue-700]="currentUser()?.gender === 'Male'"
+                [class.bg-pink-100]="currentUser()?.gender === 'Female'"
+                [class.text-pink-700]="currentUser()?.gender === 'Female'"
+                [class.bg-gray-100]="currentUser()?.gender === 'Other'"
+                [class.text-gray-700]="currentUser()?.gender === 'Other'"
+              >
+                @if (currentUser()?.gender === 'Male') {
+                  <lucide-icon name="mars" class="w-3 h-3"></lucide-icon>
+                } @else if (currentUser()?.gender === 'Female') {
+                  <lucide-icon name="venus" class="w-3 h-3"></lucide-icon>
+                } @else {
+                  <lucide-icon name="user" class="w-3 h-3"></lucide-icon>
+                }
+                {{ currentUser()?.gender }}
+              </span>
+
+              @if (spotifyConnected()) {
+                <div class="flex items-center w-full p-1">
+                  <img src="/Images/Spotify-Logo.png" class="h-7 w-21" />
+                  <lucide-icon
+                    name="circle-check-big"
+                    class="w-6 h-6 text-green-400 bg-green-200 rounded-full"
+                  ></lucide-icon>
+                </div>
               }
-              {{ currentUser()?.gender }}
-            </span>
+            </div>
           </div>
           <div class="flex justify-end items-end w-full mr-4">
             <button

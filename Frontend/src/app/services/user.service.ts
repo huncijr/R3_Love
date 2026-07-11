@@ -467,4 +467,20 @@ export class UserService {
       variables: { code },
     });
   }
+
+  isSpotifyConnected() {
+    return this.apollo
+      .query<{ isSpotifyConnected: boolean }>({
+        query: gql`
+          query IsSpotifyConnected {
+            query
+            IsSpotifyConnected {
+              isSpotifyConnected
+            }
+          }
+        `,
+        fetchPolicy: 'network-only',
+      })
+      .pipe(map((result) => result.data?.isSpotifyConnected ?? false));
+  }
 }

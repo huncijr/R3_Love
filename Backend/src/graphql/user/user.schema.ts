@@ -132,6 +132,7 @@ export const userSchema = `
     getCalendarEvents: [CalendarEvent!]
     getGiftRecommendationsHistory: [SavedGiftRecommendations!]!
     getDailyInsight: DailyInsight!
+    isSpotifyConnected: Boolean!
   }
 
 
