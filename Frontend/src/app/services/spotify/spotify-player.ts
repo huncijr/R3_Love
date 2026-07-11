@@ -67,4 +67,12 @@ export class SpotifyPlayerService {
   async togglePlayback() {
     await this.player.togglePlay();
   }
+
+  async seek(positionMs: number) {
+    await this.player.seek(positionMs);
+  }
+
+  async getCurrentState(): Promise<any> {
+    return await this.player.getCurrentState();
+  }
 }

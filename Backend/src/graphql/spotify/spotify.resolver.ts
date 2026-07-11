@@ -58,6 +58,14 @@ export const spotifyResolver = {
         errorHandler(error);
       }
     },
+    getSpotifyProfile: async (_: any, __: any, context: any) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        return await spotifyService.getProfile(userId);
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
   },
   Mutation: {
     exchangeSpotifyCode: async (

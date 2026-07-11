@@ -502,4 +502,19 @@ export class UserService {
       })
       .pipe(map((result) => result.data?.getSpotifyAccessToken ?? null));
   }
+
+  getSpotifyProfile() {
+    return this.apollo
+      .query<{ getSpotifyProfile: { displayName: string } | null }>({
+        query: gql`
+          query GetSpotifyProfile {
+            getSpotifyProfile {
+              displayName
+            }
+          }
+        `,
+        fetchPolicy: 'network-only',
+      })
+      .pipe(map((result) => result.data?.getSpotifyProfile ?? null));
+  }
 }

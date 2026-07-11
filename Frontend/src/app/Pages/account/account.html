@@ -45,10 +45,16 @@
               @if (spotifyConnected()) {
                 <div class="flex items-center w-full p-1">
                   <img src="/Images/Spotify-Logo.png" class="h-7 w-21" />
-                  <lucide-icon
-                    name="circle-check-big"
-                    class="w-6 h-6 text-green-400 bg-green-200 rounded-full"
-                  ></lucide-icon>
+                  @if (spotifyDisplayName()) {
+                    <span class="text-sm font-semibold text-green-400">{{
+                      spotifyDisplayName()
+                    }}</span>
+                  } @else {
+                    <lucide-icon
+                      name="circle-check-big"
+                      class="w-6 h-6 text-green-400 bg-green-200 rounded-full"
+                    ></lucide-icon>
+                  }
                 </div>
               }
             </div>

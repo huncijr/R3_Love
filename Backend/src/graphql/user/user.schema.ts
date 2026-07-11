@@ -60,6 +60,10 @@ export const userSchema = `
     advice: String!
   }
 
+  type SpotifyProfile {
+    displayName: String!
+  }
+
   type CalendarEvent {
     id: ID!
     userId: ID!
@@ -133,6 +137,7 @@ export const userSchema = `
     getGiftRecommendationsHistory: [SavedGiftRecommendations!]!
     getDailyInsight: DailyInsight!
     isSpotifyConnected: Boolean!
+    getSpotifyProfile: SpotifyProfile
   }
 
 

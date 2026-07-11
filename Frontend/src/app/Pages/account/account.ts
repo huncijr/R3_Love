@@ -171,6 +171,8 @@ export class Account implements OnInit, AfterViewInit {
     gameDone: false,
   });
 
+  spotifyDisplayName = signal<string | null>(null);
+
   turnstileToken = signal('');
   turnstileSiteKey = environment.turnstileSiteKey;
 
@@ -206,6 +208,10 @@ export class Account implements OnInit, AfterViewInit {
   });
 
   ngOnInit() {
+    const savedSpotifyName = sessionStorage.getItem('spotifyDisplayName');
+    if (savedSpotifyName) {
+      this.spotifyDisplayName.set(savedSpotifyName);
+    }
     this.userService.getCalendarQuiz().subscribe({
       next: (quiz) => {
         this.calendarQuiz.set(quiz);
@@ -217,8 +223,28 @@ export class Account implements OnInit, AfterViewInit {
       error: (err) => console.error('Failed to load progress', err),
     });
     this.userService.isSpotifyConnected().subscribe({
-      next: (connected) => this.spotifyConnected.set(connected),
-      error: (err) => console.error('Failed to check Spotify status', err),
+      next: (connected) => {
+        this.spotifyConnected.set(connected);
+        if (connected) {
+          this.userService.getSpotifyProfile().subscribe({
+            next: (profile) => {
+              const name = profile?.displayName ?? null;
+              if (name) {
+                sessionStorage.setItem('spotifyDisplayName', name);
+              } else {
+                sessionStorage.removeItem('spotifyDisplayName');
+              }
+            },
+            error: (err) => console.error('Failed to load Spotify profile', err),
+          });
+        } else {
+          this.spotifyDisplayName.set(null);
+          sessionStorage.removeItem('spotifyDisplayName');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to check Spotify status', err);
+      },
     });
   }
 
@@ -327,6 +353,7 @@ export class Account implements OnInit, AfterViewInit {
     this.resetForm();
     this.calendarQuiz.set(null);
     this.userProgress.set({ calendarDone: false, giftDone: false, gameDone: false });
+    sessionStorage.removeItem('spotifyDisplayName');
     this.toastr.info('You have been logged out', 'Logout');
   }
 

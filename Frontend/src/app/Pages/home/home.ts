@@ -113,6 +113,9 @@ export class Home implements OnInit {
   romanticSongs = signal<RomanticSong[] | null>(null);
   currentSong = signal<RomanticSong | null>(null);
   isPlaying = signal(false);
+  currentProgress = signal(0);
+  trackDuration = signal(0);
+  private syncInterval: any = null;
 
   showSpotifyConnect = signal(false);
   spotifyConnected = signal(false);
@@ -367,22 +370,115 @@ export class Home implements OnInit {
       return;
     }
 
+    const isSameSong = this.currentSong()?.uri === song.uri;
     this.currentSong.set(song);
-    this.isPlaying.set(true);
     this.showMusicBar.set(true);
 
     try {
       await this.spotifyPlayerService.init();
-      await this.spotifyPlayerService.play(song.uri);
+      if (isSameSong && this.isPlaying()) {
+        await this.spotifyPlayerService.togglePlayback();
+        this.isPlaying.set(false);
+        this.stopPlayerStateSync();
+      } else {
+        this.isPlaying.set(true);
+        this.currentProgress.set(0);
+        this.trackDuration.set(30000);
+        await this.spotifyPlayerService.play(song.uri);
+        this.syncPlayerState();
+      }
     } catch (error) {
       console.error('Failed to play song', error);
       this.isPlaying.set(false);
     }
   }
 
+  async togglePlay(event: Event) {
+    event.stopPropagation();
+    if (!this.spotifyConnected() || !this.currentSong()) return;
+
+    try {
+      await this.spotifyPlayerService.togglePlayback();
+      this.isPlaying.update((playing) => !playing);
+      if (this.isPlaying()) {
+        this.syncPlayerState();
+      } else {
+        this.stopPlayerStateSync();
+      }
+    } catch (error) {
+      console.error('Failed to toggle playback', error);
+    }
+  }
+
   stopSong(event: Event) {
     event.stopPropagation();
     this.isPlaying.set(false);
+    this.stopPlayerStateSync();
+    this.spotifyPlayerService.togglePlayback().catch((err) => {
+      console.error('Failed to stop song', err);
+    });
+  }
+
+  playPrevious(event: Event) {
+    event.stopPropagation();
+    const songs = this.romanticSongs();
+    const current = this.currentSong();
+    if (!songs || !current) return;
+
+    const index = songs.findIndex((s) => s.uri === current.uri);
+    const previousIndex = index > 0 ? index - 1 : songs.length - 1;
+    this.playSong(songs[previousIndex], event);
+  }
+
+  playNext(event: Event) {
+    event.stopPropagation();
+    const songs = this.romanticSongs();
+    const current = this.currentSong();
+    if (!songs || !current) return;
+
+    const index = songs.findIndex((s) => s.uri === current.uri);
+    const nextIndex = index < songs.length - 1 ? index + 1 : 0;
+    this.playSong(songs[nextIndex], event);
+  }
+
+  async seekTo(positionMs: number) {
+    if (!this.spotifyConnected()) return;
+    this.currentProgress.set(positionMs);
+    try {
+      await this.spotifyPlayerService.seek(positionMs);
+    } catch (error) {
+      console.error('Failed to seek', error);
+    }
+  }
+
+  private syncPlayerState() {
+    this.stopPlayerStateSync();
+    this.syncInterval = setInterval(async () => {
+      try {
+        const state = await this.spotifyPlayerService.getCurrentState();
+        if (state && state.position !== undefined && state.duration !== undefined) {
+          this.currentProgress.set(state.position);
+          this.trackDuration.set(state.duration);
+          this.isPlaying.set(!state.paused);
+        }
+      } catch (error) {
+        console.error('Failed to sync player state', error);
+      }
+    }, 1000);
+  }
+
+  private stopPlayerStateSync() {
+    if (this.syncInterval) {
+      clearInterval(this.syncInterval);
+      this.syncInterval = null;
+    }
+  }
+
+  formatTime(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
   connectToSpotify() {
@@ -403,9 +499,17 @@ export class Home implements OnInit {
 
   closeMusicBar(event: Event) {
     event.stopPropagation();
+    this.stopPlayerStateSync();
+    if (this.isPlaying()) {
+      this.spotifyPlayerService.togglePlayback().catch((err) => {
+        console.error('Failed to pause on close', err);
+      });
+    }
     this.showMusicBar.set(false);
     this.isPlaying.set(false);
     this.currentSong.set(null);
+    this.currentProgress.set(0);
+    this.trackDuration.set(0);
   }
 
   openCurrentSong(event: Event) {

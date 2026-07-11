@@ -249,7 +249,7 @@
 
 @keyframes slideUp {
   from {
-    transform: translateY(100%);
+    transform: translateY(120%);
     opacity: 0;
   }
   to {
@@ -258,47 +258,178 @@
   }
 }
 
-.animate-slide-up {
-  animation: slideUp 0.3s ease-out forwards;
+.music-bar {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
+  overflow: visible;
 }
 
-@keyframes audioLines {
-  0%,
-  100% {
-    transform: scaleY(0.4);
-  }
-  50% {
-    transform: scaleY(1);
-  }
+/* Subtle green glow around the compact music bar when playing */
+.music-bar-playing {
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.6),
+    0 0 18px rgba(34, 197, 94, 0.35),
+    0 0 40px rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.9);
 }
 
-.animate-audio-lines {
-  animation: audioLines 0.8s ease-in-out infinite;
-}
-
-.playing-glow-frame {
-  position: fixed;
-  inset: 0;
+/* Animated side strands that move inward toward the bar */
+.music-bar-strand {
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #22c55e, transparent);
+  opacity: 0;
+  transform: translateY(-50%);
   pointer-events: none;
-  z-index: 40;
-  border: 4px solid #22c55e;
-  animation: glow-pulse 2s infinite;
 }
 
-@keyframes glow-pulse {
+.strand-left {
+  right: 100%;
+  margin-right: 8px;
+  animation: strand-in-left 1.6s ease-in-out infinite;
+}
+
+.strand-right {
+  left: 100%;
+  margin-left: 8px;
+  background: linear-gradient(270deg, transparent, #22c55e, transparent);
+  animation: strand-in-right 1.6s ease-in-out infinite;
+}
+
+@keyframes strand-in-left {
   0% {
-    box-shadow:
-      inset 0 0 10px #22c55e,
-      0 0 10px #22c55e;
+    opacity: 0;
+    transform: translateY(-50%) translateX(-20px) scaleX(0.4);
   }
-  50% {
-    box-shadow:
-      inset 0 0 25px #4ade80,
-      0 0 25px #4ade80;
+  40% {
+    opacity: 0.8;
   }
   100% {
-    box-shadow:
-      inset 0 0 10px #22c55e,
-      0 0 10px #22c55e;
+    opacity: 0;
+    transform: translateY(-50%) translateX(10px) scaleX(1);
   }
+}
+
+@keyframes strand-in-right {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(20px) scaleX(0.4);
+  }
+  40% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px) scaleX(1);
+  }
+}
+
+/* Custom equalizer bars that mimic the audio-lines icon */
+.equalizer {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  height: 16px;
+  width: 18px;
+}
+
+.equalizer span {
+  display: block;
+  width: 2px;
+  height: 4px;
+  border-radius: 999px;
+  background: #4ade80;
+  transition: height 0.2s ease;
+}
+
+.equalizer-playing span {
+  animation: eq-bar 0.6s ease-in-out infinite alternate;
+}
+
+.equalizer-playing span:nth-child(1) {
+  animation-duration: 0.55s;
+  animation-delay: 0s;
+}
+.equalizer-playing span:nth-child(2) {
+  animation-duration: 0.7s;
+  animation-delay: 0.1s;
+}
+.equalizer-playing span:nth-child(3) {
+  animation-duration: 0.5s;
+  animation-delay: 0.2s;
+}
+.equalizer-playing span:nth-child(4) {
+  animation-duration: 0.65s;
+  animation-delay: 0.05s;
+}
+.equalizer-playing span:nth-child(5) {
+  animation-duration: 0.6s;
+  animation-delay: 0.15s;
+}
+
+@keyframes eq-bar {
+  0% {
+    height: 4px;
+  }
+  100% {
+    height: 16px;
+  }
+}
+
+.seek-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #22c55e 0%,
+    #22c55e var(--progress, 0%),
+    #374151 var(--progress, 0%),
+    #374151 100%
+  );
+  outline: none;
+  cursor: pointer;
+  transition: height 0.2s ease;
+}
+
+.seek-slider:hover {
+  height: 7px;
+}
+
+.seek-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #111827;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.seek-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
+}
+
+.seek-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #111827;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  cursor: pointer;
+}
+
+.fixed-player .romantic-songs-card {
+  transition: all 0.3s ease;
 }

@@ -199,3 +199,33 @@ export async function refreshAccessToken(
   console.log("data:", data);
   return data.access_token;
 }
+
+export async function getProfile(userId: string) {
+  try {
+    const [foundUser] = await db
+      .select({
+        spotifyAccessToken: user.spotifyAccessToken,
+      })
+      .from(user)
+      .where(eq(user.id, userId));
+    if (!foundUser?.spotifyAccessToken) {
+      return null;
+    }
+
+    const response = await fetch("https://api.spotify.com/v1/me", {
+      headers: {
+        Authorization: `Bearer ${foundUser.spotifyAccessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Spotify profile error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return { displayName: data.display_name };
+  } catch (error) {
+    errorHandler(error);
+    return null;
+  }
+}
