@@ -11,6 +11,7 @@ export interface SpotifySong {
   artist: string;
   url: string;
   imageUrl: string;
+  uri: string;
 }
 
 export interface SpotifyTokens {
@@ -46,6 +47,7 @@ export function getSpotifyAuthUrl(): string {
     redirect_uri: redirectUri,
     show_dialog: "true",
   });
+  console.log(params);
   return `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
@@ -53,8 +55,9 @@ export async function exchangeSpotifyCode(
   code: string,
 ): Promise<SpotifyTokens> {
   const { clientId, clientSecret, redirectUri } = getSpotifyCredentials();
-
+  console.log(clientId, clientSecret, redirectUri);
   const response = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
     headers: {
       Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
       "Content-Type": "application/x-www-form-urlencoded",
@@ -65,6 +68,8 @@ export async function exchangeSpotifyCode(
       redirect_uri: redirectUri,
     }),
   });
+
+  console.log(response);
 
   if (!response.ok) {
     throw new Error(`Spotify token exchange error: ${response.status}`);
@@ -107,28 +112,55 @@ async function getAccessToken(): Promise<string> {
 }
 
 export async function getRomanticSongs(): Promise<SpotifySong[]> {
-  const token = await getAccessToken();
-  console.log(token);
-  const response = await fetch(
-    "https://api.spotify.com/v1/search?q=love&type=track&limit=5",
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    },
-  );
-  console.log(response);
-  if (!response.ok) {
-    throw new Error(`Spotify search error: ${response.status}`);
-  }
+  const queries = [
+    "love",
+    "romantic",
+    "wedding song",
+    "slow dance",
+    "R&B love",
+    "acoustic love",
+  ];
 
-  const data = await response.json();
-  console.log(data);
-  const tracks = data.tracks?.items || [];
-  return tracks.map((track: any) => ({
-    title: track.name,
-    artist: track.artists.map((a: any) => a.name).join(", "),
-    url: track.external_urls.spotify,
-    imageUrl: track.album?.images?.[0]?.url ?? "",
-  }));
+  const allSongs: SpotifySong[] = [];
+  const token = await getAccessToken();
+
+  for (const query of queries) {
+    console.log("aa");
+    const response = await fetch(
+      `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=2`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Spotify search error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const tracks = data.tracks?.items || [];
+
+    for (const track of tracks) {
+      const song: SpotifySong = {
+        title: track.name,
+        artist: track.artists.map((a: any) => a.name).join(", "),
+        url: track.external_urls.spotify,
+        imageUrl: track.album?.images?.[0]?.url ?? "",
+        uri: track.uri,
+      };
+
+      const alreadyExists = allSongs.some(
+        (existing) =>
+          existing.title === song.title && existing.artist === song.artist,
+      );
+
+      if (!alreadyExists) {
+        allSongs.push(song);
+      }
+    }
+  }
+  console.log(allSongs);
+
+  return allSongs.slice(0, 10);
 }
 
 export async function isConnected(userId: string): Promise<boolean> {
@@ -145,4 +177,25 @@ export async function isConnected(userId: string): Promise<boolean> {
     errorHandler(error);
     return false;
   }
+}
+
+export async function refreshAccessToken(
+  refreshToken: string,
+): Promise<string> {
+  const { clientId, clientSecret } = getSpotifyCredentials();
+  const response = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    }),
+  });
+
+  const data = await response.json();
+  console.log("data:", data);
+  return data.access_token;
 }

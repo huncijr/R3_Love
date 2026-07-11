@@ -174,6 +174,7 @@ type Song {
   artist: String!
   url: String!
   imageUrl: String!
+  uri: String!
 
 }
   extend type Query{

@@ -288,13 +288,24 @@
             }
           </div>
         } @else {
-          <div class="flex flex-col items-center justify-center h-full gap-2 p-4">
-            <div class="border-2 rounded-lg p-2 border-gray-900/10">
-              <lucide-icon name="circle-slash-2" class="w-20 h-20 text-red-500"></lucide-icon>
+          <div class="flex flex-col items-center justify-center h-full gap-2 p-4 text-center">
+            <div class="relative">
+              <div class="absolute inset-0 rounded-full bg-primary-light blur-xl opacity-0"></div>
+              <div class="relative rounded-full bg-white p-4 shadow-md border border-primary-light">
+                <lucide-icon name="gift" class="w-10 h-10 text-primary-main"></lucide-icon>
+              </div>
             </div>
-            <span class="text-xs text-muted text-center">
-              No gift recommendations yet.<br />Try the Gift Finder!
-            </span>
+            <div class="space-y-1">
+              <p class="text-sm font-semibold text-neutral-text">No gift recommendations</p>
+              <p class="text-xs text-neutral-muted">
+                Try the Gift Finder to get personalized ideas!
+              </p>
+            </div>
+            <a
+              routerLink="/games/gift"
+              class="inline-flex cursor-pointer items-center gap-2 rounded-full bg-primary-main px-4 py-2 text-xs font-bold text-white shadow hover:bg-primary-dark transition"
+              ><lucide-icon name="sparkles" class="w-4 h-4"></lucide-icon> Find a Gift</a
+            >
           </div>
         }
       </section>

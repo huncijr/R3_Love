@@ -429,7 +429,13 @@ export class UserService {
   getRomanticSongs() {
     console.log('aaa');
     return this.apollo.query<{
-      getRomanticSongs: { title: string; artist: string; url: string; imageUrl: string }[];
+      getRomanticSongs: {
+        title: string;
+        artist: string;
+        url: string;
+        imageUrl: string;
+        uri: string;
+      }[];
     }>({
       query: gql`
         query GetRomanticSongs {
@@ -438,6 +444,7 @@ export class UserService {
             artist
             url
             imageUrl
+            uri
           }
         }
       `,
@@ -458,14 +465,16 @@ export class UserService {
   }
 
   exchangeSpotifyCode(code: string) {
-    return this.apollo.mutate<{ exhangeSpotifyCode: boolean }>({
-      mutation: gql`
-        mutation ExchangeSpotifyCode($code: String!) {
-          exchangeSpotifyCode(code: $code)
-        }
-      `,
-      variables: { code },
-    });
+    return this.apollo
+      .mutate<{ exchangeSpotifyCode: boolean }>({
+        mutation: gql`
+          mutation ExchangeSpotifyCode($code: String!) {
+            exchangeSpotifyCode(code: $code)
+          }
+        `,
+        variables: { code },
+      })
+      .pipe(map((result) => result.data?.exchangeSpotifyCode ?? false));
   }
 
   isSpotifyConnected() {
@@ -473,14 +482,24 @@ export class UserService {
       .query<{ isSpotifyConnected: boolean }>({
         query: gql`
           query IsSpotifyConnected {
-            query
-            IsSpotifyConnected {
-              isSpotifyConnected
-            }
+            isSpotifyConnected
           }
         `,
         fetchPolicy: 'network-only',
       })
       .pipe(map((result) => result.data?.isSpotifyConnected ?? false));
+  }
+
+  getSpotifyAccessToken() {
+    return this.apollo
+      .query<{ getSpotifyAccessToken: string | null }>({
+        query: gql`
+          query GetSpotifyAccessToken {
+            getSpotifyAccessToken
+          }
+        `,
+        fetchPolicy: 'network-only',
+      })
+      .pipe(map((result) => result.data?.getSpotifyAccessToken ?? null));
   }
 }

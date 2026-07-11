@@ -29,20 +29,22 @@ import { GiftRecommendation } from '../games/gift/gift';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '../../../enviroments/enviroment';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { ToastrService } from 'ngx-toastr';
+import { SpotifyPlayerService } from '../../services/spotify/spotify-player';
 
 export type RomanticSong = {
   title: string;
   artist: string;
   url: string;
   imageUrl: string;
+  uri: string;
 };
 
 @Component({
   selector: 'app-home',
-  imports: [HlmCardImports, LucideAngularModule, HlmBadge, HlmButton],
+  imports: [HlmCardImports, LucideAngularModule, HlmBadge, HlmButton, RouterLink],
   providers: [
     {
       provide: LUCIDE_ICONS,
@@ -79,6 +81,7 @@ export class Home implements OnInit {
   private userService = inject(UserService);
   private userContext = inject(UserContext);
   private toastr = inject(ToastrService);
+  private spotifyPlayerService = inject(SpotifyPlayerService);
   // Computes total days since the relationship started
   private calculateDaysTogether(datingDateStr: string) {
     const datingDate = new Date(datingDateStr);
@@ -161,10 +164,11 @@ export class Home implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      const spotify = params['spotify'];
       const code = params['code'];
 
-      if (spotify === 'success' && code) {
+      console.log('code', code);
+
+      if (code) {
         this.userService.exchangeSpotifyCode(code).subscribe({
           next: () => {
             this.spotifyConnected.set(true);
@@ -177,6 +181,16 @@ export class Home implements OnInit {
           },
           error: (err) => {
             console.error('Spotify connect error', err);
+            this.spotifyConnected.set(false);
+          },
+        });
+      }
+      if (this.userContext.isLoggedIn()) {
+        this.userService.isSpotifyConnected().subscribe({
+          next: (connected) => {
+            this.spotifyConnected.set(connected);
+          },
+          error: () => {
             this.spotifyConnected.set(false);
           },
         });
@@ -195,9 +209,12 @@ export class Home implements OnInit {
             this.calculateDaysTogether(quiz.datingDate);
             this.calculateUpcomingDates(quiz.datingDate, quiz.partnerBirthday);
             this.funFact.set(this.getFunFact(this.daysTogether()));
-          } else if (quiz && quiz.isSingle) {
+          } else {
             this.calculateSingleDays();
           }
+        },
+        error: () => {
+          this.calculateSingleDays();
         },
       });
     } else {
@@ -210,6 +227,8 @@ export class Home implements OnInit {
         } else if (data.isSingle) {
           this.calculateSingleDays();
         }
+      } else {
+        this.calculateSingleDays();
       }
     }
   }
@@ -282,15 +301,20 @@ export class Home implements OnInit {
       }
     }
 
+    const fallbackInsight = {
+      didYouKnow:
+        'Did you know that the smallest gestures often leave the biggest imprint on the heart?',
+      advice: 'Send a message today for no reason other than to say you are thinking of them.',
+    };
     this.userService.getDailyInsight().subscribe({
       next: (insight) => {
-        const value = insight ?? null;
+        const value = insight ?? fallbackInsight;
         this.dailyInsight.set(value);
         if (value) {
           sessionStorage.setItem(this.DAILY_INSIGHT_KEY, JSON.stringify(value));
         }
       },
-      error: () => this.dailyInsight.set(null),
+      error: () => this.dailyInsight.set(fallbackInsight),
     });
   }
 
@@ -336,15 +360,24 @@ export class Home implements OnInit {
     });
   }
 
-  playSong(song: RomanticSong, event: Event) {
+  async playSong(song: RomanticSong, event: Event) {
     event.stopPropagation();
     if (!this.spotifyConnected()) {
       this.showSpotifyConnect.set(true);
       return;
     }
+
     this.currentSong.set(song);
     this.isPlaying.set(true);
     this.showMusicBar.set(true);
+
+    try {
+      await this.spotifyPlayerService.init();
+      await this.spotifyPlayerService.play(song.uri);
+    } catch (error) {
+      console.error('Failed to play song', error);
+      this.isPlaying.set(false);
+    }
   }
 
   stopSong(event: Event) {

@@ -23,7 +23,7 @@ export class AuthService {
   setToken(token: string): void {
     const expires = new Date();
     expires.setDate(expires.getDate() + 30);
-    document.cookie = `${this.TOKEN_NAME}=${token}; expires=${expires.toUTCString()}; path/; SameSite=Lax`;
+    document.cookie = `${this.TOKEN_NAME}=${token}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
   }
 
   // Reads the JWT token from browser cookies
@@ -34,7 +34,7 @@ export class AuthService {
 
   // Removes the JWT cookie and clears persisted user data
   clearToken(): void {
-    document.cookie = `{this.TOKEN_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
+    document.cookie = `${this.TOKEN_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
     this.clearAppData();
   }
 
