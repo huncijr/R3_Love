@@ -25,56 +25,124 @@
       </button>
     </div>
   </div>
-
+  <div class="items-end justify-end flex p-3 gap-2 cursor-pointer"></div>
   <div
     class="scene-container relative flex-1 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(236,72,153,0.2)]"
+    [class.kissing-border]="isKissing()"
   >
-    <div class="backdrop"></div>
-    <div class="stage-platform"></div>
-
-    <div class="character-stage">
-      <div
-        class="character"
-        [class.male]="currentGender() === 'male'"
-        [class.female]="currentGender() === 'female'"
-        [class.kissing]="isKissing()"
+    <div
+      class="absolute top-4 right-4 z-20 flex gap-2 rounded-xl border-2 border-ring bg-white/85 p-1.5 shadow-[0_4px_16px_rgba(236,72,153,0.15)] backdrop-blur-md"
+    >
+      <button
+        type="button"
+        title="Default"
+        (click)="setView('default')"
+        class="cursor-pointer inline-flex h-11 w-11 items-center justify-center rounded-xl border-0 transition"
+        [ngClass]="
+          view() === 'default'
+            ? 'bg-primary-main text-white shadow-md'
+            : 'bg-transparent text-primary-dark hover:bg-primary-light'
+        "
       >
-        <div class="hair male-hair" *ngIf="currentGender() === 'male'">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <div class="hair female-hair" *ngIf="currentGender() === 'female'"></div>
+        <lucide-icon name="tv-minimal" class="w-7 h-7"></lucide-icon>
+      </button>
 
-        <div class="shadow"></div>
-        <div class="head">
-          <div class="face">
-            <div class="eye left"></div>
-            <div class="eye right"></div>
-            <div class="mouth"></div>
-            <div class="blush left"></div>
-            <div class="blush right"></div>
+      <button
+        type="button"
+        title="Full"
+        (click)="setView('full')"
+        class="cursor-pointer inline-flex h-11 w-11 items-center justify-center rounded-xl border-0 transition"
+        [ngClass]="
+          view() === 'full'
+            ? 'bg-primary-main text-white shadow-md'
+            : 'bg-transparent text-primary-dark hover:bg-primary-light'
+        "
+      >
+        <lucide-icon name="maximize" class="w-7 h-7"></lucide-icon>
+      </button>
+      <button
+        type="button"
+        title="Body"
+        (click)="setView('body')"
+        class="cursor-pointer inline-flex h-11 w-11 items-center justify-center rounded-xl border-0 transition"
+        [ngClass]="
+          view() === 'body'
+            ? 'bg-primary-main text-white shadow-md'
+            : 'bg-transparent text-primary-dark hover:bg-primary-light'
+        "
+      >
+        <lucide-icon name="user" class="w-7 h-7"></lucide-icon>
+      </button>
+      <button
+        type="button"
+        title="Face"
+        (click)="setView('face')"
+        class="cursor-pointer inline-flex h-11 w-11 items-center justify-center rounded-xl border-0 transition"
+        [ngClass]="
+          view() === 'face'
+            ? 'bg-primary-main text-white shadow-md'
+            : 'bg-transparent text-primary-dark hover:bg-primary-light'
+        "
+      >
+        <lucide-icon name="scan-face" class="w-7 h-7"></lucide-icon>
+      </button>
+    </div>
+    <div class="camera" [style.--zoom]="zoom()" [style.--focus-y.px]="focusY()">
+      <div class="stage">
+        <div class="backdrop"></div>
+
+        <div
+          class="character"
+          [class.male]="currentGender() === 'male'"
+          [class.female]="currentGender() === 'female'"
+        >
+          <div class="hair-back" *ngIf="currentGender() === 'female'"></div>
+
+          <div class="hair male-hair" *ngIf="currentGender() === 'male'"></div>
+
+          <div class="shadow"></div>
+
+          <div class="head">
+            <div class="face">
+              <div class="eye left"></div>
+              <div class="eye right"></div>
+              <div class="mouth"></div>
+              <div class="blush left"></div>
+              <div class="blush right"></div>
+            </div>
           </div>
-        </div>
-        <div class="body"></div>
-        <div class="arm left">
-          <div class="hand"></div>
-        </div>
-        <div class="arm right">
-          <div class="hand"></div>
-        </div>
-        <div class="leg left"></div>
-        <div class="leg right"></div>
-      </div>
 
-      <div class="hearts" [class.visible]="isKissing()">
-        <div class="heart"></div>
-        <div class="heart"></div>
-        <div class="heart"></div>
+          <div class="hair-front" *ngIf="currentGender() === 'female'">
+            <div class="hair-bangs"></div>
+          </div>
+
+          <div class="body"></div>
+          <div class="arm left">
+            <div class="hand"></div>
+          </div>
+          <div class="arm right">
+            <div class="hand"></div>
+          </div>
+          <div class="leg left"></div>
+          <div class="leg right"></div>
+        </div>
+
+        <div
+          class="kiss-icon"
+          *ngIf="kissPosition()"
+          [style.left.%]="kissPosition()!.x"
+          [style.top.%]="kissPosition()!.y"
+        >
+          <span class="kiss-emoji">💋</span>
+        </div>
+
+        <div class="stage-platform"></div>
+      </div>
+    </div>
+    <div class="kiss-overlay items-center" *ngIf="showKissOverlay()">
+      <div class="Licorice">You need to kiss there</div>
+      <div class="kiss-heart">
+        <lucide-icon name="heart" class="h-12 w-12 text-destructive"></lucide-icon>
       </div>
     </div>
   </div>

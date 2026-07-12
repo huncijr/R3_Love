@@ -1,144 +1,143 @@
+.Licorice {
+  font-family: 'Licorice', cursive;
+  font-size: clamp(3rem, 10vw, 6rem);
+  color: #5a1035;
+  text-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  text-align: center;
+}
+
 .scene-container {
   position: relative;
   width: 100%;
   flex: 1;
-  min-height: 500px;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 1.5rem;
   overflow: hidden;
   box-shadow: 0 12px 30px rgba(236, 72, 153, 0.2);
   background: linear-gradient(180deg, #fff5f7 0%, #fbcfe8 100%);
 }
 
+.stage {
+  position: relative;
+  width: 300px;
+  height: 380px;
+}
+
 .backdrop {
   position: absolute;
-  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 320px;
-  height: 420px;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 300px;
   border-radius: 50%;
-  background: #e5e7eb;
+  background: radial-gradient(circle, #fbe7ff 0%, #ed99ca 100%);
+  opacity: 1;
   z-index: 0;
+  transform: translateX(-50%) translateZ(-40px) scale(1.04);
 }
 
 .stage-platform {
   position: absolute;
-  bottom: 60px;
   left: 50%;
-  transform: translateX(-50%) rotateX(60deg);
-  width: 280px;
-  height: 120px;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 32px;
   border-radius: 50%;
   background: #facc15;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
   z-index: 1;
 }
 
-.character-stage {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 60px;
-  perspective: 800px;
-  z-index: 2;
-}
-
 .character {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
   width: 140px;
   height: 280px;
+  transform: translateX(-50%);
   transform-style: preserve-3d;
   animation: breathe 2.4s ease-in-out infinite;
   transition: transform 0.4s ease;
-}
-
-/* Hair */
-.hair {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 4;
+  z-index: 2;
 }
 
 .male-hair {
   position: absolute;
-  top: -16px;
+  top: -25px;
   left: 50%;
   transform: translateX(-50%);
-  width: 78px;
-  height: 44px;
-  background: #4b2c20;
-  border-radius: 50% 50% 30% 30%;
+  width: 76px;
+  height: 42px;
+  background: #22c55e;
+  border-radius: 40px 40px 12px 12px;
   z-index: 5;
+  box-shadow: inset 0 -6px 0 #16a34a;
 }
 
 .male-hair::before {
   content: '';
   position: absolute;
-  top: -10px;
+  bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 30px;
-  background: #4b2c20;
-  border-radius: 50% 50% 40% 40%;
+  width: 80px;
+  height: 16px;
+  background: #16a34a;
+  border-radius: 8px;
 }
 
-.male-hair span {
-  width: 12px;
-  background: #4b2c20;
-  border-radius: 8px 8px 2px 2px;
-  transform-origin: bottom center;
-}
-
-.male-hair span:nth-child(1) {
-  height: 18px;
-  transform: rotate(-18deg) translateY(2px);
-}
-.male-hair span:nth-child(2) {
-  height: 26px;
-  transform: rotate(-10deg);
-}
-.male-hair span:nth-child(3) {
-  height: 34px;
-}
-.male-hair span:nth-child(4) {
-  height: 30px;
-}
-.male-hair span:nth-child(5) {
-  height: 36px;
-}
-.male-hair span:nth-child(6) {
-  height: 28px;
-  transform: rotate(10deg);
-}
-.male-hair span:nth-child(7) {
-  height: 20px;
-  transform: rotate(18deg) translateY(2px);
-}
-
-.female-hair {
-  top: -10px;
-  width: 86px;
-  height: 130px;
-  background: #5a3828;
-  border-radius: 45px 45px 35px 35px;
-}
-
-.female-hair::after {
+.male-hair::after {
   content: '';
   position: absolute;
-  top: 60px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 96px;
-  height: 110px;
+  width: 18px;
+  height: 18px;
+  background: #facc15;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* Female hair — long back + thin bangs only */
+.hair-back {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 165px;
   background: #5a3828;
-  border-radius: 25px 25px 45px 45px;
-  z-index: -1;
+  border-radius: 50px 50px 42px 42px;
+  z-index: 1;
+}
+
+.hair-front {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.hair-bangs {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68px;
+  height: 20px;
+  background: #5a3828;
+  border-radius: 34px 34px 12px 12px;
+  z-index: 5;
 }
 
 /* Gender colors */
@@ -149,7 +148,7 @@
 
 .character.female .body,
 .character.female .leg {
-  background: #f472b6;
+  background: #da2281;
 }
 
 .character.female .body {
@@ -159,13 +158,14 @@
 /* Shadow */
 .shadow {
   position: absolute;
-  bottom: -12px;
+  bottom: -4px;
   left: 50%;
-  transform: translateX(-50%) rotateX(70deg);
-  width: 120px;
-  height: 40px;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 24px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 0;
 }
 
 /* Head */
@@ -300,40 +300,16 @@
   right: 32px;
 }
 
-/* Kiss animation */
-.character.kissing {
-  animation: none;
-}
-
-.character.kissing .head {
-  animation: leanIn 0.4s ease forwards;
-}
-
-.character.kissing .mouth {
-  animation: pucker 0.4s ease forwards;
-}
-
-.character.kissing .arm.left {
-  animation: reachLeft 0.4s ease forwards;
-}
-
-.character.kissing .arm.right {
-  animation: reachRight 0.4s ease forwards;
-}
-
-.character.kissing .blush {
-  background: rgba(236, 72, 153, 0.55);
-}
-
 /* Floating hearts */
 .hearts {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease;
+  z-index: 5;
 }
 
 .hearts.visible {
@@ -381,14 +357,71 @@
   animation: floatHeart 1.2s ease-out 0.4s forwards;
 }
 
+.camera {
+  --zoom: 1;
+  --focus-y: 0px;
+
+  transform: translateY(var(--focus-y)) scale(var(--zoom));
+  transform-origin: center 72%;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.stage-platform {
+  transform: translateX(-50%) translateZ(0);
+}
+
+.kiss-icon {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition:
+    left 0.35s ease,
+    top 0.35s ease,
+    opacity 0.2s ease;
+  animation: kissPop 0.35s ease;
+}
+
+.kiss-emoji {
+  font-size: 13px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(194, 3, 3, 0.4));
+  pointer-events: none;
+  user-select: none;
+}
+
+.kiss-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+.kiss-heart {
+  font-size: 3rem;
+  margin-top: 1rem;
+  animation: heartbeat 1s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+.kissing-border {
+  animation: borderPulse 1s ease-in-out infinite;
+}
+
 /* Keyframes */
 @keyframes breathe {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateX(-50%) translateY(-6px);
   }
 }
 
@@ -403,39 +436,37 @@
   }
 }
 
-@keyframes leanIn {
-  to {
-    transform: translateX(-50%) translateY(14px) rotateX(18deg);
-  }
-}
-
-@keyframes pucker {
-  to {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-}
-
-@keyframes reachLeft {
-  to {
-    transform: rotateZ(55deg) translateX(18px);
-  }
-}
-
-@keyframes reachRight {
-  to {
-    transform: rotateZ(-55deg) translateX(-18px);
-  }
-}
-
-@keyframes floatHeart {
+@keyframes kissPop {
   0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.2);
     opacity: 1;
-    transform: rotate(-45deg) translateY(0) scale(0.6);
   }
   100% {
-    opacity: 0;
-    transform: rotate(-45deg) translateY(-140px) scale(1.2);
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes borderPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(236, 72, 154, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(236, 72, 153, 0.2);
   }
 }
