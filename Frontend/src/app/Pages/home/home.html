@@ -331,7 +331,7 @@
 </div>
 @if (showMusicBar()) {
   <div
-    class="music-bar fixed left-0 right-0 z-50 mx-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-green-500/60 bg-gray-900/95 px-4 py-3 shadow-2xl shadow-green-500/20 backdrop-blur-md"
+    class="music-bar z-50 w-[calc(100%-2rem)] max-w-md rounded-2xl border border-green-500/60 bg-gray-900/95 px-4 py-3 shadow-2xl shadow-green-500/20 backdrop-blur-md"
     [class.music-bar-playing]="isPlaying()"
   >
     <!-- side glow strands -->
@@ -462,6 +462,17 @@
           Connect
         </button>
       </div>
+    </div>
+  </div>
+}
+
+@if (isPlaying()) {
+  <div class="playing-screen-frame">
+    <div class="screen-frame-border"></div>
+    <div class="frame-connector frame-connector-left"></div>
+    <div class="frame-connector frame-connector-right"></div>
+    <div class="frame-music-icon">
+      <lucide-icon name="music-2" class="w-5 h-5 text-green-500"></lucide-icon>
     </div>
   </div>
 }

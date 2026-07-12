@@ -64,13 +64,27 @@
 }
 
 .male-hair {
-  top: -20px;
-  width: 84px;
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78px;
   height: 44px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 1px;
+  background: #4b2c20;
+  border-radius: 50% 50% 30% 30%;
+  z-index: 5;
+}
+
+.male-hair::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 30px;
+  background: #4b2c20;
+  border-radius: 50% 50% 40% 40%;
 }
 
 .male-hair span {
