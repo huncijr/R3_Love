@@ -3,6 +3,7 @@ import {
   calendarEvents,
   calendarQuiz,
   giftRecommendations,
+  giftUsage,
   user,
 } from "../../db/schema.js";
 import { and, desc, eq } from "drizzle-orm";
@@ -371,8 +372,33 @@ export const userResolver = {
     getGiftRecommendations: async (
       _: any,
       { answers }: { answers: QuizAnswer[] },
+      context: any,
     ) => {
-      return await getGiftRecommendationsFromAI(answers);
+      try {
+        const userId = getUserIdFromContext(context.token);
+        const today = new Date().toISOString().slice(0, 10);
+        const usageRows = await db
+          .select()
+          .from(giftUsage)
+          .where(and(eq(giftUsage.userId, userId), eq(giftUsage.date, today)));
+
+        const todayCount = usageRows[0]?.count ?? 0;
+        if (todayCount >= 3) {
+          throw new AppError("Daily gift recommendation limit reached", 429);
+        }
+
+        if (usageRows.length > 0) {
+          await db
+            .update(giftUsage)
+            .set({ count: todayCount + 1, updatedAt: new Date() })
+            .where(eq(giftUsage.id, usageRows[0].id));
+        } else {
+          await db.insert(giftUsage).values({ userId, date: today, count: 1 });
+        }
+        return await getGiftRecommendationsFromAI(answers);
+      } catch (err) {
+        errorHandler(err);
+      }
     },
 
     saveGiftRecommendations: async (

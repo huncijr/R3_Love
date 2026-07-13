@@ -42,7 +42,6 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
     HlmCardFooter,
     HlmCardImports,
     HlmButton,
-    HlmBadge,
   ],
   templateUrl: './kiss_games.html',
   styleUrl: './kiss_games.scss',
@@ -222,6 +221,16 @@ export class KissComponent implements OnInit {
     localStorage.setItem('kissGameView', v);
   }
 
+  closeIntro(): void {
+    this.showIntro.set(false);
+    this.userService.markGameDone().subscribe({
+      next: () => {},
+      error: (err) => {
+        console.error('Failed to mark game as done', err);
+      },
+    });
+  }
+
   dissmissIntro(_markGameDone: boolean): void {
     localStorage.setItem('kissIntroDismissed', 'true');
     this.showIntro.set(false);
@@ -229,7 +238,6 @@ export class KissComponent implements OnInit {
     this.userService.markGameDone().subscribe({
       next: () => {
         localStorage.setItem('kissGameDown', 'true');
-        console.log('Game marked as done');
       },
       error: (err) => {
         console.error('Failed to mark game as done', err);

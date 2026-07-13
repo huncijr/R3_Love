@@ -84,3 +84,19 @@ export const giftRecommendations = pgTable("GiftRecommendations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp().defaultNow().notNull(),
 });
+
+export const giftUsage = pgTable("GiftUsage", {
+  id: uuid("id")
+    .default(sql`gen_random_uuid()`)
+    .primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  date: varchar("date", { length: 10 }).notNull(),
+  count: integer("count").notNull().default(1),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type GiftUsage = typeof giftUsage.$inferSelect;
+export type NewGiftUsage = typeof giftUsage.$inferInsert;

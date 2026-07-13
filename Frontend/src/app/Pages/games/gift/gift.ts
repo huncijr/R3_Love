@@ -14,7 +14,7 @@ import { environment } from '../../../../enviroments/enviroment';
 import { UserService } from '../../../services/user.service';
 import { AuthService } from '../../../services/Auth/auth';
 import { UserContext } from '../../../services/UserContext/user-context';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import {
   LucideAngularModule,
@@ -37,6 +37,8 @@ import {
   X,
   Trash2,
   Undo2,
+  CornerDownLeft,
+  ClockAlert,
 } from 'lucide-angular';
 import { CdkAriaLive } from '../../../../../node_modules/@angular/cdk/types/_a11y-module-chunk';
 import { ToastrService } from 'ngx-toastr';
@@ -237,6 +239,7 @@ const SECTION_ICONS = ['Ruler', 'Heart', 'Sparkles'];
     LucideAngularModule,
     HlmBadge,
     HlmSelectImports,
+    RouterLink,
   ],
   templateUrl: './gift.html',
   styleUrl: './gift.scss',
@@ -261,6 +264,8 @@ const SECTION_ICONS = ['Ruler', 'Heart', 'Sparkles'];
         X,
         Trash2,
         Undo2,
+        CornerDownLeft,
+        ClockAlert,
       }),
       multi: true,
     },
@@ -320,6 +325,7 @@ export class GiftFinder implements OnInit {
   showGuestBlur = signal(false);
   isSaving = false;
   finalAnswers = signal<any[]>([]);
+  rateLimitReached = signal(false);
 
   currentRecommendation = computed(() => this.recommendations()[this.currentRecIndex()]);
 
@@ -697,7 +703,11 @@ export class GiftFinder implements OnInit {
       error: (err) => {
         this.stopLoading();
         console.error('Recommendation failed', err);
-        this.errorMessage.set('Failed to get recommendations. Please try again.');
+        if (err.status === 429 || err.message?.includes('limit')) {
+          this.rateLimitReached.set(true);
+        } else {
+          this.errorMessage.set('Failed to get recommendations. Please try again.');
+        }
       },
     });
   }

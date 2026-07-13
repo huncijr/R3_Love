@@ -60,7 +60,7 @@ async function callAI(
       ],
     }),
   });
-
+  console.log(response);
   if (!response.ok) {
     throw new Error(`AI API error: ${response.status} ${response.statusText}`);
   }

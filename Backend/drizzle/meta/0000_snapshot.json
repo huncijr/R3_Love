@@ -1,5 +1,5 @@
 {
-  "id": "f3763aac-c5a2-4740-8de7-cc1ae0378f4b",
+  "id": "9d563642-f936-43ac-befe-82b31ba5e990",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -209,6 +209,73 @@
         "GiftRecommendations_user_id_Users_id_fk": {
           "name": "GiftRecommendations_user_id_Users_id_fk",
           "tableFrom": "GiftRecommendations",
+          "tableTo": "Users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.GiftUsage": {
+      "name": "GiftUsage",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "GiftUsage_user_id_Users_id_fk": {
+          "name": "GiftUsage_user_id_Users_id_fk",
+          "tableFrom": "GiftUsage",
           "tableTo": "Users",
           "columnsFrom": [
             "user_id"
