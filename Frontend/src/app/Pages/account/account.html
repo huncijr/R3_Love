@@ -256,7 +256,7 @@
           </div>
 
           <a
-            [routerLink]="!userProgress().calendarDone ? ['/games/kiss-game'] : null"
+            [routerLink]="!userProgress().gameDone ? ['/games/kiss-game'] : null"
             hlmBtn
             [class.pointer-events-none]="userProgress().gameDone"
             [class.cursor-default]="userProgress().gameDone"

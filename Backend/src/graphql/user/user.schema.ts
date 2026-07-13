@@ -171,6 +171,7 @@ export const userSchema = `
     getGiftRecommendations(answers: [QuizAnswerInput!]!): [GiftRecommendation!]!
     saveGiftRecommendations(input: SaveGiftRecommendationsInput!): SavedGiftRecommendations!
     deleteGiftRecommendations(id: ID!): Boolean!
+    markGameDone: Boolean!
   }
 `;
 export const spotifyTypeDefs = `#graphql

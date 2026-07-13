@@ -1,149 +1,252 @@
-<div class="flex min-h-screen flex-col bg-neutral-bg p-6">
-  <div class="mb-4 flex items-center justify-between">
-    <h1 class="m-0 text-3xl font-bold text-primary-dark">Kiss game</h1>
-    <div class="actions flex items-center gap-3">
-      <button
-        hlmBtn
-        variant="outline"
-        class="inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-border bg-white p-0 text-primary-dark transition hover:bg-primary-light"
-        (click)="toggleGender()"
-        title="Switch character"
-      >
-        <lucide-icon
-          [name]="currentGender() === 'male' ? 'mars' : 'venus'"
-          class="h-5 w-5"
-        ></lucide-icon>
-      </button>
-      <button
-        hlmBtn
-        class="inline-flex items-center gap-2 rounded-full bg-primary-main px-6 py-2 text-white shadow-lg transition hover:bg-primary-dark disabled:opacity-50"
-        (click)="launchKiss()"
-        [disabled]="isKissing()"
-      >
-        <lucide-icon name="hand-heart" class="h-5 w-5"></lucide-icon>
-        <span>Kiss</span>
-      </button>
-    </div>
-  </div>
-  <div class="items-end justify-end flex p-3 gap-2 cursor-pointer"></div>
-  <div
-    class="scene-container relative flex-1 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(236,72,153,0.2)]"
-    [class.kissing-border]="isKissing()"
-  >
-    <div
-      class="absolute top-4 right-4 z-20 flex gap-2 rounded-xl border-2 border-ring bg-white/85 p-1.5 shadow-[0_4px_16px_rgba(236,72,153,0.15)] backdrop-blur-md"
-    >
-      <button
-        type="button"
-        title="Default"
-        (click)="setView('default')"
-        class="cursor-pointer inline-flex h-11 w-11 items-center justify-center rounded-xl border-0 transition"
-        [ngClass]="
-          view() === 'default'
-            ? 'bg-primary-main text-white shadow-md'
-            : 'bg-transparent text-primary-dark hover:bg-primary-light'
-        "
-      >
-        <lucide-icon name="tv-minimal" class="w-7 h-7"></lucide-icon>
-      </button>
+<div class="kiss-page">
+  <div class="flex min-h-screen flex-col bg-secondary p-6 bg-border">
+    <div class="mb-4 grid grid-cols-1 gap-4 view-controls">
+      <h1 class="m-0 text-3xl font-bold text-primary-dark">Kiss game</h1>
 
-      <button
-        type="button"
-        title="Full"
-        (click)="setView('full')"
-        class="cursor-pointer inline-flex h-11 w-11 items-center justify-center rounded-xl border-0 transition"
-        [ngClass]="
-          view() === 'full'
-            ? 'bg-primary-main text-white shadow-md'
-            : 'bg-transparent text-primary-dark hover:bg-primary-light'
-        "
-      >
-        <lucide-icon name="maximize" class="w-7 h-7"></lucide-icon>
-      </button>
-      <button
-        type="button"
-        title="Body"
-        (click)="setView('body')"
-        class="cursor-pointer inline-flex h-11 w-11 items-center justify-center rounded-xl border-0 transition"
-        [ngClass]="
-          view() === 'body'
-            ? 'bg-primary-main text-white shadow-md'
-            : 'bg-transparent text-primary-dark hover:bg-primary-light'
-        "
-      >
-        <lucide-icon name="user" class="w-7 h-7"></lucide-icon>
-      </button>
-      <button
-        type="button"
-        title="Face"
-        (click)="setView('face')"
-        class="cursor-pointer inline-flex h-11 w-11 items-center justify-center rounded-xl border-0 transition"
-        [ngClass]="
-          view() === 'face'
-            ? 'bg-primary-main text-white shadow-md'
-            : 'bg-transparent text-primary-dark hover:bg-primary-light'
-        "
-      >
-        <lucide-icon name="scan-face" class="w-7 h-7"></lucide-icon>
-      </button>
-    </div>
-    <div class="camera" [style.--zoom]="zoom()" [style.--focus-y.px]="focusY()">
-      <div class="stage">
-        <div class="backdrop"></div>
-
-        <div
-          class="character"
-          [class.male]="currentGender() === 'male'"
-          [class.female]="currentGender() === 'female'"
-        >
-          <div class="hair-back" *ngIf="currentGender() === 'female'"></div>
-
-          <div class="hair male-hair" *ngIf="currentGender() === 'male'"></div>
-
-          <div class="shadow"></div>
-
-          <div class="head">
-            <div class="face">
-              <div class="eye left"></div>
-              <div class="eye right"></div>
-              <div class="mouth"></div>
-              <div class="blush left"></div>
-              <div class="blush right"></div>
-            </div>
-          </div>
-
-          <div class="hair-front" *ngIf="currentGender() === 'female'">
-            <div class="hair-bangs"></div>
-          </div>
-
-          <div class="body"></div>
-          <div class="arm left">
-            <div class="hand"></div>
-          </div>
-          <div class="arm right">
-            <div class="hand"></div>
-          </div>
-          <div class="leg left"></div>
-          <div class="leg right"></div>
+      <div class="flex flex-col items-center gap-3 justify-self-end md:items-end w-auto">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            title="Toggle sound"
+            (click)="toggleSound()"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-xl transition"
+            [ngClass]="
+              soundEnabled()
+                ? 'bg-primary-main text-white shadow-md'
+                : 'bg-transparent text-primary-dark hover:bg-primarylight'
+            "
+          >
+            <lucide-icon
+              [name]="soundEnabled() ? 'volume-2' : 'volume-off'"
+              class="h-7 w-7"
+            ></lucide-icon>
+          </button>
+          <button
+            hlmBtn
+            variant="outline"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-border bg-white p-0 text-primary-dark transition hover:bg-primary-light"
+            (click)="toggleGender()"
+            title="Switch character"
+          >
+            <lucide-icon
+              [name]="currentGender() === 'male' ? 'mars' : 'venus'"
+              class="h-5 w-5"
+            ></lucide-icon>
+          </button>
+          <button
+            hlmBtn
+            class="inline-flex items-center gap-2 rounded-full bg-primary-main px-6 py-2 text-white shadow-lg transition hover:bg-primary-dark disabled:opacity-50"
+            (click)="launchKiss()"
+            [disabled]="isKissing() || showKissOverlay()"
+          >
+            <lucide-icon name="hand-heart" class="h-5 w-5"></lucide-icon>
+            <span>Kiss</span>
+          </button>
         </div>
 
         <div
-          class="kiss-icon"
-          *ngIf="kissPosition()"
-          [style.left.%]="kissPosition()!.x"
-          [style.top.%]="kissPosition()!.y"
+          class="flex w-full md:w-auto md:justify-end flex-wrap justify-center gap-2 rounded-xl border-2 border-ring bg-white/85 p-1.5 shadow-[0_4px_16px_rgba(236,72,153,0.15)] backdrop-blur-md md:justify-end"
         >
-          <span class="kiss-emoji">💋</span>
-        </div>
+          <button
+            type="button"
+            title="Default"
+            (click)="setView('default')"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-xl transition"
+            [ngClass]="
+              view() === 'default'
+                ? 'bg-primary-main text-white shadow-md'
+                : 'bg-transparent text-primary-dark hover:bg-primary-light'
+            "
+          >
+            <lucide-icon name="tv-minimal" class="h-7 w-7"></lucide-icon>
+          </button>
 
-        <div class="stage-platform"></div>
+          <button
+            type="button"
+            title="Full"
+            (click)="setView('full')"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-xl transition"
+            [ngClass]="
+              view() === 'full'
+                ? 'bg-primary-main text-white shadow-md'
+                : 'bg-transparent text-primary-dark hover:bg-primary-light'
+            "
+          >
+            <lucide-icon name="maximize" class="h-7 w-7"></lucide-icon>
+          </button>
+
+          <button
+            type="button"
+            title="Body"
+            (click)="setView('body')"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-xl transition"
+            [ngClass]="
+              view() === 'body'
+                ? 'bg-primary-main text-white shadow-md'
+                : 'bg-transparent text-primary-dark hover:bg-primary-light'
+            "
+          >
+            <lucide-icon name="user" class="h-7 w-7"></lucide-icon>
+          </button>
+
+          <button
+            type="button"
+            title="Face"
+            (click)="setView('face')"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-xl transition"
+            [ngClass]="
+              view() === 'face'
+                ? 'bg-primary-main text-white shadow-md'
+                : 'bg-transparent text-primary-dark hover:bg-primary-light'
+            "
+          >
+            <lucide-icon name="scan-face" class="h-7 w-7"></lucide-icon>
+          </button>
+        </div>
       </div>
     </div>
-    <div class="kiss-overlay items-center" *ngIf="showKissOverlay()">
-      <div class="Licorice">You need to kiss there</div>
-      <div class="kiss-heart">
-        <lucide-icon name="heart" class="h-12 w-12 text-destructive"></lucide-icon>
+
+    <div
+      class="scene-container relative flex-1 overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_rgba(236,72,153,0.2)]"
+      [class.kissing-border]="isKissing()"
+    >
+      <div class="camera" [style.--zoom]="zoom()" [style.--focus-y.px]="focusY()">
+        <div class="stage">
+          <div class="backdrop"></div>
+
+          <div
+            class="character"
+            [class.male]="currentGender() === 'male'"
+            [class.female]="currentGender() === 'female'"
+          >
+            <div class="hair-back" *ngIf="currentGender() === 'female'"></div>
+
+            <div class="hair male-hair" *ngIf="currentGender() === 'male'"></div>
+
+            <div class="shadow"></div>
+
+            <div class="head">
+              <div class="face">
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                <div class="mouth"></div>
+                <div class="blush left"></div>
+                <div class="blush right"></div>
+              </div>
+            </div>
+
+            <div class="hair-front" *ngIf="currentGender() === 'female'">
+              <div class="hair-bangs"></div>
+            </div>
+
+            <div class="body"></div>
+            <div class="arm left">
+              <div class="hand"></div>
+            </div>
+            <div class="arm right">
+              <div class="hand"></div>
+            </div>
+            <div class="leg left"></div>
+            <div class="leg right"></div>
+          </div>
+
+          <div
+            class="kiss-icon"
+            *ngIf="kissPosition()"
+            [style.left.%]="kissPosition()!.x"
+            [style.top.%]="kissPosition()!.y"
+          >
+            <span class="kiss-emoji">💋</span>
+          </div>
+
+          <div class="stage-platform"></div>
+        </div>
+      </div>
+      <div class="kiss-overlay items-center bg-gray-600/10" hlmCard *ngIf="showKissOverlay()">
+        <div class="Licorice">You need to kiss there</div>
+        <div class="kiss-heart">
+          <lucide-icon name="heart" class="h-12 w-12 text-destructive"></lucide-icon>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+@if (showIntro()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm animate-fade-in p-4"
+  >
+    <section
+      hlmCard
+      class="relative w-full max-w-md overflow-hidden bg-white border border-border shadow-2xl shadow-primary-main/25 rounded-3xl animate-scale-in"
+    >
+      <div
+        class="h-3 w-full bg-linear-to-r from-primary-light via-primary-main to-primary-dark"
+      ></div>
+
+      <div hlmCardHeader class="pt-8 pb-3 text-center">
+        <div
+          class="mx-auto mb-4 w-16 h-16 rounded-2xl bg-primary-light/60 flex items-center justify-center shadow-lg shadow-primary-main/20"
+        >
+          <lucide-icon name="heart" class="w-8 h-8 text-primary-main"></lucide-icon>
+        </div>
+        <h2
+          hlmCardTitle
+          class="text-2xl md:text-3xl font-bold text-primary-dark playwrite-id font-bree"
+        >
+          Kiss Game
+        </h2>
+        <p class="text-sm text-muted mt-1">A fun mini-game inspired by a classic trend</p>
+      </div>
+
+      <div hlmCardContent class="px-6 pt-2 pb-4 space-y-4">
+        <div class="flex flex-wrap justify-center gap-2">
+          <span
+            class="px-3 py-1 rounded-full bg-primary-light/50 text-primary-dark text-xs font-semibold"
+          >
+            #TikTokTrend
+          </span>
+          <span
+            class="px-3 py-1 rounded-full bg-primary-light/50 text-primary-dark text-xs font-semibold"
+          >
+            #JustForFun
+          </span>
+          <span
+            class="px-3 py-1 rounded-full bg-primary-light/50 text-primary-dark text-xs font-semibold"
+          >
+            #MiniGame
+          </span>
+        </div>
+
+        <p class="text-sm md:text-base text-muted leading-relaxed text-center font-bree">
+          This game is inspired by the older "kiss me here" TikTok trend. It's not meant to be taken
+          seriously — it's just a lighthearted way to have some fun.
+        </p>
+        <p class="text-sm md:text-base text-muted leading-relaxed text-center font-bree">
+          Pick a character, choose a view, and launch a kiss. Wherever it lands... that's the magic
+          spot. 💋
+        </p>
+      </div>
+
+      <div hlmCardFooter class="flex flex-col gap-3 px-6 pb-7 pt-2">
+        <button
+          hlmBtn
+          (click)="dissmissIntro(false)"
+          class="w-full bg-primary-main hover:bg-primary-dark text-white font-semibold py-3 rounded-xl transition-all shadow-md shadow-primary-main/30 hover:shadow-lg hover:shadow-primary-main/90 flex items-center justify-center gap-2"
+        >
+          <lucide-icon name="play" class="w-5 h-5"></lucide-icon>
+          <span class="text-sm text-muted mt-1 text-white"> Continue </span>
+        </button>
+        <button
+          hlmBtn
+          variant="outline"
+          (click)="dissmissIntro(false)"
+          class="w-full text-primary-dark border-border hover:bg-primary-light font-medium py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          <lucide-icon name="eye-off" class="w-5 h-5"></lucide-icon>
+          <span class="text-sm text-muted mt-1"> Don't show again </span>
+        </button>
+      </div>
+    </section>
+  </div>
+}

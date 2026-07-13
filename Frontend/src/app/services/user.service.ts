@@ -517,4 +517,18 @@ export class UserService {
       })
       .pipe(map((result) => result.data?.getSpotifyProfile ?? null));
   }
+
+  markGameDone() {
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation MarkGameDone {
+          markGameDone {
+            calendarDone
+            giftDone
+            gameDone
+          }
+        }
+      `,
+    });
+  }
 }

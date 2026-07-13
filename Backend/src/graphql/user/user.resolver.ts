@@ -420,5 +420,33 @@ export const userResolver = {
         errorHandler(error);
       }
     },
+
+    markGameDone: async (
+      _parent: unknown,
+      _args: unknown,
+      context: { token: string },
+    ) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        await db
+          .update(user)
+          .set({ gameDone: true })
+          .where(eq(user.id, userId));
+
+        const result = await db
+          .select({
+            calendarDone: user.calendarDone,
+            giftDone: user.giftDone,
+            gameDone: user.gameDone,
+          })
+          .from(user)
+          .where(eq(user.id, userId));
+        return (
+          result[0] || { calendarDone: false, giftDone: false, gameDone: false }
+        );
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
   },
 };

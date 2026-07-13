@@ -208,6 +208,8 @@ export class Account implements OnInit, AfterViewInit {
   });
 
   ngOnInit() {
+    this.loadProgress();
+
     const savedSpotifyName = sessionStorage.getItem('spotifyDisplayName');
     if (savedSpotifyName) {
       this.spotifyDisplayName.set(savedSpotifyName);
@@ -222,6 +224,7 @@ export class Account implements OnInit, AfterViewInit {
       next: (progress) => this.userProgress.set(progress),
       error: (err) => console.error('Failed to load progress', err),
     });
+
     this.userService.isSpotifyConnected().subscribe({
       next: (connected) => {
         this.spotifyConnected.set(connected);
@@ -272,6 +275,13 @@ export class Account implements OnInit, AfterViewInit {
       this.toastr.error(errors.join(' '), 'Password Error');
     }
     return true;
+  }
+
+  private loadProgress(): void {
+    this.userService.getUserProgress().subscribe({
+      next: (progress) => this.userProgress.set(progress),
+      error: (err) => console.error('Failed to load progress', err),
+    });
   }
 
   // Validates username length constraints
