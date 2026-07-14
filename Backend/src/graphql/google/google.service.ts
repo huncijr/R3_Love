@@ -27,7 +27,7 @@ export async function verifyGoogleCredential(
     throw new AppError("Invalid Google token payload", 401);
   }
 
-  const clientId = process.env.GOOGLE_SECRET_ID;
+  const clientId = process.env.GOOGLE_CLIENT_ID;
   if (clientId && data.aud !== clientId) {
     throw new AppError("Google token audience mismatch", 401);
   }

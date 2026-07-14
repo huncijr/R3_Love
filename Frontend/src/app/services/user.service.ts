@@ -388,6 +388,23 @@ export class UserService {
       .pipe(map((result) => result.data?.generatePracticalQuestions ?? []));
   }
 
+  updateUserGender(gender: string): Observable<User> {
+    return this.apollo
+      .mutate<{ updateUserGender: User }>({
+        mutation: gql`
+          mutation UpdateUserGender($gender: String!) {
+            updateUserGender(gender: $gender) {
+              id
+              name
+              gender
+            }
+          }
+        `,
+        variables: { gender },
+      })
+      .pipe(map((result) => result.data!.updateUserGender));
+  }
+
   getGiftRecommendationsHistory() {
     return this.apollo.query<{ getGiftRecommendationsHistory: any }>({
       query: GET_GIFT_RECOMMENDATIONS_HISTORY,

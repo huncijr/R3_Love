@@ -4,6 +4,7 @@ export const userSchema = `
     id: ID!
     name: String!
     gender: String
+    email: String
     country: String
     createdAt: String!
     spotifyAccessToken: String
@@ -174,6 +175,7 @@ export const userSchema = `
     markGameDone: UserProgress!
     disconnectSpotify: Boolean!
     googleAuth(credential: String!): AuthPayload!     
+    updateUserGender(gender: String!): User!
   }
 `;
 export const spotifyTypeDefs = `#graphql

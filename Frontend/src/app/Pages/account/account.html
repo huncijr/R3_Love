@@ -358,13 +358,25 @@
         </p>
       </div>
       <section class="w-full max-w-md flex flex-col gap-4 animate-fade-in-up">
+        <div
+          class="relative flex justify-center w-full transition-opacity duration-200"
+          [class.opacity-50]="!turnstileToken()"
+          [class.pointer-events-none]="!turnstileToken()"
+        >
+          <div id="google-signin-btn" class="flex justify-center w-full"></div>
+        </div>
         <div class="flex items-center gap w-full max-w-md">
           <div class="h-px flex-1 bg-border"></div>
           <span class="text-xs text-muted font-medium"> or contiue with </span>
           <div class="h-px flex-1 bg-border"></div>
         </div>
-
-        <div id="google-signin-btn" class="flex justify-center w-full"></div>
+        @if (!turnstileToken()) {
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-[10px] text-muted bg-white/80 px-2 py-1 rounded">
+              Complete the captcha above first!
+            </span>
+          </div>
+        }
       </section>
 
       <div hlmCardContent class="space-y-5 flex-1 flex flex-col">
@@ -567,6 +579,55 @@
           Disconnect
         </button>
       </div>
+    </div>
+  </div>
+}
+
+@if (showGenderCard()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="w-full max-w-md mx-4 p-8 rounded-2xl bg-white border border-border shadow-2xl text-center"
+    >
+      <div class="flex justify-center items-center mb-4 rounded-full p-3 border-ring">
+        <lucide-icon name="user" class="h-8 w-8 text-black"></lucide-icon>
+      </div>
+
+      <h2 class="text-2xl font-bold text-primary-dark mb-1 playwrite-id">Almost there!</h2>
+      <p class="text-sm text-muted mb-7">
+        You signed in with Google. Select your gender to finish your profile.
+      </p>
+
+      <div class="flex gap-3">
+        <button
+          hlmBtn
+          (click)="selectGender('Male')"
+          class="cursor-pointer flex-1 py-3 px-4 rounded-xl border-2 border-primary-main text-white font-bold text-lg transition-all hover:bg-primary-dark hover:shadow-lg hover:scale-[1.02]"
+        >
+          <lucide-icon name="mars" class="w-5 h-5 inline mr-2 mb-1"></lucide-icon>
+          Male
+        </button>
+        <button
+          hlmBtn
+          (click)="selectGender('Female')"
+          class="cursor-pointer flex-1 py-3 px-4 rounded-xl border-2 border-primary-light bg-white text-primary-dark font-bold text-lg transition-all hover:border-primary-main hover:bg-primary-light/50 hover:shadow-lg hover:scale-[1.02]"
+        >
+          <lucide-icon name="venus" class="w-5 h-5 inline mr-2 mb-1"></lucide-icon>
+          Female
+        </button>
+      </div>
+      <div class="mt-3">
+        <button
+          hlmBtn
+          (click)="selectGender('Other')"
+          class="cursor-pointer py-2.5 px-4 rounded-xl w-[50%] bg-white border border-border text-muted font-medium text-sm transition-all hover:border-primary-main hover:text-primary-dark hover:bg-primary-light/20"
+        >
+          <lucide-icon name="user" class="w-5 h-5 inline mr-1.5 mb-1"></lucide-icon>
+          Other
+        </button>
+      </div>
+      <p class="text-[10px] text-muted mt-4">You can change this later in</p>
     </div>
   </div>
 }

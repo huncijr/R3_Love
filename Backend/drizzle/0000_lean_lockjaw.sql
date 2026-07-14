@@ -41,6 +41,7 @@ CREATE TABLE "GiftUsage" (
 CREATE TABLE "Users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(255) NOT NULL,
+	"email" varchar(255),
 	"password" varchar(255) NOT NULL,
 	"gender" varchar(50),
 	"country" varchar(255),

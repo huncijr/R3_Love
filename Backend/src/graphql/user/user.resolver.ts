@@ -359,6 +359,24 @@ export const userResolver = {
       }
     },
 
+    updateUserGender: async (
+      _: any,
+      args: { gender: string },
+      context: any,
+    ) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        const [updatedUser] = await db
+          .update(user)
+          .set({ gender: args.gender })
+          .where(eq(user.id, userId))
+          .returning();
+        return updatedUser;
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+
     generateDeepQuestions: async (
       _: any,
       { answers }: { answers: QuizAnswer[] },
@@ -500,7 +518,7 @@ export const userResolver = {
           const foundUser = existingByName[0];
           await db
             .update(user)
-            .set({ googleId: googleUser.sub })
+            .set({ googleId: googleUser.sub, email: googleUser.email })
             .where(eq(user.id, foundUser.id));
           const token = generateToken(foundUser.id);
           return { user: foundUser, token };
@@ -513,6 +531,7 @@ export const userResolver = {
           name: googleUser.name,
           password: hashedPassword,
           googleId: googleUser.sub,
+          email: googleUser.email,
           gender: null,
         };
 

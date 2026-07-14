@@ -210,6 +210,8 @@ export class Account implements OnInit, AfterViewInit {
     gameDone: false,
   });
 
+  showGenderCard = computed(() => this.currentUser() !== null && !this.currentUser()?.gender);
+
   spotifyDisplayName = signal<string | null>(null);
 
   turnstileToken = signal('');
@@ -379,6 +381,11 @@ export class Account implements OnInit, AfterViewInit {
   }
 
   handleGoogleCredential(response: { credential: string }) {
+    if (!this.turnstileToken()) {
+      this.toastr.warning('Please complete the captcha first', 'Warning');
+      return;
+    }
+
     this.userService.googleAuth(response.credential).subscribe({
       next: (res) => {
         this.userContext.login(res.user, res.token);
@@ -436,6 +443,16 @@ export class Account implements OnInit, AfterViewInit {
         gender: this.gender(),
       });
     }
+  }
+
+  selectGender(gender: string) {
+    this.userService.updateUserGender(gender).subscribe({
+      next: (updateUser) => {
+        this.userContext.updateUser(updateUser);
+        this.toastr.success('Gender set!', 'Done');
+      },
+      error: (err) => this.toastr.error('Failed to set gender', 'Error'),
+    });
   }
 
   // Clears user session and shows logout confirmation

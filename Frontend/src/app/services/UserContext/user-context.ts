@@ -39,4 +39,11 @@ export class UserContext {
     this.authService.clearToken();
     this.currentUser.set(null);
   }
+
+  updateUser(updatedUser: any) {
+    const current = this.currentUser();
+    if (current) {
+      this.currentUser.set({ ...current, ...updatedUser });
+    }
+  }
 }
