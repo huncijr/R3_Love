@@ -164,6 +164,10 @@ export class Account implements OnInit, AfterViewInit {
 
   spotifyConnected = signal(false);
 
+  isFinished = computed(() => {
+    return this.setupItems().every((item) => item.done);
+  });
+
   calendarQuiz = signal<any>(null);
   userProgress = signal<{ calendarDone: boolean; giftDone: boolean; gameDone: boolean }>({
     calendarDone: false,
@@ -222,6 +226,7 @@ export class Account implements OnInit, AfterViewInit {
     });
     this.userService.getUserProgress().subscribe({
       next: (progress) => this.userProgress.set(progress),
+
       error: (err) => console.error('Failed to load progress', err),
     });
 
