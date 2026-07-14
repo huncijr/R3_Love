@@ -541,4 +541,25 @@ export class UserService {
       `,
     });
   }
+
+  googleAuth(credential: string): Observable<CreateUserResponse> {
+    return this.apollo
+      .mutate<{ googleAuth: CreateUserResponse }>({
+        mutation: gql`
+          mutation GoogleAuth($credential: String!) {
+            googleAuth(credential: $credential) {
+              user {
+                id
+                name
+                gender
+                country
+              }
+              token
+            }
+          }
+        `,
+        variables: { credential },
+      })
+      .pipe(map((result) => result.data!.googleAuth));
+  }
 }

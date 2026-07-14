@@ -50,7 +50,9 @@ CREATE TABLE "Users" (
 	"spotifyAccessToken" text,
 	"spotifyRefreshToken" text,
 	"spotifyTokenExpiry" timestamp,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"google_id" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "Users_google_id_unique" UNIQUE("google_id")
 );
 --> statement-breakpoint
 ALTER TABLE "CalendarEvents" ADD CONSTRAINT "CalendarEvents_user_id_Users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."Users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

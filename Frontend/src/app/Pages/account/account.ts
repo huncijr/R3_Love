@@ -31,7 +31,8 @@ import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
 import { getCode } from 'country-list';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
-import { environment } from '../../../enviroments/enviroment';
+import { environment } from '../../../enviroments/enviroment.prod';
+
 declare global {
   interface Window {
     turnstile?: {
@@ -87,6 +88,7 @@ export class Account implements OnInit, AfterViewInit {
   private toastr = inject(ToastrService);
   private userService = inject(UserService);
   private userContext = inject(UserContext);
+  googleClientId = environment.googleClientId;
 
   ngAfterViewInit(): void {
     window.onTurnstileCallback = (token: string) => {
@@ -99,6 +101,34 @@ export class Account implements OnInit, AfterViewInit {
           this.turnstileToken.set(token);
         },
       });
+    }
+
+    this.initGoogleAuth();
+  }
+
+  private initGoogleAuth() {
+    if ((window as any).google?.accounts?.id) {
+      (window as any).google.accounts.id.initialize({
+        client_id: this.googleClientId,
+        callback: (response: any) => {
+          this.handleGoogleCredential(response);
+        },
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+
+      const container = document.getElementById('google-signin-btn');
+      if (container) {
+        (window as any).google.accounts.id.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          text: 'signin_with',
+          shape: 'rectangular',
+          width: container.parentElement?.clientWidth || 300,
+        });
+      }
+    } else {
+      setTimeout(() => this.initGoogleAuth(), 500);
     }
   }
 
@@ -242,6 +272,10 @@ export class Account implements OnInit, AfterViewInit {
   ngOnInit() {
     this.loadProgress();
 
+    (window as any).handleGoogleCredential = (response: any) => {
+      this.handleGoogleCredential(response);
+    };
+
     const savedSpotifyName = sessionStorage.getItem('spotifyDisplayName');
     if (savedSpotifyName) {
       this.spotifyDisplayName.set(savedSpotifyName);
@@ -342,6 +376,20 @@ export class Account implements OnInit, AfterViewInit {
       return false;
     }
     return true;
+  }
+
+  handleGoogleCredential(response: { credential: string }) {
+    this.userService.googleAuth(response.credential).subscribe({
+      next: (res) => {
+        this.userContext.login(res.user, res.token);
+        this.toastr.success('Signed in with Google', 'Welcome');
+        this.syncCalendarQuiz();
+        this.syncGiftRecommendation();
+      },
+      error: (err) => {
+        this.toastr.error(err.message || 'Google sign-in failed', 'Error');
+      },
+    });
   }
 
   // Handles both registration and login form submission

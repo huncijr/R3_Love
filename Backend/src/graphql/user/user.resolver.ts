@@ -6,7 +6,7 @@ import {
   giftUsage,
   user,
 } from "../../db/schema.js";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
 import { generateToken, verifyToken } from "../../middleware/Auth.js";
@@ -18,6 +18,8 @@ import {
   QuizAnswer,
 } from "../ai/ai.service.js";
 import { verifyTurnstileToken } from "../../utils/turnstile.js";
+import crypto from "crypto";
+import { verifyGoogleCredential } from "../google/google.service.js";
 
 // Extracts and verifies user ID from JWT token in request context
 const getUserIdFromContext = (token: string): string => {
@@ -470,6 +472,55 @@ export const userResolver = {
         return (
           result[0] || { calendarDone: false, giftDone: false, gameDone: false }
         );
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+    googleAuth: async (_parent: unknown, args: { credential: string }) => {
+      try {
+        const googleUser = await verifyGoogleCredential(args.credential);
+
+        const existingByGoogleId = await db
+          .select()
+          .from(user)
+          .where(eq(user.googleId, googleUser.sub));
+
+        if (existingByGoogleId.length > 0) {
+          const foundUser = existingByGoogleId[0];
+          const token = generateToken(foundUser.id);
+          return { user: foundUser, token };
+        }
+
+        const existingByName = await db
+          .select()
+          .from(user)
+          .where(eq(user.name, googleUser.name));
+
+        if (existingByName.length > 0) {
+          const foundUser = existingByName[0];
+          await db
+            .update(user)
+            .set({ googleId: googleUser.sub })
+            .where(eq(user.id, foundUser.id));
+          const token = generateToken(foundUser.id);
+          return { user: foundUser, token };
+        }
+
+        const randomPassword = crypto.randomBytes(32).toString("hex");
+        const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+        const newUser = {
+          name: googleUser.name,
+          password: hashedPassword,
+          googleId: googleUser.sub,
+          gender: null,
+        };
+
+        const result = await db.insert(user).values(newUser).returning();
+        const createdUser = result[0];
+        const token = generateToken(createdUser.id);
+
+        return { user: createdUser, token };
       } catch (error) {
         errorHandler(error);
       }

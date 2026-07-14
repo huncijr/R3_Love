@@ -173,6 +173,7 @@ export const userSchema = `
     deleteGiftRecommendations(id: ID!): Boolean!
     markGameDone: UserProgress!
     disconnectSpotify: Boolean!
+    googleAuth(credential: String!): AuthPayload!     
   }
 `;
 export const spotifyTypeDefs = `#graphql

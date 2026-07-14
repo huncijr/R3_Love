@@ -25,7 +25,7 @@ export const user = pgTable("Users", {
   spotifyAccessToken: text("spotifyAccessToken"),
   spotifyRefreshToken: text("spotifyRefreshToken"),
   sportifyTokenExpiry: timestamp("spotifyTokenExpiry"),
-
+  googleId: text("google_id").unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
