@@ -172,6 +172,7 @@ export const userSchema = `
     saveGiftRecommendations(input: SaveGiftRecommendationsInput!): SavedGiftRecommendations!
     deleteGiftRecommendations(id: ID!): Boolean!
     markGameDone: UserProgress!
+    disconnectSpotify: Boolean!
   }
 `;
 export const spotifyTypeDefs = `#graphql

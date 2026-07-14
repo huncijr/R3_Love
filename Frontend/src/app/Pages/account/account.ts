@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 import { HlmLabel } from '@spartan-ng/helm/label';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Unplug } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { HlmInput } from '@spartan-ng/helm/input';
 import {
@@ -54,6 +54,7 @@ declare global {
     HlmSwitch,
     RouterLink,
     HlmDropdownMenuImports,
+    HlmBadge,
   ],
   templateUrl: './account.html',
   providers: [
@@ -76,6 +77,7 @@ declare global {
         Trash2,
         X,
         CircleCheckBig,
+        Unplug,
       }),
     },
   ],
@@ -124,6 +126,8 @@ export class Account implements OnInit, AfterViewInit {
       });
   }
 
+  showSpotifyDisconnectConfirm = signal(false);
+
   private syncGiftRecommendation() {
     const saved = localStorage.getItem('gift-recommendations');
     if (!saved) return;
@@ -134,6 +138,7 @@ export class Account implements OnInit, AfterViewInit {
         answers: data.answers,
         recommendations: data.recommendations,
       })
+
       .subscribe({
         next: () => {
           localStorage.removeItem('gift-recommendations');
@@ -210,6 +215,29 @@ export class Account implements OnInit, AfterViewInit {
 
     return items;
   });
+
+  openSpotifyDisconnectConfirm() {
+    this.showSpotifyDisconnectConfirm.set(true);
+  }
+
+  cancelSpotifyDisconnect() {
+    this.showSpotifyDisconnectConfirm.set(false);
+  }
+
+  confirmDisconnectSpotify() {
+    this.showSpotifyDisconnectConfirm.set(false);
+    this.userService.disconnectSpotify().subscribe({
+      next: () => {
+        this.spotifyConnected.set(false);
+        this.spotifyDisplayName.set(null);
+        sessionStorage.removeItem('spotifyDisplayName');
+        this.toastr.success('Spotify disconnected', 'Done');
+      },
+      error: (err) => {
+        this.toastr.error('Failed to disconnect Spotify', 'Error');
+      },
+    });
+  }
 
   ngOnInit() {
     this.loadProgress();

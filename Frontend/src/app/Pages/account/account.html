@@ -43,18 +43,27 @@
               </span>
 
               @if (spotifyConnected()) {
-                <div class="flex items-center w-full p-1">
-                  <img src="/Images/Spotify-Logo.png" class="h-7 w-21" />
-                  @if (spotifyDisplayName()) {
-                    <span class="text-sm font-semibold text-green-400">{{
-                      spotifyDisplayName()
-                    }}</span>
-                  } @else {
-                    <lucide-icon
-                      name="circle-check-big"
-                      class="w-6 h-6 text-green-400 bg-green-200 rounded-full"
-                    ></lucide-icon>
-                  }
+                <div class="flex items-center w-full p-1 hover:bg-red-500">
+                  <div class="flex items-center gap-1 group relative">
+                    <img src="/Images/Spotify-Logo.png" class="h-7 w-21" group />
+                    @if (spotifyDisplayName()) {
+                      <span class="text-sm font-semibold text-green-400">{{
+                        spotifyDisplayName()
+                      }}</span>
+                    } @else {
+                      <lucide-icon
+                        name="circle-check-big"
+                        class="w-6 h-6 text-green-400 bg-green-200 rounded-full"
+                      ></lucide-icon>
+                    }
+                    <button
+                      (click)="openSpotifyDisconnectConfirm()"
+                      class="ml-2 rounded-full p-0.5 hover:bg-red-500 text-muted hover:text-red-900 cursor-pointer"
+                      title="Disconnect Spotify"
+                    >
+                      <lucide-icon name="x" class="w-4 h-4"></lucide-icon>
+                    </button>
+                  </div>
                 </div>
               }
             </div>
@@ -516,3 +525,38 @@
     </div>
   }
 </div>
+
+@if (showSpotifyDisconnectConfirm()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div
+      class="w-full max-w-sm mx-4 p-6 rounded-2xl bg-white border border-border shadow-2xl text-center"
+    >
+      <div class="mx-auto mb-4 w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
+        <lucide-icon name="unplug" class="w-7 h-7 text-red-500"></lucide-icon>
+      </div>
+      <h3 class="font-bold text-neutral-text mb-2 font-bold text-2xl">Disconnect Spotify ?</h3>
+      <p class="text-muted mb-6 font-medium">
+        Are you sure you want to disconnect your Spotify account? you can reconnect anytime
+      </p>
+      <div class="flex gap-3">
+        <button
+          hlmBtn
+          variant="outline"
+          class="flex-1 cursor-pointer"
+          (click)="cancelSpotifyDisconnect()"
+        >
+          Cancel
+        </button>
+
+        s
+        <button
+          hlmBtn
+          class="flex-1 cursor-pointer bg-red-500 hover:bg-red-800 text-white"
+          (click)="confirmDisconnectSpotify()"
+        >
+          Disconnect
+        </button>
+      </div>
+    </div>
+  </div>
+}

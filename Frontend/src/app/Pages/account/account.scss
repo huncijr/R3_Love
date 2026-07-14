@@ -67,6 +67,15 @@
   animation: glowPulse 2.5s ease-in-out infinite;
 }
 
+.spotify-x-btn {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.spotify-row:hover .spotify-x-btn {
+  opacity: 1;
+}
+
 .success-glow > * {
   position: relative;
   z-index: 1;

@@ -531,4 +531,14 @@ export class UserService {
       `,
     });
   }
+
+  disconnectSpotify() {
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation DisconnectSpotify {
+          disconnectSpotify
+        }
+      `,
+    });
+  }
 }

@@ -98,5 +98,18 @@ export const spotifyResolver = {
         return false;
       }
     },
+
+    disconnectSpotify: async (_: any, __any: any, context: any) => {
+      const userId = getUserIdFromContext(context.token);
+      await db
+        .update(user)
+        .set({
+          spotifyAccessToken: null,
+          spotifyRefreshToken: null,
+          sportifyTokenExpiry: null,
+        })
+        .where(eq(user.id, userId));
+      return true;
+    },
   },
 };
