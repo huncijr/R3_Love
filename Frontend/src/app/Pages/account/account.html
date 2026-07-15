@@ -155,7 +155,61 @@
         }
         <div class="w-full h-0.5 mt-1" style="background-color: var(--border)"></div>
       </div>
+      @if (currentUser()?.email && !emailVerified()) {
+        <div class="w-full animate-fade-in-up mt-2">
+          <section
+            hlmCard
+            class="w-full border border-amber-300 bg-linear-to-br from-amber-50/50 to-white shadow-sm overflow-hidden"
+          >
+            <div hlmCardContent class="p-4">
+              <div class="flex items-center gap-3 mb-4">
+                <div
+                  class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0"
+                >
+                  <lucide-icon name="mail" class="w-6 h-6 text-amber-600"></lucide-icon>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-neutral-text">Verify your email</span>
+                  <span class="text-xs text-muted"
+                    >Enter 6 digit code sent to {{ currentUser()?.email }}</span
+                  >
+                </div>
+              </div>
+              <div class="flex justify-center mb-4">
+                <brn-input-otp hlmInputOtp maxLength="6" [(value)]="otpCode">
+                  <hlm-input-otp-group>
+                    @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+                      <hlm-input-otp-slot [index]="i" />
+                    }
+                  </hlm-input-otp-group>
+                </brn-input-otp>
+              </div>
 
+              <div class="flex gap-3">
+                <button
+                  hlmBtn
+                  variant="outline"
+                  (click)="sendVerificationCode()"
+                  [disabled]="isSendingCode()"
+                  class="flex-1 text-xs"
+                >
+                  Resend code
+                </button>
+                <button hlmBtn variant="outline">Resend code</button>
+                <button
+                  hlmBtn
+                  (click)="verifyCode()"
+                  [disabled]="isVerifyingCode() || otpCode().length < 6"
+                  class="flex-1 bg-primary-main text-white text-xs"
+                >
+                  Verify
+                </button>
+              </div>
+              <div class="flex justify-center mb-4"></div>
+            </div>
+          </section>
+        </div>
+      }
       @if (!isFinished()) {
         <div class="w-full animate-fade-in-up delay-100 mt-3">
           <div class="flex items-center">
@@ -434,17 +488,47 @@
       </section>
 
       <div hlmCardContent class="space-y-5 flex-1 flex flex-col">
-        <div class="space-y-1.5">
-          <label hlmLabel for="username" class="text-sm font-medium text-ring"> Username </label>
-          <input
-            hlmInput
-            id="username"
-            type="text"
-            placeholder="Enter your username"
-            [(ngModel)]="username"
-            class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
-          />
-        </div>
+        @if (isLoginMode()) {
+          <div class="space-y-1.5">
+            <label hlmLabel for="loginEmail" class="text-sm font-medium text-ring">Email</label>
+            <input
+              hlmInput
+              id="loginEmail"
+              type="email"
+              placeholder="Enter your email"
+              [(ngModel)]="loginEmail"
+              class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+            />
+          </div>
+        }
+
+        <!-- REGISZTRÁCIÓ: username + email -->
+        @if (!isLoginMode()) {
+          <div class="space-y-1.5">
+            <label hlmLabel for="username" class="text-sm font-medium text-ring">Username</label>
+            <input
+              hlmInput
+              id="username"
+              type="text"
+              placeholder="Enter your username"
+              [(ngModel)]="username"
+              class="w-full p-2 border-border focus:ring-primary-light rounded-lg"
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label hlmLabel for="regEmail" class="text-sm font-medium text-ring">Email</label>
+            <input
+              hlmInput
+              id="regEmail"
+              type="email"
+              placeholder="Enter your email"
+              [(ngModel)]="email"
+              class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+            />
+          </div>
+        }
+
         <div class="space-y-1.5">
           <label hlmLabel for="password" class="text-sm font-medium text-ring"> Password </label>
           <div class="flex">

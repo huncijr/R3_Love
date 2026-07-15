@@ -6,10 +6,17 @@ const CREATE_USER = gql`
   mutation CreateUser(
     $name: String!
     $password: String!
+    $email: String!
     $gender: String!
     $turnstileToken: String!
   ) {
-    createUser(name: $name, password: $password, gender: $gender, turnstileToken: $turnstileToken) {
+    createUser(
+      name: $name
+      email: $email
+      password: $password
+      gender: $gender
+      turnstileToken: $turnstileToken
+    ) {
       user {
         id
         name
@@ -21,11 +28,12 @@ const CREATE_USER = gql`
 `;
 
 const LOGIN = gql`
-  mutation Login($name: String!, $password: String!, $turnstileToken: String!) {
-    login(name: $name, password: $password, turnstileToken: $turnstileToken) {
+  mutation Login($email: String!, $password: String!, $turnstileToken: String!) {
+    login(email: $email, password: $password, turnstileToken: $turnstileToken) {
       user {
         id
         name
+        email
         gender
         country
       }
@@ -163,6 +171,7 @@ export class UserService {
   createUser(
     name: string,
     password: string,
+    email: string,
     gender: string,
     turnstileToken: string,
   ): Observable<CreateUserResponse> {
@@ -170,16 +179,16 @@ export class UserService {
     return this.apollo
       .mutate<{ createUser: CreateUserResponse }>({
         mutation: CREATE_USER,
-        variables: { name, password, gender, turnstileToken },
+        variables: { name, email, password, gender, turnstileToken },
       })
       .pipe(map((result) => result.data!.createUser));
   }
   // Authenticates existing user and returns token for session management
-  login(name: string, password: string, turnstileToken: string): Observable<CreateUserResponse> {
+  login(email: string, password: string, turnstileToken: string): Observable<CreateUserResponse> {
     return this.apollo
       .mutate<{ login: CreateUserResponse }>({
         mutation: LOGIN,
-        variables: { name, password, turnstileToken },
+        variables: { email, password, turnstileToken },
       })
       .pipe(map((result) => result.data!.login));
   }

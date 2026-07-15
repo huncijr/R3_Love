@@ -5,6 +5,7 @@ export const userSchema = `
     name: String!
     gender: String
     email: String
+    emailVerified: Boolean
     country: String
     createdAt: String!
     spotifyAccessToken: String
@@ -146,12 +147,13 @@ export const userSchema = `
     createUser(
       name: String!
       password: String!
+      email: String!
       gender: String
       turnstileToken: String!
     ): AuthPayload!
 
     login(
-       name: String!
+       email: String!
        password: String!
        turnstileToken: String!
     ): AuthPayload

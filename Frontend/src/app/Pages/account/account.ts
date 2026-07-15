@@ -76,6 +76,7 @@ declare global {
     HlmInputOtpSlot,
     BrnInputOtp,
     HlmInputOtp,
+    HlmBadge,
   ],
   templateUrl: './account.html',
   providers: [
@@ -114,9 +115,11 @@ export class Account implements OnInit, AfterViewInit {
   googleClientId = environment.googleClientId;
 
   emailVerified = signal(false);
+  email = signal('');
   isSendingCode = signal(false);
   isVerifyingCode = signal(false);
   otpCode = signal('');
+  loginEmail = signal('');
 
   showEmailVerification = computed(() => this.currentUser()?.email && !this.emailVerified());
 
@@ -354,6 +357,9 @@ export class Account implements OnInit, AfterViewInit {
     const user = this.currentUser();
     if (user?.email) {
       this.emailVerified.set(!!(user as any)?.emailVerified);
+      if (!this.emailVerified()) {
+        this.sendVerificationCode();
+      }
     }
   }
 
@@ -454,7 +460,13 @@ export class Account implements OnInit, AfterViewInit {
     if (isUsernameValid && isPasswordValid && isPasswordMatch && this.gender()) {
       this.isLoading.set(true);
       this.userService
-        .createUser(this.username(), this.password(), this.gender(), this.turnstileToken())
+        .createUser(
+          this.username(),
+          this.password(),
+          this.email(),
+          this.gender(),
+          this.turnstileToken(),
+        )
         .subscribe({
           next: (response) => {
             this.isLoading.set(false);
@@ -592,12 +604,13 @@ export class Account implements OnInit, AfterViewInit {
 
   // Authenticates existing user and stores session token
   onLogin() {
-    if (!this.username().trim() || !this.password().trim()) {
-      this.toastr.warning('Please enter username and password', 'Warning');
+    if (!this.loginEmail().trim() || !this.password().trim()) {
+      this.toastr.warning('Please enter email and password', 'Warning');
       return;
     }
+
     this.isLoading.set(true);
-    this.userService.login(this.username(), this.password(), this.turnstileToken()).subscribe({
+    this.userService.login(this.loginEmail(), this.password(), this.turnstileToken()).subscribe({
       next: (response) => {
         this.isLoading.set(false);
         this.isSubmited.set(true);
@@ -633,5 +646,6 @@ export class Account implements OnInit, AfterViewInit {
     this.password.set('');
     this.confirmPassword.set('');
     this.gender.set('');
+    this.loginEmail.set('');
   }
 }

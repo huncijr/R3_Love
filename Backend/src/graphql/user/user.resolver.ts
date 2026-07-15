@@ -153,6 +153,7 @@ export const userResolver = {
       args: {
         name: string;
         password: string;
+        email: string;
         gender?: string;
         turnstileToken: string;
       },
@@ -166,6 +167,7 @@ export const userResolver = {
         const newUser = {
           name: args.name,
           password: hashedPassword,
+          email: args.email,
           gender: args.gender || null,
         };
 
@@ -185,7 +187,7 @@ export const userResolver = {
     // Authenticates user and returns JWT token
     login: async (
       _parent: unknown,
-      args: { name: string; password: string; turnstileToken: string },
+      args: { email: string; password: string; turnstileToken: string },
     ) => {
       try {
         const isHuman = await verifyTurnstileToken(args.turnstileToken);
@@ -195,7 +197,7 @@ export const userResolver = {
         const result = await db
           .select()
           .from(user)
-          .where(eq(user.name, args.name));
+          .where(eq(user.email, args.email));
         if (result.length === 0) {
           throw new AppError("Invalid username or password", 401);
         }
