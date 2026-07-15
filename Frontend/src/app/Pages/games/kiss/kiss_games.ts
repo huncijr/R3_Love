@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HlmButton } from '@spartan-ng/helm/button';
 import {
@@ -78,6 +78,8 @@ export class KissComponent implements OnInit {
   private kissTimeout?: number;
   private messageTimeout?: number;
   private kissId = 0;
+
+  partnerName = computed(() => (this.currentGender() === 'male' ? 'Dani' : 'Lucy'));
 
   view = signal<'full' | 'body' | 'face' | 'default'>('default');
   zoom = signal(1);

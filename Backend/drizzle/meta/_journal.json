@@ -15,6 +15,13 @@
       "when": 1784098646074,
       "tag": "0001_long_squirrel_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784129057430,
+      "tag": "0002_wealthy_steel_serpent",
+      "breakpoints": true
     }
   ]
 }

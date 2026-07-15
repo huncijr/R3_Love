@@ -481,12 +481,11 @@ export class Account implements OnInit, AfterViewInit {
               this.showOtpModal.set(true);
             }
           },
-          error: (err) => {
+          error: () => {
             this.isLoading.set(false);
             this.isSubmited.set(false);
-            const errorMessage = err.message || 'Something went wrong';
+            const errorMessage = 'Something went wrong';
             this.toastr.error(errorMessage, 'Error');
-            console.error('GraphQL error', err);
           },
         });
 

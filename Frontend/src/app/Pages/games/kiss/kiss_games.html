@@ -124,7 +124,14 @@
             <div class="hair male-hair" *ngIf="currentGender() === 'male'"></div>
 
             <div class="shadow"></div>
-
+            <div
+              class="floating-name"
+              [class.male-name]="currentGender() === 'male'"
+              [class.female-name]="currentGender() === 'female'"
+            >
+              <span class="name-3d">{{ partnerName() }}</span>
+              <span class="name-shadow">{{ partnerName() }}</span>
+            </div>
             <div class="head">
               <div class="face">
                 <div class="eye left"></div>

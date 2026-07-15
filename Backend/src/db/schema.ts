@@ -16,7 +16,7 @@ export const user = pgTable("Users", {
     .default(sql`gen_random_uuid()`)
     .primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  email: varchar("email", { length: 255 }),
+  email: varchar("email", { length: 255 }).unique(),
   emailVerified: boolean("email_verified").default(false),
   verificationCode: varchar("verification_code", { length: 6 }),
   verificationCodeExpiry: timestamp("verification_code_expiry"),
