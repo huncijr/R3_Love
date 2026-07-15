@@ -35,7 +35,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmSwitch } from '../../ui/switch/src';
-import { UserService } from '../../services/user.service';
+import { CreateUserResponse, UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
 import { getCode } from 'country-list';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
@@ -355,12 +355,7 @@ export class Account implements OnInit, AfterViewInit {
     });
 
     const user = this.currentUser();
-    if (user?.email) {
-      this.emailVerified.set(!!(user as any)?.emailVerified);
-      if (!this.emailVerified()) {
-        this.sendVerificationCode();
-      }
-    }
+    this.emailVerified.set(!!(user as any)?.emailVerified);
   }
 
   Setgender(value: string) {
@@ -432,6 +427,7 @@ export class Account implements OnInit, AfterViewInit {
     this.userService.googleAuth(response.credential).subscribe({
       next: (res) => {
         this.userContext.login(res.user, res.token);
+        this.emailVerified.set(!!res.user.emailVerified);
         this.toastr.success('Signed in with Google', 'Welcome');
         this.syncCalendarQuiz();
         this.syncGiftRecommendation();
@@ -472,10 +468,9 @@ export class Account implements OnInit, AfterViewInit {
             this.isLoading.set(false);
             this.isSubmited.set(true);
             this.userContext.login(response.user, response.token);
+            this.emailVerified.set(!!response.user.emailVerified);
             this.resetForm();
-            this.toastr.success('Account created successfully!', 'Success');
-            this.syncCalendarQuiz();
-            this.syncGiftRecommendation();
+            this.toastr.success('Account created! Welcome aboard.');
           },
           error: (err) => {
             this.isLoading.set(false);
@@ -485,6 +480,7 @@ export class Account implements OnInit, AfterViewInit {
             console.error('GraphQL error', err);
           },
         });
+
       this.isSubmited.set(true);
       console.log('Account created:', {
         username: this.username(),
@@ -517,9 +513,10 @@ export class Account implements OnInit, AfterViewInit {
 
     this.isVerifyingCode.set(true);
     this.userService.verifyEmail(code).subscribe({
-      next: () => {
+      next: (response: CreateUserResponse) => {
         this.isVerifyingCode.set(false);
-        this.emailVerified.set(true);
+        this.emailVerified.set(!!response.user.emailVerified);
+        this.userContext.login(response.user, response.token);
         this.otpCode.set('');
         this.toastr.success('Email verified');
       },
@@ -615,6 +612,7 @@ export class Account implements OnInit, AfterViewInit {
         this.isLoading.set(false);
         this.isSubmited.set(true);
         this.userContext.login(response.user, response.token);
+        this.emailVerified.set(!!response.user.emailVerified);
         this.toastr.success('Logged in successfully', 'Success');
       },
       error: (err) => {

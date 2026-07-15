@@ -20,6 +20,8 @@ const CREATE_USER = gql`
       user {
         id
         name
+        email
+        emailVerified
         gender
       }
       token
@@ -34,6 +36,7 @@ const LOGIN = gql`
         id
         name
         email
+        emailVerified
         gender
         country
       }
@@ -154,6 +157,8 @@ export interface User {
   name: string;
   gender: string | null;
   country?: string | null;
+  email?: string | null;
+  emailVerified?: boolean | null;
 }
 export interface CreateUserResponse {
   user: User;
@@ -205,12 +210,21 @@ export class UserService {
       .pipe(map((result) => result.data!.sendVerificationEmail));
   }
 
-  verifyEmail(code: string): Observable<boolean> {
+  verifyEmail(code: string): Observable<CreateUserResponse> {
     return this.apollo
-      .mutate<{ verifyEmail: boolean }>({
+      .mutate<{ verifyEmail: CreateUserResponse }>({
         mutation: gql`
           mutation VerifyEmail($code: String!) {
-            verifyEmail(code: string)
+            verifyEmail(code: $code) {
+              user {
+                id
+                name
+                email
+                emailVerified
+                gender
+              }
+              token
+            }
           }
         `,
         variables: { code },

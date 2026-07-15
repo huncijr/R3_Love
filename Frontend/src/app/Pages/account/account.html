@@ -100,116 +100,10 @@
             </hlm-dropdown-menu>
           </ng-template>
         </div>
-        @if (currentUser()?.email && !emailVerified()) {
-          <div class="w-full animate-fade-in-up mt-2">
-            <section
-              hlmCard
-              class="w-full border border-amber-300 bg-linear-to-br from-amber-50/50 to white shadow-sm overflow-hidden"
-            >
-              <div hlmCardContent class="p-4">
-                <div class="flex items-center gap-3 mb-4">
-                  <div
-                    class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0"
-                  >
-                    <lucide-icon name="mail" class="w-6 h-6 text-amber-600"></lucide-icon>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="text-sm font-bold text-neutral-text">Verify your email</span>
-                    <span class="text-xs text-muted"
-                      >Enter a 6-digit code sent to {{ currentUser()?.email }}</span
-                    >
-                  </div>
-                </div>
-                <div class="flex justify-center mb-4">
-                  <brn-input-otp
-                    hlmInputOtp
-                    maxLength="6"
-                    [(value)]="otpCode"
-                    inputClass="disabled:cursor-not-allowed"
-                  >
-                    <hlm-input-otp-group>
-                      @for (i of [0, 1, 2, 3, 4, 5]; track i) {
-                        <hlm-input-otp-slot [index]="i" />
-                      }
-                    </hlm-input-otp-group>
-                  </brn-input-otp>
-                </div>
-                <div class="flex gap-2">
-                  <button
-                    hlmBtn
-                    variant="outline"
-                    (click)="sendVerificationCode()"
-                    [disabled]="isSendingCode()"
-                    class="flex-1 cursor-pointer bg-primary-main text-white text-xs font-medium"
-                  >
-                    @if (isVerifyingCode()) {
-                      Verifying...
-                    } @else {
-                      Verify
-                    }
-                  </button>
-                </div>
-              </div>
-            </section>
-          </div>
-        }
+
         <div class="w-full h-0.5 mt-1" style="background-color: var(--border)"></div>
       </div>
-      @if (currentUser()?.email && !emailVerified()) {
-        <div class="w-full animate-fade-in-up mt-2">
-          <section
-            hlmCard
-            class="w-full border border-amber-300 bg-linear-to-br from-amber-50/50 to-white shadow-sm overflow-hidden"
-          >
-            <div hlmCardContent class="p-4">
-              <div class="flex items-center gap-3 mb-4">
-                <div
-                  class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0"
-                >
-                  <lucide-icon name="mail" class="w-6 h-6 text-amber-600"></lucide-icon>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-sm font-bold text-neutral-text">Verify your email</span>
-                  <span class="text-xs text-muted"
-                    >Enter 6 digit code sent to {{ currentUser()?.email }}</span
-                  >
-                </div>
-              </div>
-              <div class="flex justify-center mb-4">
-                <brn-input-otp hlmInputOtp maxLength="6" [(value)]="otpCode">
-                  <hlm-input-otp-group>
-                    @for (i of [0, 1, 2, 3, 4, 5]; track i) {
-                      <hlm-input-otp-slot [index]="i" />
-                    }
-                  </hlm-input-otp-group>
-                </brn-input-otp>
-              </div>
 
-              <div class="flex gap-3">
-                <button
-                  hlmBtn
-                  variant="outline"
-                  (click)="sendVerificationCode()"
-                  [disabled]="isSendingCode()"
-                  class="flex-1 text-xs"
-                >
-                  Resend code
-                </button>
-                <button hlmBtn variant="outline">Resend code</button>
-                <button
-                  hlmBtn
-                  (click)="verifyCode()"
-                  [disabled]="isVerifyingCode() || otpCode().length < 6"
-                  class="flex-1 bg-primary-main text-white text-xs"
-                >
-                  Verify
-                </button>
-              </div>
-              <div class="flex justify-center mb-4"></div>
-            </div>
-          </section>
-        </div>
-      }
       @if (!isFinished()) {
         <div class="w-full animate-fade-in-up delay-100 mt-3">
           <div class="flex items-center">
@@ -818,5 +712,63 @@
         Cancel
       </button>
     </div>
+  </div>
+}
+
+@if (currentUser()?.email && !emailVerified()) {
+  <div
+    class="fixed inset-0 z=50 flex items-center justify-center backdrop-blur-sm animate-fade-in-up mt-2"
+  >
+    <section
+      hlmCard
+      class="border border-amber-300 bg-linear-to-br from-amber-50/50 to-white shadow-sm overflow-hidden"
+    >
+      <div hlmCardContent class="p-4">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+            <lucide-icon name="mail" class="w-6 h-6 text-amber-600"></lucide-icon>
+          </div>
+          <div class="flex flex-col items-center">
+            <span class="text-sm font-bold text-neutral-text">Verify your email</span>
+            <span class="text-xs text-muted"
+              >Enter 6 digit code sent to {{ currentUser()?.email }}</span
+            >
+          </div>
+        </div>
+        <div class="flex justify-center mb-4">
+          <brn-input-otp hlmInputOtp maxLength="6" [(value)]="otpCode">
+            <hlm-input-otp-group class="gap-1">
+              @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+                @if (i === 3) {
+                  <span>-</span>
+                }
+                <hlm-input-otp-slot [index]="i" class="border-2 rounded-lg border-accent" />
+              }
+            </hlm-input-otp-group>
+          </brn-input-otp>
+        </div>
+
+        <div class="flex gap-3">
+          <button
+            hlmBtn
+            variant="outline"
+            (click)="sendVerificationCode()"
+            [disabled]="isSendingCode()"
+            class="flex-1 text-xs"
+          >
+            Resend code
+          </button>
+          <button
+            hlmBtn
+            (click)="verifyCode()"
+            [disabled]="isVerifyingCode() || otpCode().length < 6"
+            class="flex-1 bg-primary-main text-white text-xs"
+          >
+            Verify
+          </button>
+        </div>
+        <div class="flex justify-center mb-4"></div>
+      </div>
+    </section>
   </div>
 }

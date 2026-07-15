@@ -1,5 +1,9 @@
 import dotenv from "dotenv";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { db } from "../db";
+import { eq } from "drizzle-orm";
+import { user } from "../db/schema";
+import { AppError } from "./ErrorHandler";
 
 dotenv.config();
 
@@ -21,10 +25,26 @@ export function verifyToken(token: string): { userId: string } {
   return decoded as { userId: string };
 }
 
-export function getUserIdFromContext(token: string | undefined): string {
+export async function getUserIdFromContext(
+  token: string | undefined,
+  allowUnverified = false,
+): Promise<string> {
   if (!token) {
     throw new Error("Unathorized");
   }
   const decoded = verifyToken(token);
+
+  if (!allowUnverified) {
+    const [foundUser] = await db
+      .select({ email: user.email, emailVerified: user.emailVerified })
+      .from(user)
+      .where(eq(user.id, decoded.userId));
+    if (foundUser?.email && !foundUser.emailVerified) {
+      throw new AppError(
+        "Email not verified. Please verify your email first.",
+        403,
+      );
+    }
+  }
   return decoded.userId;
 }

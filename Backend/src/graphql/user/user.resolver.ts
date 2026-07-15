@@ -9,7 +9,11 @@ import {
 import { and, desc, eq, ne } from "drizzle-orm";
 import { AppError, errorHandler } from "../../middleware/ErrorHandler.js";
 import bcrypt from "bcrypt";
-import { generateToken, verifyToken } from "../../middleware/Auth.js";
+import {
+  generateToken,
+  getUserIdFromContext,
+  verifyToken,
+} from "../../middleware/Auth.js";
 import {
   generateDailyInsightFromAI,
   generateDeepQuestionsFromAI,
@@ -21,17 +25,6 @@ import { verifyTurnstileToken } from "../../utils/turnstile.js";
 import crypto from "crypto";
 import { verifyGoogleCredential } from "../google/google.service.js";
 import { sendVerificationCode } from "../../utils/mailer.js";
-
-// Extracts and verifies user ID from JWT token in request context
-const getUserIdFromContext = (token: string): string => {
-  if (!token) throw new AppError("Unathorized", 401);
-  try {
-    const decoded = verifyToken(token);
-    return decoded.userId;
-  } catch {
-    throw new AppError("Invalid token", 401);
-  }
-};
 
 export const userResolver = {
   Query: {
@@ -64,7 +57,7 @@ export const userResolver = {
       context: { token: string },
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const result = await db
           .select()
           .from(calendarQuiz)
@@ -81,7 +74,7 @@ export const userResolver = {
       context: { token: string },
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const result = await db
           .select({
             calendarDone: user.calendarDone,
@@ -104,7 +97,7 @@ export const userResolver = {
       context: { token: string },
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const events = await db
           .select()
           .from(calendarEvents)
@@ -124,7 +117,7 @@ export const userResolver = {
       _args: any,
       context: any,
     ) => {
-      const userId = getUserIdFromContext(context.token);
+      const userId = await getUserIdFromContext(context.token);
       try {
         const rows = await db
           .select()
@@ -169,10 +162,12 @@ export const userResolver = {
           password: hashedPassword,
           email: args.email,
           gender: args.gender || null,
+          emailVerified: false,
         };
 
         const result = await db.insert(user).values(newUser).returning();
         const createdUser = result[0];
+
         const token = generateToken(createdUser.id);
 
         return {
@@ -212,6 +207,10 @@ export const userResolver = {
           foundUser.password,
         );
 
+        if (!isPasswordValid) {
+          throw new AppError("Invalid username or password", 401);
+        }
+
         const token = generateToken(foundUser.id);
         return {
           user: foundUser,
@@ -224,7 +223,7 @@ export const userResolver = {
 
     sendVerificationEmail: async (_: any, __: any, context: any) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token, true);
         const [foundUser] = await db
           .select({ email: user.email })
           .from(user)
@@ -256,7 +255,7 @@ export const userResolver = {
 
     verifyEmail: async (_: any, args: { code: string }, context: any) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token, true);
         const [foundUser] = await db
           .select({
             verificationCode: user.verificationCode,
@@ -289,10 +288,16 @@ export const userResolver = {
           })
           .where(eq(user.id, userId));
 
-        return true;
+        const [verifiedUser] = await db
+          .select()
+          .from(user)
+          .where(eq(user.id, userId));
+
+        const token = generateToken(verifiedUser.id);
+
+        return { user: verifiedUser, token };
       } catch (error) {
         errorHandler(error);
-        return false;
       }
     },
 
@@ -303,7 +308,7 @@ export const userResolver = {
     ) => {
       try {
         console.log(args.country);
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const [updatedUser] = await db
           .update(user)
           .set({ country: args.country })
@@ -330,7 +335,7 @@ export const userResolver = {
       context: { token: string },
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token) as string;
+        const userId = (await getUserIdFromContext(context.token)) as string;
         console.log(userId);
         const existing = await db
           .select()
@@ -394,7 +399,7 @@ export const userResolver = {
       context: { token: string },
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const result = await db
           .insert(calendarEvents)
           .values({
@@ -419,7 +424,7 @@ export const userResolver = {
       context: { token: string },
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const events = await db
           .delete(calendarEvents)
           .where(
@@ -442,7 +447,7 @@ export const userResolver = {
       context: any,
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const [updatedUser] = await db
           .update(user)
           .set({ gender: args.gender })
@@ -472,7 +477,7 @@ export const userResolver = {
       context: any,
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const today = new Date().toISOString().slice(0, 10);
         const usageRows = await db
           .select()
@@ -503,7 +508,7 @@ export const userResolver = {
       { input }: { input: any },
       context: any,
     ) => {
-      const userId = getUserIdFromContext(context.token);
+      const userId = await getUserIdFromContext(context.token);
       try {
         const [saved] = await db
           .insert(giftRecommendations)
@@ -528,7 +533,7 @@ export const userResolver = {
       args: { id: string },
       context: any,
     ) => {
-      const userId = getUserIdFromContext(context.token);
+      const userId = await getUserIdFromContext(context.token);
       try {
         await db
           .delete(giftRecommendations)
@@ -550,7 +555,7 @@ export const userResolver = {
       context: { token: string },
     ) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         await db
           .update(user)
           .set({ gameDone: true })
@@ -582,6 +587,13 @@ export const userResolver = {
 
         if (existingByGoogleId.length > 0) {
           const foundUser = existingByGoogleId[0];
+          if (!foundUser.emailVerified) {
+            await db
+              .update(user)
+              .set({ emailVerified: true })
+              .where(eq(user.id, foundUser.id));
+            foundUser.emailVerified = true;
+          }
           const token = generateToken(foundUser.id);
           return { user: foundUser, token };
         }
@@ -595,8 +607,15 @@ export const userResolver = {
           const foundUser = existingByName[0];
           await db
             .update(user)
-            .set({ googleId: googleUser.sub, email: googleUser.email })
+            .set({
+              googleId: googleUser.sub,
+              email: googleUser.email,
+              emailVerified: true,
+            })
             .where(eq(user.id, foundUser.id));
+          foundUser.googleId = googleUser.sub;
+          foundUser.email = googleUser.email;
+          foundUser.emailVerified = true;
           const token = generateToken(foundUser.id);
           return { user: foundUser, token };
         }
@@ -610,6 +629,7 @@ export const userResolver = {
           googleId: googleUser.sub,
           email: googleUser.email,
           gender: null,
+          emailVerified: true,
         };
 
         const result = await db.insert(user).values(newUser).returning();

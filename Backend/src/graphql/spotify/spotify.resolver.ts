@@ -18,7 +18,7 @@ export const spotifyResolver = {
     getSpotifyAuthUrl: () => getSpotifyAuthUrl(),
     isSpotifyConnected: async (_: any, __: any, context: any) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token, true);
         return await spotifyService.isConnected(userId);
       } catch (error) {
         errorHandler(error);
@@ -26,7 +26,7 @@ export const spotifyResolver = {
     },
     getSpotifyAccessToken: async (_: any, __: any, context: any) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         const [foundUser] = await db
           .select({
             spotifyAccessToken: user.spotifyAccessToken,
@@ -60,7 +60,7 @@ export const spotifyResolver = {
     },
     getSpotifyProfile: async (_: any, __: any, context: any) => {
       try {
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token, true);
         return await spotifyService.getProfile(userId);
       } catch (error) {
         errorHandler(error);
@@ -78,7 +78,7 @@ export const spotifyResolver = {
           code,
           hasToken: !!context.token,
         });
-        const userId = getUserIdFromContext(context.token);
+        const userId = await getUserIdFromContext(context.token);
         console.log("userId from token", userId);
         const tokens = await exchangeSpotifyCode(code);
         console.log("tokens received from Spotify", tokens);
@@ -100,7 +100,7 @@ export const spotifyResolver = {
     },
 
     disconnectSpotify: async (_: any, __any: any, context: any) => {
-      const userId = getUserIdFromContext(context.token);
+      const userId = await getUserIdFromContext(context.token);
       await db
         .update(user)
         .set({
