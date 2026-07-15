@@ -184,6 +184,31 @@ export class UserService {
       .pipe(map((result) => result.data!.login));
   }
 
+  sendVerificationEmail(): Observable<Boolean> {
+    return this.apollo
+      .mutate<{ sendVerificationEmail: boolean }>({
+        mutation: gql`
+          mutation SendVerificationEmail {
+            sendVerificationEmail
+          }
+        `,
+      })
+      .pipe(map((result) => result.data!.sendVerificationEmail));
+  }
+
+  verifyEmail(code: string): Observable<boolean> {
+    return this.apollo
+      .mutate<{ verifyEmail: boolean }>({
+        mutation: gql`
+          mutation VerifyEmail($code: String!) {
+            verifyEmail(code: string)
+          }
+        `,
+        variables: { code },
+      })
+      .pipe(map((result) => result.data!.verifyEmail));
+  }
+
   deleteUser(): Observable<boolean> {
     return this.apollo
       .mutate<{ deleteUser: boolean }>({

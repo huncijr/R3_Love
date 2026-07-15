@@ -10,7 +10,7 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmSelectImports } from '../../../ui/select/src';
 import { getNames } from 'country-list';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { environment } from '../../../../enviroments/enviroment';
+import { environment } from '../../../../enviroments/enviroment.prod';
 import { UserService } from '../../../services/user.service';
 import { AuthService } from '../../../services/Auth/auth';
 import { UserContext } from '../../../services/UserContext/user-context';

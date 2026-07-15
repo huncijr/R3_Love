@@ -20,6 +20,7 @@ import {
 import { verifyTurnstileToken } from "../../utils/turnstile.js";
 import crypto from "crypto";
 import { verifyGoogleCredential } from "../google/google.service.js";
+import { sendVerificationCode } from "../../utils/mailer.js";
 
 // Extracts and verifies user ID from JWT token in request context
 const getUserIdFromContext = (token: string): string => {
@@ -216,6 +217,80 @@ export const userResolver = {
         };
       } catch (error) {
         errorHandler(error);
+      }
+    },
+
+    sendVerificationEmail: async (_: any, __: any, context: any) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        const [foundUser] = await db
+          .select({ email: user.email })
+          .from(user)
+          .where(eq(user.id, userId));
+
+        if (!foundUser?.email) {
+          throw new AppError("No email address found. Add an email first", 400);
+        }
+
+        const code = Math.floor(10000 + Math.random() * 900000).toString();
+        const expiry = new Date(Date.now() + 10 * 60 * 1000);
+
+        await db
+          .update(user)
+          .set({ verificationCode: code, verificationCodeExpiry: expiry })
+          .where(eq(user.id, userId));
+
+        const sent = await sendVerificationCode(foundUser.email, code);
+
+        if (!sent) {
+          throw new AppError("Failed to send verification email", 500);
+        }
+        return true;
+      } catch (error) {
+        errorHandler(error);
+        return false;
+      }
+    },
+
+    verifyEmail: async (_: any, args: { code: string }, context: any) => {
+      try {
+        const userId = getUserIdFromContext(context.token);
+        const [foundUser] = await db
+          .select({
+            verificationCode: user.verificationCode,
+            verificationCodeExpiry: user.verificationCodeExpiry,
+          })
+          .from(user)
+          .where(eq(user.id, userId));
+
+        if (!foundUser?.verificationCode) {
+          throw new AppError("No verification code requested", 400);
+        }
+
+        if (new Date() > new Date(foundUser.verificationCodeExpiry!)) {
+          throw new AppError(
+            "Verification code expired, Request a new one",
+            400,
+          );
+        }
+
+        if (foundUser.verificationCode !== args.code) {
+          throw new AppError("Invalid verification code", 400);
+        }
+
+        await db
+          .update(user)
+          .set({
+            emailVerified: true,
+            verificationCode: null,
+            verificationCodeExpiry: null,
+          })
+          .where(eq(user.id, userId));
+
+        return true;
+      } catch (error) {
+        errorHandler(error);
+        return false;
       }
     },
 

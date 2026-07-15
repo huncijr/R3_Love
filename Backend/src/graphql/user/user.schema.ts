@@ -176,6 +176,8 @@ export const userSchema = `
     disconnectSpotify: Boolean!
     googleAuth(credential: String!): AuthPayload!     
     updateUserGender(gender: String!): User!
+    sendVerificationEmail: Boolean!
+    verifyEmail(code: String!): Boolean!
   }
 `;
 export const spotifyTypeDefs = `#graphql

@@ -8,6 +8,13 @@
       "when": 1784042019791,
       "tag": "0000_lean_lockjaw",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784098646074,
+      "tag": "0001_long_squirrel_girl",
+      "breakpoints": true
     }
   ]
 }

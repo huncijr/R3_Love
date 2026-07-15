@@ -27,7 +27,7 @@ import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
 import { GiftRecommendation } from '../games/gift/gift';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { environment } from '../../../enviroments/enviroment';
+import { environment } from '../../../enviroments/enviroment.prod';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';

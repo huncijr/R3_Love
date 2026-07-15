@@ -9,6 +9,8 @@ export interface User {
   name: string;
   gender: string | null;
   country?: string | null;
+  email?: string | null;
+  emailVerified?: boolean | null;
 }
 
 @Injectable({

@@ -24,7 +24,8 @@
             </div>
             <div class="flex">
               <span
-                class="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full text-xs font-bold w-fit"
+                (click)="openGenderEdit()"
+                class="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full text-xs font-bold w-fit cursor-pointer hover:scale-105 transition-transform"
                 [class.bg-blue-100]="currentUser()?.gender === 'Male'"
                 [class.text-blue-700]="currentUser()?.gender === 'Male'"
                 [class.bg-pink-100]="currentUser()?.gender === 'Female'"
@@ -99,6 +100,59 @@
             </hlm-dropdown-menu>
           </ng-template>
         </div>
+        @if (currentUser()?.email && !emailVerified()) {
+          <div class="w-full animate-fade-in-up mt-2">
+            <section
+              hlmCard
+              class="w-full border border-amber-300 bg-linear-to-br from-amber-50/50 to white shadow-sm overflow-hidden"
+            >
+              <div hlmCardContent class="p-4">
+                <div class="flex items-center gap-3 mb-4">
+                  <div
+                    class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0"
+                  >
+                    <lucide-icon name="mail" class="w-6 h-6 text-amber-600"></lucide-icon>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-bold text-neutral-text">Verify your email</span>
+                    <span class="text-xs text-muted"
+                      >Enter a 6-digit code sent to {{ currentUser()?.email }}</span
+                    >
+                  </div>
+                </div>
+                <div class="flex justify-center mb-4">
+                  <brn-input-otp
+                    hlmInputOtp
+                    maxLength="6"
+                    [(value)]="otpCode"
+                    inputClass="disabled:cursor-not-allowed"
+                  >
+                    <hlm-input-otp-group>
+                      @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+                        <hlm-input-otp-slot [index]="i" />
+                      }
+                    </hlm-input-otp-group>
+                  </brn-input-otp>
+                </div>
+                <div class="flex gap-2">
+                  <button
+                    hlmBtn
+                    variant="outline"
+                    (click)="sendVerificationCode()"
+                    [disabled]="isSendingCode()"
+                    class="flex-1 cursor-pointer bg-primary-main text-white text-xs font-medium"
+                  >
+                    @if (isVerifyingCode()) {
+                      Verifying...
+                    } @else {
+                      Verify
+                    }
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        }
         <div class="w-full h-0.5 mt-1" style="background-color: var(--border)"></div>
       </div>
 
@@ -628,6 +682,57 @@
         </button>
       </div>
       <p class="text-[10px] text-muted mt-4">You can change this later in</p>
+    </div>
+  </div>
+}
+
+@if (showGenderEditModal()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="w-full max-w-sm mx-4 p-6 rounded-2xl bg-white border border-border shadow-2xl text-center"
+    >
+      <div
+        class="mx-auto mb-4 w-14 h-14 rounded-full bg-primary-light flex items-center justify-center"
+      >
+        <lucide-icon name="pen" class="w-6 h-6 text-primary-main"></lucide-icon>
+      </div>
+
+      <h3 class="text-xl font-bold text-neutral-text mb-1">Edit Gender</h3>
+      <p class="text-sm text-muted mb-5">Change your gender preference</p>
+
+      <div class="flex gap-2">
+        <button
+          hlmBtn
+          (click)="selectGender('Male')"
+          class="cursor-pointer flex-1 py-2.5 rounded-xl bg-primary-main text-white font-bold text-sm"
+        >
+          <lucide-icon name="mars" class="w-4 h-4 inline mr-1"></lucide-icon> Male
+        </button>
+        <button
+          hlmBtn
+          (click)="selectGender('Female')"
+          class="cursor-pointer flex-1 py-2.5 rounded-xl bg-white border-2 border-primary-light text-primary-dark font-bold text-sm"
+        >
+          <lucide-icon name="venus" class="w-4 h-4 inline mr-1"></lucide-icon> Female
+        </button>
+      </div>
+      <button
+        type="button"
+        (click)="selectGender('Other')"
+        class="cursor-pointer mt-2 w-full py-2.5 rounded-xl bg-white border border-border text-muted font-medium text-sm"
+      >
+        <lucide-icon name="user" class="w-4 h-4 inline mr-1.5"></lucide-icon> Other
+      </button>
+      <button
+        hlmBtn
+        variant="outline"
+        (click)="closeGenderEdit()"
+        class="cursor-pointer w-full mt-3"
+      >
+        Cancel
+      </button>
     </div>
   </div>
 }

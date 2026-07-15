@@ -3,7 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 import { HlmLabel } from '@spartan-ng/helm/label';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Unplug } from 'lucide-angular';
+import {
+  LUCIDE_ICONS,
+  LucideAngularModule,
+  LucideIconProvider,
+  Mail,
+  MailCheck,
+  Pen,
+  Unplug,
+} from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { HlmInput } from '@spartan-ng/helm/input';
 import {
@@ -32,6 +40,14 @@ import { UserContext } from '../../services/UserContext/user-context';
 import { getCode } from 'country-list';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
 import { environment } from '../../../enviroments/enviroment.prod';
+import {
+  HlmInputOtp,
+  HlmInputOtpGroup,
+  HlmInputOtpSeparator,
+  HlmInputOtpSlot,
+} from '@spartan-ng/helm/input-otp';
+import { BrnInputImports } from '@spartan-ng/brain/input';
+import { BrnInputOtp } from '@spartan-ng/brain/input-otp';
 
 declare global {
   interface Window {
@@ -55,7 +71,11 @@ declare global {
     HlmSwitch,
     RouterLink,
     HlmDropdownMenuImports,
-    HlmBadge,
+    BrnInputImports,
+    HlmInputOtpGroup,
+    HlmInputOtpSlot,
+    BrnInputOtp,
+    HlmInputOtp,
   ],
   templateUrl: './account.html',
   providers: [
@@ -79,6 +99,9 @@ declare global {
         X,
         CircleCheckBig,
         Unplug,
+        Pen,
+        Mail,
+        MailCheck,
       }),
     },
   ],
@@ -89,6 +112,13 @@ export class Account implements OnInit, AfterViewInit {
   private userService = inject(UserService);
   private userContext = inject(UserContext);
   googleClientId = environment.googleClientId;
+
+  emailVerified = signal(false);
+  isSendingCode = signal(false);
+  isVerifyingCode = signal(false);
+  otpCode = signal('');
+
+  showEmailVerification = computed(() => this.currentUser()?.email && !this.emailVerified());
 
   ngAfterViewInit(): void {
     window.onTurnstileCallback = (token: string) => {
@@ -210,6 +240,8 @@ export class Account implements OnInit, AfterViewInit {
     gameDone: false,
   });
 
+  showGenderEditModal = signal(false);
+
   showGenderCard = computed(() => this.currentUser() !== null && !this.currentUser()?.gender);
 
   spotifyDisplayName = signal<string | null>(null);
@@ -318,6 +350,11 @@ export class Account implements OnInit, AfterViewInit {
         console.error('Failed to check Spotify status', err);
       },
     });
+
+    const user = this.currentUser();
+    if (user?.email) {
+      this.emailVerified.set(!!(user as any)?.emailVerified);
+    }
   }
 
   Setgender(value: string) {
@@ -445,10 +482,56 @@ export class Account implements OnInit, AfterViewInit {
     }
   }
 
+  sendVerificationCode() {
+    this.isSendingCode.set(true);
+    this.userService.sendVerificationEmail().subscribe({
+      next: () => {
+        this.isSendingCode.set(false);
+        this.toastr.success('Code sent to your email');
+      },
+      error: (err) => {
+        this.isSendingCode.set(false);
+        this.toastr.error(err.message || 'Failed to send code', 'Error');
+      },
+    });
+  }
+
+  verifyCode() {
+    const code = this.otpCode();
+    if (code.length !== 6) {
+      this.toastr.warning('Please enter the full 6 digit code');
+      return;
+    }
+
+    this.isVerifyingCode.set(true);
+    this.userService.verifyEmail(code).subscribe({
+      next: () => {
+        this.isVerifyingCode.set(false);
+        this.emailVerified.set(true);
+        this.otpCode.set('');
+        this.toastr.success('Email verified');
+      },
+      error: (err) => {
+        this.isVerifyingCode.set(false);
+        this.otpCode.set('');
+        this.toastr.error(err.message || 'Invalid code', 'Error');
+      },
+    });
+  }
+
+  openGenderEdit() {
+    this.showGenderEditModal.set(true);
+  }
+
+  closeGenderEdit() {
+    this.showGenderEditModal.set(false);
+  }
+
   selectGender(gender: string) {
     this.userService.updateUserGender(gender).subscribe({
       next: (updateUser) => {
         this.userContext.updateUser(updateUser);
+        this.showGenderEditModal.set(false);
         this.toastr.success('Gender set!', 'Done');
       },
       error: (err) => this.toastr.error('Failed to set gender', 'Error'),
