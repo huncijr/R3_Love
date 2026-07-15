@@ -164,16 +164,26 @@ export const userResolver = {
           gender: args.gender || null,
           emailVerified: false,
         };
-
         const result = await db.insert(user).values(newUser).returning();
         const createdUser = result[0];
 
-        const token = generateToken(createdUser.id);
+        if (args.email) {
+          const code = Math.floor(100000 + Math.random() * 900000).toString();
+          await db
+            .update(user)
+            .set({
+              verificationCode: code,
+              verificationCodeExpiry: new Date(Date.now() + 10 * 60 * 1000),
+            })
+            .where(eq(user.id, createdUser.id));
 
-        return {
-          user: createdUser,
-          token: token,
-        };
+          await sendVerificationCode(args.email, code);
+
+          return { user: createdUser, token: "" };
+        }
+
+        const token = generateToken(createdUser.id);
+        return { user: createdUser, token };
       } catch (error) {
         errorHandler(error);
       }
@@ -253,31 +263,28 @@ export const userResolver = {
       }
     },
 
-    verifyEmail: async (_: any, args: { code: string }, context: any) => {
+    verifyEmail: async (
+      _: any,
+      args: { code: string; email: string },
+      context: any,
+    ) => {
       try {
-        const userId = await getUserIdFromContext(context.token, true);
         const [foundUser] = await db
           .select({
+            id: user.id,
             verificationCode: user.verificationCode,
             verificationCodeExpiry: user.verificationCodeExpiry,
+            email: user.email,
           })
           .from(user)
-          .where(eq(user.id, userId));
+          .where(eq(user.email, args.email));
 
-        if (!foundUser?.verificationCode) {
+        if (!foundUser?.verificationCode)
           throw new AppError("No verification code requested", 400);
-        }
-
-        if (new Date() > new Date(foundUser.verificationCodeExpiry!)) {
-          throw new AppError(
-            "Verification code expired, Request a new one",
-            400,
-          );
-        }
-
-        if (foundUser.verificationCode !== args.code) {
-          throw new AppError("Invalid verification code", 400);
-        }
+        if (new Date() > new Date(foundUser.verificationCodeExpiry!))
+          throw new AppError("Code expired", 400);
+        if (foundUser.verificationCode !== args.code)
+          throw new AppError("Invalid code", 400);
 
         await db
           .update(user)
@@ -286,15 +293,13 @@ export const userResolver = {
             verificationCode: null,
             verificationCodeExpiry: null,
           })
-          .where(eq(user.id, userId));
+          .where(eq(user.id, foundUser.id));
 
         const [verifiedUser] = await db
           .select()
           .from(user)
-          .where(eq(user.id, userId));
-
+          .where(eq(user.id, foundUser.id));
         const token = generateToken(verifiedUser.id);
-
         return { user: verifiedUser, token };
       } catch (error) {
         errorHandler(error);

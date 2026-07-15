@@ -179,7 +179,7 @@ export const userSchema = `
     googleAuth(credential: String!): AuthPayload!     
     updateUserGender(gender: String!): User!
     sendVerificationEmail: Boolean!
-    verifyEmail(code: String!): AuthPayload!
+    verifyEmail(code: String!,email: String!): AuthPayload!
   }
 `;
 export const spotifyTypeDefs = `#graphql

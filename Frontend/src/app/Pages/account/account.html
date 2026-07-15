@@ -772,3 +772,66 @@
     </section>
   </div>
 }
+@if (showOtpModal()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
+  >
+    <div class="w-full max-w-md mx-4 p-6 rounded-2xl bg-white border border-border shadow-2xl">
+      <section
+        class="w-full border border-amber-300 bg-linear-to-br from-amber-50/50 to-white shadow-sm overflow-hidden rounded-xl mb-5"
+      >
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+              <lucide-icon name="mail" class="w-5 h-5 text-amber-600"></lucide-icon>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-bold text-neutral-text">Verify your email</span>
+              <span class="text-xs text-muted">Enter the 6-digit code sent to your email</span>
+            </div>
+          </div>
+
+          <div class="flex justify-center mb-4">
+            <brn-input-otp
+              hlmInputOtp
+              inputMode="numeric"
+              (completed)="onOtpComplete($event)"
+              maxLength="6"
+              [value]="otpCode()"
+              (valueChange)="otpCode.set($event ?? '')"
+            >
+              <hlm-input-otp-group>
+                @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+                  <hlm-input-otp-slot [index]="i" />
+                }
+              </hlm-input-otp-group>
+            </brn-input-otp>
+          </div>
+
+          <div class="flex gap-2">
+            <button
+              hlmBtn
+              variant="outline"
+              (click)="sendVerificationCode()"
+              [disabled]="isSendingCode()"
+              class="flex-1 cursor-pointer text-xs font-medium"
+            >
+              Resend code
+            </button>
+            <button
+              hlmBtn
+              (click)="verifyCode()"
+              class="flex-1 cursor-pointer bg-primary-main text-white text-xs font-medium"
+            >
+              Verify
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <p class="text-center text-[10px] text-muted">
+        Didn't receive the code? Check your spam folder.
+      </p>
+    </div>
+  </div>
+}

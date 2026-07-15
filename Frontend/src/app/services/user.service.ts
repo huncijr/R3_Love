@@ -210,12 +210,12 @@ export class UserService {
       .pipe(map((result) => result.data!.sendVerificationEmail));
   }
 
-  verifyEmail(code: string): Observable<CreateUserResponse> {
+  verifyEmail(code: string, email: string): Observable<CreateUserResponse> {
     return this.apollo
       .mutate<{ verifyEmail: CreateUserResponse }>({
         mutation: gql`
-          mutation VerifyEmail($code: String!) {
-            verifyEmail(code: $code) {
+          mutation VerifyEmail($code: String!, $email: String!) {
+            verifyEmail(code: $code, email: $email) {
               user {
                 id
                 name
@@ -227,9 +227,9 @@ export class UserService {
             }
           }
         `,
-        variables: { code },
+        variables: { code, email },
       })
-      .pipe(map((result) => result.data!.verifyEmail));
+      .pipe(map((r) => r.data!.verifyEmail));
   }
 
   deleteUser(): Observable<boolean> {

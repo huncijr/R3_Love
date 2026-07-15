@@ -76,7 +76,6 @@ declare global {
     HlmInputOtpSlot,
     BrnInputOtp,
     HlmInputOtp,
-    HlmBadge,
   ],
   templateUrl: './account.html',
   providers: [
@@ -231,6 +230,8 @@ export class Account implements OnInit, AfterViewInit {
   showDeleteConfirm = signal(false);
 
   spotifyConnected = signal(false);
+  pendingEmail = signal('');
+  showOtpModal = signal(false);
 
   isFinished = computed(() => {
     return this.setupItems().every((item) => item.done);
@@ -465,12 +466,20 @@ export class Account implements OnInit, AfterViewInit {
         )
         .subscribe({
           next: (response) => {
+            console.log('Create user response, token', JSON.stringify(response.token));
             this.isLoading.set(false);
-            this.isSubmited.set(true);
-            this.userContext.login(response.user, response.token);
-            this.emailVerified.set(!!response.user.emailVerified);
-            this.resetForm();
-            this.toastr.success('Account created! Welcome aboard.');
+            this.isSubmited.set(false);
+            if (response.token) {
+              this.userContext.login(response.user, response.token);
+              this.toastr.success('Account created!', 'Success');
+              this.syncCalendarQuiz();
+              this.syncGiftRecommendation();
+            } else {
+              this.isSubmited.set(true);
+              this.toastr.success('Check your email for verification code!');
+              this.pendingEmail.set(response.user.email || this.email());
+              this.showOtpModal.set(true);
+            }
           },
           error: (err) => {
             this.isLoading.set(false);
@@ -505,27 +514,29 @@ export class Account implements OnInit, AfterViewInit {
   }
 
   verifyCode() {
+    console.log('Code', this.otpCode());
     const code = this.otpCode();
-    if (code.length !== 6) {
-      this.toastr.warning('Please enter the full 6 digit code');
-      return;
-    }
-
+    if (code.length !== 6) return;
     this.isVerifyingCode.set(true);
-    this.userService.verifyEmail(code).subscribe({
-      next: (response: CreateUserResponse) => {
+    this.userService.verifyEmail(code, this.pendingEmail()).subscribe({
+      next: (response: any) => {
         this.isVerifyingCode.set(false);
-        this.emailVerified.set(!!response.user.emailVerified);
-        this.userContext.login(response.user, response.token);
-        this.otpCode.set('');
-        this.toastr.success('Email verified');
+        if (response.token) {
+          this.userContext.login(response.user, response.token);
+          this.showOtpModal.set(false);
+          this.toastr.success('Email verified! Welcome!');
+        }
       },
       error: (err) => {
         this.isVerifyingCode.set(false);
-        this.otpCode.set('');
-        this.toastr.error(err.message || 'Invalid code', 'Error');
+        this.toastr.error(err.message);
       },
     });
+  }
+
+  onOtpComplete(code: string) {
+    this.otpCode.set(code);
+    this.verifyCode();
   }
 
   openGenderEdit() {
@@ -589,6 +600,7 @@ export class Account implements OnInit, AfterViewInit {
     this.password.set('');
     this.confirmPassword.set('');
     this.gender.set('');
+    this.email.set('');
   }
 
   openDeleteConfirm() {
@@ -645,5 +657,6 @@ export class Account implements OnInit, AfterViewInit {
     this.confirmPassword.set('');
     this.gender.set('');
     this.loginEmail.set('');
+    this.email.set('');
   }
 }

@@ -14,7 +14,7 @@ export async function sendVerificationCode(
       },
       body: JSON.stringify({
         from: "R3_Love <onboarding@resend.dev>",
-        to: [toEmail],
+        to: [process.env.TEST_MAIL as string],
         subject: "Your verification code",
         html: `
          <div style="text-align:center; font-family:sans-serif; padding:30px">
