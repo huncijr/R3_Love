@@ -1,4 +1,4 @@
-<div class="min-h-screen flex flex-col items-center gap-5 pt-10 px-4">
+<div class="min-h-screen flex flex-col gap-5 pt-10 px-4">
   @if (currentUser()) {
     <div class="w-full flex flex-col gap-2 p-4">
       <div class="w-full animate-fade-in-up">
@@ -334,11 +334,8 @@
       }
     </div>
   } @else {
-    <!-- ═══ TWO-COLUMN ACCOUNT LAYOUT ═══ -->
     <div class="account-root">
-      <!-- ═══ LEFT PANEL ═══ -->
       <div class="left-panel">
-        <!-- ⚡ FULL-HEIGHT LIGHTNING BOLT ⚡ -->
         <div class="bolt-divider">
           <svg class="bolt-svg" viewBox="0 0 45 600" preserveAspectRatio="none">
             <polygon
@@ -362,342 +359,219 @@
           </svg>
         </div>
 
-        <!-- ═══ GLASS CARD ═══ -->
         <section hlmCard class="account-card">
-          <!-- TOGGLE SWITCH: Login ↔ Welcome -->
           <div class="toggle-row">
-            <span class="toggle-label" [class.active]="!showWelcomeDesign() && !currentUser()"
-              >Login</span
+            <span
+              class="toggle-label"
+              [class.active]="!isLoginMode()"
+              (click)="isLoginMode.set(false)"
+              >Register</span
             >
             <hlm-switch
-              [checked]="showWelcomeDesign() || !!currentUser()"
-              (checkedChange)="toggleDesign()"
-              ariaLabel="Toggle between login and welcome"
+              [checked]="isLoginMode()"
+              (checkedChange)="toggleMode()"
+              ariaLabel="Toggle between login and register"
             />
-            <span class="toggle-label" [class.active]="showWelcomeDesign() || !!currentUser()"
-              >Welcome</span
+            <span
+              class="toggle-label"
+              [class.active]="isLoginMode()"
+              (click)="isLoginMode.set(true)"
+              >Login</span
             >
           </div>
 
-          <!-- ═══ LOGIN / REGISTER VIEW ═══ -->
-          @if (!showWelcomeDesign() && !currentUser()) {
-            <div htmlCardHeader class="text-center pb-2">
-              <h2 hlmCardTitle class="text-2xl font-bold text-primary playwrite-id mb-4">
-                {{ isLoginMode() ? 'Login' : 'Create an Account' }}
-              </h2>
-              <p hlmCardDescription class="text-muted">
-                {{
-                  isLoginMode()
-                    ? 'Welcome back! Enter your credentials'
-                    : 'Fill in your details to get started'
-                }}
-              </p>
+          <div hlmCardHeader class="text-center pb-2">
+            <h2 hlmCardTitle class="text-2xl font-bold text-primary playwrite-id mb-4">
+              {{ isLoginMode() ? 'Login' : 'Create an Account' }}
+            </h2>
+            <p hlmCardDescription class="text-muted">
+              {{
+                isLoginMode()
+                  ? 'Welcome back! Enter your credentials'
+                  : 'Fill in your details to get started'
+              }}
+            </p>
+          </div>
+
+          <section class="relative w-full max-w-md flex flex-col gap-4 animate-fade-in-up">
+            <div
+              class="relative flex justify-center w-full transition-opacity duration-200"
+              [class.opacity-50]="!turnstileToken()"
+              [class.pointer-events-none]="!turnstileToken()"
+            >
+              <div id="google-signin-btn" class="flex justify-center w-full"></div>
+            </div>
+            <div class="flex items-center gap w-full max-w-md">
+              <div class="h-px flex-1 bg-border"></div>
+              <span class="text-xs text-muted font-medium"> or continue with </span>
+              <div class="h-px flex-1 bg-border"></div>
+            </div>
+            @if (!turnstileToken()) {
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span class="text-[10px] text-muted bg-white/80 px-2 py-1 rounded">
+                  Complete the captcha above first!
+                </span>
+              </div>
+            }
+          </section>
+
+          <div hlmCardContent class="space-y-5 flex-1 flex flex-col">
+            @if (isLoginMode()) {
+              <div class="space-y-1.5">
+                <label hlmLabel for="loginEmail" class="text-sm font-medium text-ring">Email</label>
+                <input
+                  hlmInput
+                  id="loginEmail"
+                  type="email"
+                  placeholder="Enter your email"
+                  [(ngModel)]="loginEmail"
+                  class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+                />
+              </div>
+            }
+
+            @if (!isLoginMode()) {
+              <div class="space-y-1.5">
+                <label hlmLabel for="username" class="text-sm font-medium text-ring"
+                  >Username</label
+                >
+                <input
+                  hlmInput
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  [(ngModel)]="username"
+                  class="w-full p-2 border-border focus:ring-primary-light rounded-lg"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label hlmLabel for="regEmail" class="text-sm font-medium text-ring">Email</label>
+                <input
+                  hlmInput
+                  id="regEmail"
+                  type="email"
+                  placeholder="Enter your email"
+                  [(ngModel)]="email"
+                  class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+                />
+              </div>
+            }
+
+            <div class="space-y-1.5">
+              <label hlmLabel for="password" class="text-sm font-medium text-ring">Password</label>
+              <div class="flex">
+                <div class="flex w-full">
+                  <input
+                    hlmInput
+                    id="password"
+                    [type]="showPassword() ? 'text' : 'password'"
+                    placeholder="Enter your password"
+                    [(ngModel)]="password"
+                    class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+                  />
+                </div>
+                <div class="flex pl-2 flex-[.2]">
+                  <button
+                    type="button"
+                    (click)="showPassword.set(!showPassword())"
+                    class="relative text-muted hover:text-primary-main transition-colors cursor-pointer"
+                  >
+                    <lucide-icon
+                      [name]="showPassword() ? 'eye-off' : 'eye'"
+                      class="w-6 h-6"
+                    ></lucide-icon>
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <section class="w-full max-w-md flex flex-col gap-4 animate-fade-in-up">
-              <div
-                class="relative flex justify-center w-full transition-opacity duration-200"
-                [class.opacity-50]="!turnstileToken()"
-                [class.pointer-events-none]="!turnstileToken()"
-              >
-                <div id="google-signin-btn" class="flex justify-center w-full"></div>
-              </div>
-              <div class="flex items-center gap w-full max-w-md">
-                <div class="h-px flex-1 bg-border"></div>
-                <span class="text-xs text-muted font-medium"> or continue with </span>
-                <div class="h-px flex-1 bg-border"></div>
-              </div>
-              @if (!turnstileToken()) {
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span class="text-[10px] text-muted bg-white/80 px-2 py-1 rounded">
-                    Complete the captcha above first!
-                  </span>
-                </div>
-              }
-            </section>
-
-            <div hlmCardContent class="space-y-5 flex-1 flex flex-col">
-              @if (isLoginMode()) {
-                <div class="space-y-1.5">
-                  <label hlmLabel for="loginEmail" class="text-sm font-medium text-ring"
-                    >Email</label
-                  >
-                  <input
-                    hlmInput
-                    id="loginEmail"
-                    type="email"
-                    placeholder="Enter your email"
-                    [(ngModel)]="loginEmail"
-                    class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
-                  />
-                </div>
-              }
-
-              @if (!isLoginMode()) {
-                <div class="space-y-1.5">
-                  <label hlmLabel for="username" class="text-sm font-medium text-ring"
-                    >Username</label
-                  >
-                  <input
-                    hlmInput
-                    id="username"
-                    type="text"
-                    placeholder="Enter your username"
-                    [(ngModel)]="username"
-                    class="w-full p-2 border-border focus:ring-primary-light rounded-lg"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <label hlmLabel for="regEmail" class="text-sm font-medium text-ring">Email</label>
-                  <input
-                    hlmInput
-                    id="regEmail"
-                    type="email"
-                    placeholder="Enter your email"
-                    [(ngModel)]="email"
-                    class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
-                  />
-                </div>
-              }
-
+            @if (!isLoginMode()) {
               <div class="space-y-1.5">
-                <label hlmLabel for="password" class="text-sm font-medium text-ring"
-                  >Password</label
+                <label hlmLabel for="confirmPassword" class="text-sm font-medium text-ring"
+                  >Confirm Password</label
                 >
                 <div class="flex">
-                  <div class="flex w-full">
-                    <input
-                      hlmInput
-                      id="password"
-                      [type]="showPassword() ? 'password' : 'text'"
-                      placeholder="Enter your password"
-                      [(ngModel)]="password"
-                      class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
-                    />
-                  </div>
+                  <input
+                    hlmInput
+                    id="confirmPassword"
+                    [type]="showConfirmPassword() ? 'text' : 'password'"
+                    placeholder="Confirm your password"
+                    [(ngModel)]="confirmPassword"
+                    class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+                  />
                   <div class="flex pl-2 flex-[.2]">
                     <button
                       type="button"
-                      (click)="showPassword.set(!showPassword())"
+                      (click)="showConfirmPassword.set(!showConfirmPassword())"
                       class="relative text-muted hover:text-primary-main transition-colors cursor-pointer"
                     >
                       <lucide-icon
-                        [name]="showPassword() ? 'eye-off' : 'eye'"
+                        [name]="showConfirmPassword() ? 'eye-off' : 'eye'"
                         class="w-6 h-6"
                       ></lucide-icon>
                     </button>
                   </div>
                 </div>
               </div>
+            }
 
-              @if (!isLoginMode()) {
-                <div class="space-y-1.5">
-                  <label hlmLabel for="confirmPassword" class="text-sm font-medium text-ring"
-                    >Confirm Password</label
+            @if (!isLoginMode()) {
+              <div class="space-y-2">
+                <label class="text-sm font-medium text-ring">Gender</label>
+                <div class="flex gap-3 p-2">
+                  <button
+                    type="button"
+                    (click)="Setgender('Male')"
+                    [class.bg-primary-main]="gender() === 'Male'"
+                    [class.text-white]="gender() === 'Male'"
+                    [class.bg-primary-light]="gender() !== 'Male'"
+                    [class.text-primary-dark]="gender() !== 'Male'"
+                    class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
                   >
-                  <div class="flex">
-                    <input
-                      hlmInput
-                      id="confirmPassword"
-                      [type]="showConfirmPassword() ? 'password' : 'text'"
-                      placeholder="Confirm your password"
-                      [(ngModel)]="confirmPassword"
-                      class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
-                    />
-                    <div class="flex pl-2 flex-[.2]">
-                      <button
-                        type="button"
-                        (click)="showConfirmPassword.set(!showConfirmPassword())"
-                        class="relative text-muted hover:text-primary-main transition-colors cursor-pointer"
-                      >
-                        <lucide-icon
-                          [name]="showConfirmPassword() ? 'eye-off' : 'eye'"
-                          class="w-6 h-6"
-                        ></lucide-icon>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              }
-
-              @if (!isLoginMode()) {
-                <div class="space-y-2">
-                  <label class="text-sm font-medium text-ring">Gender</label>
-                  <div class="flex gap-3 p-2">
-                    <button
-                      type="button"
-                      (click)="Setgender('Male')"
-                      [class.bg-primary-main]="gender() === 'Male'"
-                      [class.text-white]="gender() === 'Male'"
-                      [class.bg-primary-light]="gender() !== 'Male'"
-                      [class.text-primary-dark]="gender() !== 'Male'"
-                      class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
-                    >
-                      <lucide-icon name="mars" class="w-4 h-4 inline mr-1"></lucide-icon>
-                      Male
-                    </button>
-                    <button
-                      type="button"
-                      (click)="Setgender('Female')"
-                      [class.bg-primary-main]="gender() === 'Female'"
-                      [class.text-white]="gender() === 'Female'"
-                      [class.bg-primary-light]="gender() !== 'Female'"
-                      [class.text-primary-dark]="gender() !== 'Female'"
-                      class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
-                    >
-                      <lucide-icon name="venus" class="w-4 h-4 inline mr-1"></lucide-icon>
-                      Female
-                    </button>
-                    <button
-                      type="button"
-                      (click)="Setgender('Other')"
-                      [class.bg-primary-main]="gender() === 'Other'"
-                      [class.text-white]="gender() === 'Other'"
-                      [class.bg-primary-light]="gender() !== 'Other'"
-                      [class.text-primary-dark]="gender() !== 'Other'"
-                      class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
-                    >
-                      <lucide-icon name="user" class="w-4 h-4 inline mr-1"></lucide-icon>
-                      Other
-                    </button>
-                  </div>
-                </div>
-              }
-            </div>
-
-            <div class="space-y-1.5 flex justify-center">
-              <div class="cf-turnstile" data-theme="light"></div>
-            </div>
-
-            <div hlmCardFooter class="pt-2 pb-6 px-6">
-              <button
-                hlmBtn
-                (click)="onSubmit()"
-                [disabled]="!turnstileToken() || isLoading()"
-                class="w-full bg-primary hover:bg-accent cursor-pointer text-white font-semibold py-2.5 rounded-lg transition-colors shadow-md hover:shadow-lg"
-              >
-                <lucide-icon name="circle-check" class="w-5 h-5"></lucide-icon>
-                {{ isLoginMode() ? 'Login' : 'Create Account' }}
-              </button>
-            </div>
-          }
-
-          <!-- ═══ WELCOME BACK VIEW ═══ -->
-          @if (showWelcomeDesign() || currentUser()) {
-            <div class="flex flex-col gap-4">
-              <h2 class="text-2xl font-bold text-primary playwrite-id text-center">
-                Welcome back!
-              </h2>
-
-              <div
-                class="flex items-center gap-4 p-4 rounded-2xl bg-linear-to-br from-primary-light/30 to-transparent border border-border/20"
-              >
-                <div
-                  class="w-12 h-12 rounded-xl bg-primary-main flex items-center justify-center shadow-lg shadow-primary-main/20"
-                >
-                  <lucide-icon name="user-star" class="w-7 h-7 text-white"></lucide-icon>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-sm text-muted">Welcome back,</span>
-                  <span class="text-xl font-bold text-foreground">{{
-                    currentUser()?.name || 'Hunor'
-                  }}</span>
-                  <span
-                    class="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold w-fit"
-                    [class.bg-blue-100]="(currentUser()?.gender || 'Male') === 'Male'"
-                    [class.text-blue-700]="(currentUser()?.gender || 'Male') === 'Male'"
-                    [class.bg-pink-100]="(currentUser()?.gender || 'Male') === 'Female'"
-                    [class.text-pink-700]="(currentUser()?.gender || 'Male') === 'Female'"
+                    <lucide-icon name="mars" class="w-4 h-4 inline mr-1"></lucide-icon> Male
+                  </button>
+                  <button
+                    type="button"
+                    (click)="Setgender('Female')"
+                    [class.bg-primary-main]="gender() === 'Female'"
+                    [class.text-white]="gender() === 'Female'"
+                    [class.bg-primary-light]="gender() !== 'Female'"
+                    [class.text-primary-dark]="gender() !== 'Female'"
+                    class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
                   >
-                    @if ((currentUser()?.gender || 'Male') === 'Male') {
-                      <lucide-icon name="mars" class="w-3 h-3"></lucide-icon>
-                    } @else {
-                      <lucide-icon name="venus" class="w-3 h-3"></lucide-icon>
-                    }
-                    {{ currentUser()?.gender || 'Male' }}
-                  </span>
+                    <lucide-icon name="venus" class="w-4 h-4 inline mr-1"></lucide-icon> Female
+                  </button>
+                  <button
+                    type="button"
+                    (click)="Setgender('Other')"
+                    [class.bg-primary-main]="gender() === 'Other'"
+                    [class.text-white]="gender() === 'Other'"
+                    [class.bg-primary-light]="gender() !== 'Other'"
+                    [class.text-primary-dark]="gender() !== 'Other'"
+                    class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
+                  >
+                    <lucide-icon name="user" class="w-4 h-4 inline mr-1"></lucide-icon> Other
+                  </button>
                 </div>
               </div>
+            }
 
-              @if (spotifyConnected()) {
-                <div
-                  class="flex items-center gap-2 px-3 py-2 rounded-xl bg-green-50 border border-green-200"
-                >
-                  <img src="/Images/Spotify-Logo.png" class="h-5" alt="Spotify" />
-                  <span class="text-sm font-semibold text-green-600">{{
-                    spotifyDisplayName() || 'Connected'
-                  }}</span>
-                </div>
-              }
-
-              <div class="flex flex-col gap-3">
-                <div
-                  class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-border/20 hover:scale-[1.02] transition-transform cursor-pointer"
-                >
-                  <div class="flex items-center gap-3">
-                    <lucide-icon name="calendar" class="w-8 h-8 text-primary"></lucide-icon>
-                    <div class="flex flex-col">
-                      <span class="font-semibold text-foreground">Set up the Calendar</span>
-                      <span class="text-xs text-muted">Plan your special dates</span>
-                    </div>
-                  </div>
-                  <a
-                    routerLink="/games/calendar"
-                    hlmBtn
-                    class="cursor-pointer bg-primary text-white px-3 py-1.5 rounded-lg text-sm hover:bg-primary-dark transition-colors"
-                    >Continue →</a
-                  >
-                </div>
-                <div
-                  class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-border/20 hover:scale-[1.02] transition-transform cursor-pointer"
-                >
-                  <div class="flex items-center gap-3">
-                    <lucide-icon name="gift" class="w-8 h-8 text-primary"></lucide-icon>
-                    <div class="flex flex-col">
-                      <span class="font-semibold text-foreground">Gift for your Partner</span>
-                      <span class="text-xs text-muted">Find the perfect surprise</span>
-                    </div>
-                  </div>
-                  <a
-                    routerLink="/games/gift"
-                    hlmBtn
-                    class="cursor-pointer bg-primary text-white px-3 py-1.5 rounded-lg text-sm hover:bg-primary-dark transition-colors"
-                    >Continue →</a
-                  >
-                </div>
-                <div
-                  class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-border/20 hover:scale-[1.02] transition-transform cursor-pointer"
-                >
-                  <div class="flex items-center gap-3">
-                    <lucide-icon name="gamepad-2" class="w-8 h-8 text-primary"></lucide-icon>
-                    <div class="flex flex-col">
-                      <span class="font-semibold text-foreground">Play a Game</span>
-                      <span class="text-xs text-muted">Have fun together</span>
-                    </div>
-                  </div>
-                  <a
-                    routerLink="/games/kiss-game"
-                    hlmBtn
-                    class="cursor-pointer bg-primary text-white px-3 py-1.5 rounded-lg text-sm hover:bg-primary-dark transition-colors"
-                    >Continue →</a
-                  >
-                </div>
-              </div>
-
-              <button
-                hlmBtn
-                (click)="signOut()"
-                class="w-full cursor-pointer border border-red-300 text-red-500 font-semibold py-2.5 rounded-xl hover:bg-red-50 transition-colors"
-              >
-                <lucide-icon name="log-out" class="w-4 h-4 mr-2 inline"></lucide-icon> Sign out
-              </button>
+            <div class="flex items-center justify-center">
+              <div class="cf-turnstile" data-theme="dark"></div>
             </div>
-          }
+
+            <button
+              hlmBtn
+              (click)="onSubmit()"
+              [disabled]="!turnstileToken() || isLoading()"
+              class="w-full cursor-pointer bg-primary-main text-white font-bold py-3 rounded-xl flex items-center justify-center hover:bg-primary-dark transition-colors shadow-lg shadow-primary-main/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ isLoginMode() ? 'LOGIN' : 'SUBMIT' }}
+            </button>
+          </div>
         </section>
       </div>
 
-      <!-- ═══ RIGHT PANEL ═══ -->
       <div class="right-panel">
         <div class="sparkles">
           <div class="sparkle"></div>
@@ -707,7 +581,6 @@
           <div class="sparkle"></div>
           <div class="sparkle"></div>
         </div>
-
         <div class="hearts-container">
           <div class="heart-group">
             <svg class="arrow-shaft" viewBox="0 0 200 200">
@@ -729,62 +602,33 @@
                 stroke-width="6"
                 stroke-linecap="round"
                 opacity="0.7"
-              />
-            </svg>
-            <svg class="heart-svg" viewBox="0 0 100 90">
+              /></svg
+            ><svg class="heart-svg" viewBox="0 0 100 90">
               <defs>
-                <linearGradient id="hg1" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="hg4" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#a855f7" />
                   <stop offset="45%" stop-color="#7c3aed" />
                   <stop offset="100%" stop-color="#5b21b6" />
                 </linearGradient>
-                <radialGradient id="hgl1" cx="35%" cy="20%" r="50%">
+                <radialGradient id="hgl4" cx="35%" cy="20%" r="50%">
                   <stop offset="0%" stop-color="rgba(255,255,255,0.5)" />
                   <stop offset="100%" stop-color="rgba(255,255,255,0)" />
                 </radialGradient>
               </defs>
               <path
                 d="M50 85 C20 60,0 42,0 26 C0 12,10 2,22 2 C30 2,38 8,50 22 C62 8,70 2,78 2 C90 2,100 12,100 26 C100 42,80 60,50 85Z"
-                fill="url(#hg1)"
+                fill="url(#hg4)"
               />
               <path
                 d="M50 85 C20 60,0 42,0 26 C0 12,10 2,22 2 C30 2,38 8,50 22 C62 8,70 2,78 2 C90 2,100 12,100 26 C100 42,80 60,50 85Z"
-                fill="url(#hgl1)"
+                fill="url(#hgl4)"
               />
             </svg>
             <svg class="arrow-head" viewBox="0 0 200 200">
               <polygon points="178,18 150,2 156,44" fill="#3b82f6" />
               <polygon points="174,20 152,10 156,40" fill="#bfdbfe" opacity="0.5" />
-              <line
-                x1="18"
-                y1="178"
-                x2="50"
-                y2="138"
-                stroke="#2563eb"
-                stroke-width="5"
-                stroke-linecap="round"
-              />
-              <line
-                x1="18"
-                y1="178"
-                x2="-8"
-                y2="142"
-                stroke="#2563eb"
-                stroke-width="5"
-                stroke-linecap="round"
-              />
-              <line
-                x1="18"
-                y1="178"
-                x2="20"
-                y2="134"
-                stroke="#1d4ed8"
-                stroke-width="4"
-                stroke-linecap="round"
-              />
             </svg>
           </div>
-
           <div class="heart-group">
             <svg class="arrow-shaft" viewBox="0 0 200 200">
               <line
@@ -805,62 +649,33 @@
                 stroke-width="5"
                 stroke-linecap="round"
                 opacity="0.65"
-              />
-            </svg>
-            <svg class="heart-svg" viewBox="0 0 100 90">
+              /></svg
+            ><svg class="heart-svg" viewBox="0 0 100 90">
               <defs>
-                <linearGradient id="hg2" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="hg5" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#c084fc" />
                   <stop offset="50%" stop-color="#8b5cf6" />
                   <stop offset="100%" stop-color="#6d28d9" />
                 </linearGradient>
-                <radialGradient id="hgl2" cx="35%" cy="20%" r="50%">
+                <radialGradient id="hgl5" cx="35%" cy="20%" r="50%">
                   <stop offset="0%" stop-color="rgba(255,255,255,0.45)" />
                   <stop offset="100%" stop-color="rgba(255,255,255,0)" />
                 </radialGradient>
               </defs>
               <path
                 d="M50 85 C20 60,0 42,0 26 C0 12,10 2,22 2 C30 2,38 8,50 22 C62 8,70 2,78 2 C90 2,100 12,100 26 C100 42,80 60,50 85Z"
-                fill="url(#hg2)"
+                fill="url(#hg5)"
               />
               <path
                 d="M50 85 C20 60,0 42,0 26 C0 12,10 2,22 2 C30 2,38 8,50 22 C62 8,70 2,78 2 C90 2,100 12,100 26 C100 42,80 60,50 85Z"
-                fill="url(#hgl2)"
+                fill="url(#hgl5)"
               />
             </svg>
             <svg class="arrow-head" viewBox="0 0 200 200">
               <polygon points="178,18 152,2 156,42" fill="#3b82f6" />
               <polygon points="174,20 152,10 156,38" fill="#bfdbfe" opacity="0.45" />
-              <line
-                x1="18"
-                y1="178"
-                x2="48"
-                y2="140"
-                stroke="#2563eb"
-                stroke-width="4.5"
-                stroke-linecap="round"
-              />
-              <line
-                x1="18"
-                y1="178"
-                x2="-6"
-                y2="144"
-                stroke="#2563eb"
-                stroke-width="4.5"
-                stroke-linecap="round"
-              />
-              <line
-                x1="18"
-                y1="178"
-                x2="20"
-                y2="136"
-                stroke="#1d4ed8"
-                stroke-width="3.5"
-                stroke-linecap="round"
-              />
             </svg>
           </div>
-
           <div class="heart-group">
             <svg class="arrow-shaft" viewBox="0 0 200 200">
               <line
@@ -881,59 +696,31 @@
                 stroke-width="7"
                 stroke-linecap="round"
                 opacity="0.7"
-              />
-            </svg>
-            <svg class="heart-svg" viewBox="0 0 100 90">
+              /></svg
+            ><svg class="heart-svg" viewBox="0 0 100 90">
               <defs>
-                <linearGradient id="hg3" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="hg6" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#7c3aed" />
                   <stop offset="55%" stop-color="#6b21a8" />
                   <stop offset="100%" stop-color="#4a1d96" />
                 </linearGradient>
-                <radialGradient id="hgl3" cx="35%" cy="20%" r="50%">
+                <radialGradient id="hgl6" cx="35%" cy="20%" r="50%">
                   <stop offset="0%" stop-color="rgba(255,255,255,0.55)" />
                   <stop offset="100%" stop-color="rgba(255,255,255,0)" />
                 </radialGradient>
               </defs>
               <path
                 d="M50 85 C20 60,0 42,0 26 C0 12,10 2,22 2 C30 2,38 8,50 22 C62 8,70 2,78 2 C90 2,100 12,100 26 C100 42,80 60,50 85Z"
-                fill="url(#hg3)"
+                fill="url(#hg6)"
               />
               <path
                 d="M50 85 C20 60,0 42,0 26 C0 12,10 2,22 2 C30 2,38 8,50 22 C62 8,70 2,78 2 C90 2,100 12,100 26 C100 42,80 60,50 85Z"
-                fill="url(#hgl3)"
+                fill="url(#hgl6)"
               />
             </svg>
             <svg class="arrow-head" viewBox="0 0 200 200">
               <polygon points="178,18 150,2 156,44" fill="#3b82f6" />
               <polygon points="174,20 152,10 156,40" fill="#bfdbfe" opacity="0.5" />
-              <line
-                x1="18"
-                y1="178"
-                x2="50"
-                y2="138"
-                stroke="#2563eb"
-                stroke-width="5"
-                stroke-linecap="round"
-              />
-              <line
-                x1="18"
-                y1="178"
-                x2="-8"
-                y2="142"
-                stroke="#2563eb"
-                stroke-width="5"
-                stroke-linecap="round"
-              />
-              <line
-                x1="18"
-                y1="178"
-                x2="20"
-                y2="134"
-                stroke="#1d4ed8"
-                stroke-width="4"
-                stroke-linecap="round"
-              />
             </svg>
           </div>
         </div>

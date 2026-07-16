@@ -48,6 +48,7 @@ import {
 } from '@spartan-ng/helm/input-otp';
 import { BrnInputImports } from '@spartan-ng/brain/input';
 import { BrnInputOtp } from '@spartan-ng/brain/input-otp';
+import { CdkAriaLive } from '../../../../node_modules/@angular/cdk/types/_a11y-module-chunk';
 
 declare global {
   interface Window {
@@ -152,7 +153,7 @@ export class Account implements OnInit, AfterViewInit {
       const container = document.getElementById('google-signin-btn');
       if (container) {
         (window as any).google.accounts.id.renderButton(container, {
-          theme: 'outline',
+          theme: 'filled_black',
           size: 'large',
           text: 'signin_with',
           shape: 'rectangular',
@@ -309,7 +310,7 @@ export class Account implements OnInit, AfterViewInit {
   }
 
   toggleDesign() {
-    this.showWelcomeDesign.set(!this.showWelcomeDesign());
+    this.isLoginMode.set(!this.isLoginMode());
   }
 
   ngOnInit() {
