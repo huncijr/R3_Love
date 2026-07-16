@@ -127,6 +127,7 @@ export class Account implements OnInit, AfterViewInit {
     window.onTurnstileCallback = (token: string) => {
       this.turnstileToken.set(token);
     };
+
     if (window.turnstile) {
       window.turnstile.render('.cf-turnstile', {
         sitekey: this.turnstileSiteKey,
