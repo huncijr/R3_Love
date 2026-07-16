@@ -221,6 +221,7 @@ export class Account implements OnInit, AfterViewInit {
   password = signal('');
   gender = signal('');
   confirmPassword = signal('');
+  showWelcomeDesign = signal(false);
 
   isSubmited = signal(false);
   isLoading = signal(false);
@@ -305,6 +306,10 @@ export class Account implements OnInit, AfterViewInit {
         this.toastr.error('Failed to disconnect Spotify', 'Error');
       },
     });
+  }
+
+  toggleDesign() {
+    this.showWelcomeDesign.set(!this.showWelcomeDesign());
   }
 
   ngOnInit() {
