@@ -248,6 +248,16 @@ export class Account implements OnInit, AfterViewInit {
   });
 
   showGenderEditModal = signal(false);
+  maskedEmail = computed(() => {
+    const email = this.pendingEmail();
+    if (!email || !email.includes('@')) return email;
+    const [local, domain] = email.split('@');
+    const visible = Math.min(2, local.length);
+    const hidden = local.length - visible;
+    const stars = '*'.repeat(hidden);
+
+    return local.substring(0, 2) + stars + '@' + domain;
+  });
 
   showGenderCard = computed(() => this.currentUser() !== null && !this.currentUser()?.gender);
 
@@ -475,8 +485,11 @@ export class Account implements OnInit, AfterViewInit {
           next: (response) => {
             console.log('Create user response, token', JSON.stringify(response.token));
             this.isLoading.set(false);
-            this.isSubmited.set(false);
             if (response.token) {
+              this.userContext.login(response.user, response.token);
+            }
+
+            if (response.user?.emailVerified) {
               this.userContext.login(response.user, response.token);
               this.toastr.success('Account created!', 'Success');
               this.syncCalendarQuiz();
@@ -507,7 +520,7 @@ export class Account implements OnInit, AfterViewInit {
 
   sendVerificationCode() {
     this.isSendingCode.set(true);
-    this.userService.sendVerificationEmail().subscribe({
+    this.userService.sendVerificationEmail(this.pendingEmail()).subscribe({
       next: () => {
         this.isSendingCode.set(false);
         this.toastr.success('Code sent to your email');

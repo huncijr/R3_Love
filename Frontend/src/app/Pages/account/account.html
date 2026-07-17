@@ -1,4 +1,9 @@
-<div class="min-h-screen flex flex-col gap-5 pt-10 px-4" style="background: #0a0412">
+<div
+  class="min-h-screen flex flex-col gap-5"
+  [style.background]="
+    currentUser() ? 'linear-gradient(135 deg,#fce4ec 0%, #f8bbd0 50%,#f48fb1 100%)' : '#0a0412'
+  "
+>
   @if (currentUser()) {
     <div class="w-full flex flex-col gap-2 p-4">
       <div class="w-full animate-fade-in-up">
@@ -314,6 +319,7 @@
                       <p class="text-sm text-start">You are all set up!</p>
                     </div>
                   </div>
+
                   <a
                     routerLink="/home"
                     hlmBtn
@@ -416,158 +422,211 @@
           </section>
 
           <div hlmCardContent class="space-y-5 flex-1 flex flex-col">
-            @if (isLoginMode()) {
-              <div class="space-y-1.5">
-                <label hlmLabel for="loginEmail" class="text-sm font-medium text-ring">Email</label>
-                <input
-                  hlmInput
-                  id="loginEmail"
-                  type="email"
-                  placeholder="Enter your email"
-                  [(ngModel)]="loginEmail"
-                  class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
-                />
-              </div>
-            }
-
-            @if (!isLoginMode()) {
-              <div class="space-y-1.5">
-                <label hlmLabel for="username" class="text-sm font-medium text-ring"
-                  >Username</label
+            @if (isSubmited()) {
+              <div class="flex flex-col items-center gap-4 animate-fade-in-up">
+                <div
+                  class="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center"
                 >
-                <input
-                  hlmInput
-                  id="username"
-                  type="text"
-                  placeholder="Enter your username"
-                  [(ngModel)]="username"
-                  class="w-full p-2 border-border focus:ring-primary-light rounded-lg"
-                />
-              </div>
-              <div class="space-y-1.5">
-                <label hlmLabel for="regEmail" class="text-sm font-medium text-ring">Email</label>
-                <input
-                  hlmInput
-                  id="regEmail"
-                  type="email"
-                  placeholder="Enter your email"
-                  [(ngModel)]="email"
-                  class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
-                />
-              </div>
-            }
-
-            <div class="space-y-1.5">
-              <label hlmLabel for="password" class="text-sm font-medium text-ring">Password</label>
-              <div class="flex">
-                <div class="flex w-full">
-                  <input
-                    hlmInput
-                    id="password"
-                    [type]="showPassword() ? 'text' : 'password'"
-                    placeholder="Enter your password"
-                    [(ngModel)]="password"
-                    class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
-                  />
+                  <lucide-icon name="mail" class="w-6 h-6 text-primary-main"></lucide-icon>
                 </div>
-                <div class="flex pl-2 flex-[.2]">
-                  <button
-                    type="button"
-                    (click)="showPassword.set(!showPassword())"
-                    class="relative text-muted hover:text-primary-main transition-colors cursor-pointer"
+                <div class="text-center">
+                  <h3 class="text-lg font-bold text-primary-dark">Verify your email</h3>
+                  <p class="text-xs text-white">
+                    Enter the 6-digit code sent to {{ maskedEmail() }}
+                  </p>
+                </div>
+                <div class="flex justify-center">
+                  <brn-input-otp
+                    maxLength="6"
+                    hlmInputOtp
+                    inputMode="numeric"
+                    (completed)="onOtpComplete($event)"
                   >
-                    <lucide-icon
-                      [name]="showPassword() ? 'eye-off' : 'eye'"
-                      class="w-6 h-6"
-                    ></lucide-icon>
+                    <hlm-input-otp-group class="text-white">
+                      @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+                        <hlm-input-otp-slot [index]="i" />
+                      }
+                    </hlm-input-otp-group>
+                  </brn-input-otp>
+                </div>
+                <div class="flex gap-2 w-full">
+                  <button
+                    hlmBtn
+                    variant="outline"
+                    (click)="sendVerificationCode()"
+                    [disabled]="isSendingCode()"
+                    class="flex-1 cursor-pointer text-xs"
+                  >
+                    Resend code
+                  </button>
+                  <button
+                    hlmBtn
+                    (click)="verifyCode()"
+                    [disabled]="otpCode().length !== 6 || isVerifyingCode()"
+                    class="flex-1 cursor-pointer bg-primary-main text-white text-xs"
+                  >
+                    Verify Email
                   </button>
                 </div>
               </div>
-            </div>
-
-            @if (!isLoginMode()) {
-              <div class="space-y-1.5">
-                <label hlmLabel for="confirmPassword" class="text-sm font-medium text-ring"
-                  >Confirm Password</label
-                >
-                <div class="flex">
+            } @else {
+              @if (isLoginMode()) {
+                <div class="space-y-1.5">
+                  <label hlmLabel for="loginEmail" class="text-sm font-medium text-ring"
+                    >Email</label
+                  >
                   <input
                     hlmInput
-                    id="confirmPassword"
-                    [type]="showConfirmPassword() ? 'text' : 'password'"
-                    placeholder="Confirm your password"
-                    [(ngModel)]="confirmPassword"
+                    id="loginEmail"
+                    type="email"
+                    placeholder="Enter your email"
+                    [(ngModel)]="loginEmail"
                     class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
                   />
+                </div>
+              }
+
+              @if (!isLoginMode()) {
+                <div class="space-y-1.5">
+                  <label hlmLabel for="username" class="text-sm font-medium text-ring"
+                    >Username</label
+                  >
+                  <input
+                    hlmInput
+                    id="username"
+                    type="text"
+                    placeholder="Enter your username"
+                    [(ngModel)]="username"
+                    class="w-full p-2 border-border focus:ring-primary-light rounded-lg"
+                  />
+                </div>
+                <div class="space-y-1.5">
+                  <label hlmLabel for="regEmail" class="text-sm font-medium text-ring">Email</label>
+                  <input
+                    hlmInput
+                    id="regEmail"
+                    type="email"
+                    placeholder="Enter your email"
+                    [(ngModel)]="email"
+                    class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+                  />
+                </div>
+              }
+
+              <div class="space-y-1.5">
+                <label hlmLabel for="password" class="text-sm font-medium text-ring"
+                  >Password</label
+                >
+                <div class="flex">
+                  <div class="flex w-full">
+                    <input
+                      hlmInput
+                      id="password"
+                      [type]="showPassword() ? 'text' : 'password'"
+                      placeholder="Enter your password"
+                      [(ngModel)]="password"
+                      class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+                    />
+                  </div>
                   <div class="flex pl-2 flex-[.2]">
                     <button
                       type="button"
-                      (click)="showConfirmPassword.set(!showConfirmPassword())"
+                      (click)="showPassword.set(!showPassword())"
                       class="relative text-muted hover:text-primary-main transition-colors cursor-pointer"
                     >
                       <lucide-icon
-                        [name]="showConfirmPassword() ? 'eye-off' : 'eye'"
+                        [name]="showPassword() ? 'eye-off' : 'eye'"
                         class="w-6 h-6"
                       ></lucide-icon>
                     </button>
                   </div>
                 </div>
               </div>
-            }
 
-            @if (!isLoginMode()) {
-              <div class="space-y-2">
-                <label class="text-sm font-medium text-ring">Gender</label>
-                <div class="flex gap-3 p-2">
-                  <button
-                    type="button"
-                    (click)="Setgender('Male')"
-                    [class.bg-primary-main]="gender() === 'Male'"
-                    [class.text-white]="gender() === 'Male'"
-                    [class.bg-primary-light]="gender() !== 'Male'"
-                    [class.text-primary-dark]="gender() !== 'Male'"
-                    class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
+              @if (!isLoginMode()) {
+                <div class="space-y-1.5">
+                  <label hlmLabel for="confirmPassword" class="text-sm font-medium text-ring"
+                    >Confirm Password</label
                   >
-                    <lucide-icon name="mars" class="w-4 h-4 inline mr-1"></lucide-icon> Male
-                  </button>
-                  <button
-                    type="button"
-                    (click)="Setgender('Female')"
-                    [class.bg-primary-main]="gender() === 'Female'"
-                    [class.text-white]="gender() === 'Female'"
-                    [class.bg-primary-light]="gender() !== 'Female'"
-                    [class.text-primary-dark]="gender() !== 'Female'"
-                    class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
-                  >
-                    <lucide-icon name="venus" class="w-4 h-4 inline mr-1"></lucide-icon> Female
-                  </button>
-                  <button
-                    type="button"
-                    (click)="Setgender('Other')"
-                    [class.bg-primary-main]="gender() === 'Other'"
-                    [class.text-white]="gender() === 'Other'"
-                    [class.bg-primary-light]="gender() !== 'Other'"
-                    [class.text-primary-dark]="gender() !== 'Other'"
-                    class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
-                  >
-                    <lucide-icon name="user" class="w-4 h-4 inline mr-1"></lucide-icon> Other
-                  </button>
+                  <div class="flex">
+                    <input
+                      hlmInput
+                      id="confirmPassword"
+                      [type]="showConfirmPassword() ? 'text' : 'password'"
+                      placeholder="Confirm your password"
+                      [(ngModel)]="confirmPassword"
+                      class="w-full p-2 border-border focus:border-primary-main focus:ring-2 focus:ring-primary-light rounded-lg"
+                    />
+                    <div class="flex pl-2 flex-[.2]">
+                      <button
+                        type="button"
+                        (click)="showConfirmPassword.set(!showConfirmPassword())"
+                        class="relative text-muted hover:text-primary-main transition-colors cursor-pointer"
+                      >
+                        <lucide-icon
+                          [name]="showConfirmPassword() ? 'eye-off' : 'eye'"
+                          class="w-6 h-6"
+                        ></lucide-icon>
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              }
+
+              @if (!isLoginMode()) {
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-ring">Gender</label>
+                  <div class="flex gap-3 p-2">
+                    <button
+                      type="button"
+                      (click)="Setgender('Male')"
+                      [class.bg-primary-main]="gender() === 'Male'"
+                      [class.text-white]="gender() === 'Male'"
+                      [class.bg-primary-light]="gender() !== 'Male'"
+                      [class.text-primary-dark]="gender() !== 'Male'"
+                      class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
+                    >
+                      <lucide-icon name="mars" class="w-4 h-4 inline mr-1"></lucide-icon> Male
+                    </button>
+                    <button
+                      type="button"
+                      (click)="Setgender('Female')"
+                      [class.bg-primary-main]="gender() === 'Female'"
+                      [class.text-white]="gender() === 'Female'"
+                      [class.bg-primary-light]="gender() !== 'Female'"
+                      [class.text-primary-dark]="gender() !== 'Female'"
+                      class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
+                    >
+                      <lucide-icon name="venus" class="w-4 h-4 inline mr-1"></lucide-icon> Female
+                    </button>
+                    <button
+                      type="button"
+                      (click)="Setgender('Other')"
+                      [class.bg-primary-main]="gender() === 'Other'"
+                      [class.text-white]="gender() === 'Other'"
+                      [class.bg-primary-light]="gender() !== 'Other'"
+                      [class.text-primary-dark]="gender() !== 'Other'"
+                      class="archivo-black cursor-pointer flex-1 py-2.5 px-4 rounded-lg border border-border font-medium transition-all hover:shadow-md"
+                    >
+                      <lucide-icon name="user" class="w-4 h-4 inline mr-1"></lucide-icon> Other
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <div class="flex items-center justify-center">
+                <div class="cf-turnstile" data-theme="dark"></div>
               </div>
+
+              <button
+                hlmBtn
+                (click)="onSubmit()"
+                [disabled]="!turnstileToken() || isLoading()"
+                class="w-full cursor-pointer bg-primary-main text-white font-bold py-3 rounded-xl flex items-center justify-center hover:bg-primary-dark transition-colors shadow-lg shadow-primary-main/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{ isLoginMode() ? 'LOGIN' : 'SUBMIT' }}
+              </button>
             }
-
-            <div class="flex items-center justify-center">
-              <div class="cf-turnstile" data-theme="dark"></div>
-            </div>
-
-            <button
-              hlmBtn
-              (click)="onSubmit()"
-              [disabled]="!turnstileToken() || isLoading()"
-              class="w-full cursor-pointer bg-primary-main text-white font-bold py-3 rounded-xl flex items-center justify-center hover:bg-primary-dark transition-colors shadow-lg shadow-primary-main/30 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ isLoginMode() ? 'LOGIN' : 'SUBMIT' }}
-            </button>
           </div>
         </section>
       </div>
@@ -831,127 +890,6 @@
       >
         Cancel
       </button>
-    </div>
-  </div>
-}
-
-@if (currentUser()?.email && !emailVerified()) {
-  <div
-    class="fixed inset-0 z=50 flex items-center justify-center backdrop-blur-sm animate-fade-in-up mt-2"
-  >
-    <section
-      hlmCard
-      class="border border-amber-300 bg-linear-to-br from-amber-50/50 to-white shadow-sm overflow-hidden"
-    >
-      <div hlmCardContent class="p-4">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
-            <lucide-icon name="mail" class="w-6 h-6 text-amber-600"></lucide-icon>
-          </div>
-          <div class="flex flex-col items-center">
-            <span class="text-sm font-bold text-neutral-text">Verify your email</span>
-            <span class="text-xs text-muted"
-              >Enter 6 digit code sent to {{ currentUser()?.email }}</span
-            >
-          </div>
-        </div>
-        <div class="flex justify-center mb-4">
-          <brn-input-otp hlmInputOtp maxLength="6" [(value)]="otpCode">
-            <hlm-input-otp-group class="gap-1">
-              @for (i of [0, 1, 2, 3, 4, 5]; track i) {
-                @if (i === 3) {
-                  <span>-</span>
-                }
-                <hlm-input-otp-slot [index]="i" class="border-2 rounded-lg border-accent" />
-              }
-            </hlm-input-otp-group>
-          </brn-input-otp>
-        </div>
-
-        <div class="flex gap-3">
-          <button
-            hlmBtn
-            variant="outline"
-            (click)="sendVerificationCode()"
-            [disabled]="isSendingCode()"
-            class="flex-1 text-xs"
-          >
-            Resend code
-          </button>
-          <button
-            hlmBtn
-            (click)="verifyCode()"
-            [disabled]="isVerifyingCode() || otpCode().length < 6"
-            class="flex-1 bg-primary-main text-white text-xs"
-          >
-            Verify
-          </button>
-        </div>
-        <div class="flex justify-center mb-4"></div>
-      </div>
-    </section>
-  </div>
-}
-@if (showOtpModal()) {
-  <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
-  >
-    <div class="w-full max-w-md mx-4 p-6 rounded-2xl bg-white border border-border shadow-2xl">
-      <section
-        class="w-full border border-amber-300 bg-linear-to-br from-amber-50/50 to-white shadow-sm overflow-hidden rounded-xl mb-5"
-      >
-        <div class="p-4">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
-              <lucide-icon name="mail" class="w-5 h-5 text-amber-600"></lucide-icon>
-            </div>
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-neutral-text">Verify your email</span>
-              <span class="text-xs text-muted">Enter the 6-digit code sent to your email</span>
-            </div>
-          </div>
-
-          <div class="flex justify-center mb-4">
-            <brn-input-otp
-              hlmInputOtp
-              inputMode="numeric"
-              (completed)="onOtpComplete($event)"
-              maxLength="6"
-              [value]="otpCode()"
-              (valueChange)="otpCode.set($event ?? '')"
-            >
-              <hlm-input-otp-group>
-                @for (i of [0, 1, 2, 3, 4, 5]; track i) {
-                  <hlm-input-otp-slot [index]="i" />
-                }
-              </hlm-input-otp-group>
-            </brn-input-otp>
-          </div>
-
-          <div class="flex gap-2">
-            <button
-              hlmBtn
-              variant="outline"
-              (click)="sendVerificationCode()"
-              [disabled]="isSendingCode()"
-              class="flex-1 cursor-pointer text-xs font-medium"
-            >
-              Resend code
-            </button>
-            <button
-              hlmBtn
-              (click)="verifyCode()"
-              class="flex-1 cursor-pointer bg-primary-main text-white text-xs font-medium"
-            >
-              Verify
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <p class="text-center text-[10px] text-muted">
-        Didn't receive the code? Check your spam folder.
-      </p>
     </div>
   </div>
 }

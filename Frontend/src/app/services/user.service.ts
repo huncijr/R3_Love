@@ -198,14 +198,15 @@ export class UserService {
       .pipe(map((result) => result.data!.login));
   }
 
-  sendVerificationEmail(): Observable<Boolean> {
+  sendVerificationEmail(email: string): Observable<Boolean> {
     return this.apollo
       .mutate<{ sendVerificationEmail: boolean }>({
         mutation: gql`
-          mutation SendVerificationEmail {
-            sendVerificationEmail
+          mutation SendVerificationEmail($email: String!) {
+            sendVerificationEmail(email: $email)
           }
         `,
+        variables: { email },
       })
       .pipe(map((result) => result.data!.sendVerificationEmail));
   }
