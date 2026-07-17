@@ -157,6 +157,19 @@ export const userResolver = {
           throw new AppError("Turnstile verification failed", 403);
         }
         const hashedPassword = await bcrypt.hash(args.password, 10);
+
+        const [existing] = await db
+          .select()
+          .from(user)
+          .where(eq(user.email, args.email));
+
+        if (existing) {
+          if (existing.emailVerified) {
+            throw new AppError("Email already in used", 409);
+          }
+          await db.delete(user).where(eq(user.id, existing.id));
+        }
+
         const newUser = {
           name: args.name,
           password: hashedPassword,
@@ -231,27 +244,30 @@ export const userResolver = {
       }
     },
 
-    sendVerificationEmail: async (_: any, __: any, context: any) => {
+    sendVerificationEmail: async (
+      _: any,
+      args: { email: string },
+      context: any,
+    ) => {
       try {
-        const userId = await getUserIdFromContext(context.token, true);
         const [foundUser] = await db
-          .select({ email: user.email })
+          .select({ id: user.id })
           .from(user)
-          .where(eq(user.id, userId));
+          .where(eq(user.email, args.email));
 
-        if (!foundUser?.email) {
+        if (!foundUser) {
           throw new AppError("No email address found. Add an email first", 400);
         }
 
-        const code = Math.floor(10000 + Math.random() * 900000).toString();
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
         const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
         await db
           .update(user)
           .set({ verificationCode: code, verificationCodeExpiry: expiry })
-          .where(eq(user.id, userId));
+          .where(eq(user.id, foundUser.id));
 
-        const sent = await sendVerificationCode(foundUser.email, code);
+        const sent = await sendVerificationCode(args.email, code);
 
         if (!sent) {
           throw new AppError("Failed to send verification email", 500);

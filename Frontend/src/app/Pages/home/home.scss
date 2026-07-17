@@ -530,3 +530,161 @@
     opacity: 1;
   }
 }
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(236, 72, 153, 0.1);
+  border: 2px solid #f472b6;
+  color: #be185d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover:not(.disabled) {
+  background: #ec4899;
+  color: white;
+}
+
+.nav-btn.disabled {
+  opacity: 0.25s;
+  cursor: not-allowed;
+  border-color: #d1d5db;
+  color: #9ca3af;
+}
+
+.character-scene {
+  position: relative;
+  width: 120px;
+  height: 150px;
+}
+
+.scene {
+  background: linear-gradient(180deg, #fff5f7 0%, #fbcfe8 100%);
+}
+
+.character {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  width: 140px;
+  height: 280px;
+  transform: translateX(-50%);
+  transform-style: preserve-3d;
+  animation: breathe 2.4s ease-in-out;
+  transition: transform 0.4s ease;
+  z-index: 2;
+}
+
+.char {
+  transform: translateX(-50%) scale(0.55) !important;
+  bottom: -20px !important;
+}
+
+.shadow {
+  position: absolute;
+  bottom: -4px;
+  left: 50px;
+  transform: translateX(-50%);
+  width: 100px;
+}
+
+.float-name {
+  top: -80px !important;
+  left: 68px !important;
+}
+
+.float-name .name-3d {
+  font-size: 1.2rem !important;
+}
+
+.floating-name {
+  position: absolute;
+  top: -65px;
+  left: 70px;
+  transform: translateX(-50%);
+  z-index: 15px;
+  pointer-events: none;
+  animation: float3D es ease-in-out infinite;
+  perspective: 400px;
+}
+
+.head {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #ffbdac;
+  z-index: 3;
+  box-shadow: inset -6px -6px 12px rgba(0, 0, 0, 0);
+}
+
+.face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.eye {
+  position: absolute;
+  top: 28px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1f2937;
+  animation: blink 4s infinite;
+}
+
+.eye.left {
+  left: 18px;
+}
+
+.eye.right {
+  right: 18px;
+}
+
+.blush {
+  position: absolute;
+  left: 38px;
+  width: 14px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(237, 72, 153, 0.25);
+}
+
+.blush.left {
+  left: 10px;
+}
+
+.blush-right {
+  right: 10px;
+}
+
+.hair-front {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 0;
+  z-index: 4;
+}
+
+.hair-bangs {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68px;
+  height: 20px;
+  background: #5a3828;
+  border-radius: 34px 34px 12px 12px;
+  z-index: 5;
+}

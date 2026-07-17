@@ -319,7 +319,67 @@
       <section
         class="col-span-10 md:col-span-5 md:row-span-1 bg-white/80 backdrop-blur-md border rounded-lg"
       >
-        <div hlmCardContent class="flex flex-col h-full items-center justify-center">IDK PAGE</div>
+        <div class="flex flex-col gap-2 p-3">
+          <div class="flex items-center gap-4">
+            <button class="nav-btn" (click)="Prev()" [class.disabled]="currentIndex() === 0">
+              <lucide-icon name="chevron-left" class="w-4 h-4"></lucide-icon>
+            </button>
+            <span class="flex-1 text-center text-accent font-bold text-lg">{{
+              currentCharacter()
+            }}</span>
+            <button
+              class="nav-btn"
+              (click)="Next()"
+              [class.disabled]="currentIndex() === characters.length - 1"
+            >
+              <lucide-icon name="chevron-right" class="w-4 h-4"></lucide-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-4 items-center">
+          <div
+            class="scene shrink-0 w-[140px] h-[170px] rounded-xl overflow-hidden flex items-center justify-center"
+            style="background: linear-gradient(180deg, #fff5f7 0%, #fbcfe8 100%)"
+          >
+            <div class="character-scene" [class.switch]="direction()">
+              <div
+                class="character char"
+                [class.male]="currentCharacter() === 'Dani'"
+                [class.female]="currentCharacter() === 'Lucy'"
+              >
+                @if (currentCharacter() === 'Lucy') {
+                  <div class="hair-black"></div>
+                }
+                @if (currentCharacter() === 'Dani') {
+                  <div class="hair male-hair"></div>
+                }
+                <div class="shadow"></div>
+                <div
+                  class="floating-name float-name"
+                  [class.male-name]="currentCharacter() === 'Dani'"
+                  [class.female-name]="currentCharacter() === 'Lucy'"
+                >
+                  <span class="name-3d">{{ currentCharacter() }}</span>
+                </div>
+                <div class="head">
+                  <div class="face">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="mouth"></div>
+                    <div class="blush left"></div>
+                    <div class="blush-right"></div>
+                  </div>
+                </div>
+                @if (currentCharacter() === 'Lucy') {
+                  <div class="hair-front">
+                    <div class="hair-bangs"></div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   } @else {

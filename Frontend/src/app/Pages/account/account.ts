@@ -485,7 +485,8 @@ export class Account implements OnInit, AfterViewInit {
           next: (response) => {
             console.log('Create user response, token', JSON.stringify(response.token));
             this.isLoading.set(false);
-            if (response.token) {
+
+            if (response.user) {
               this.userContext.login(response.user, response.token);
             }
 
@@ -510,6 +511,7 @@ export class Account implements OnInit, AfterViewInit {
         });
 
       this.isSubmited.set(true);
+
       console.log('Account created:', {
         username: this.username(),
         password: this.password(),

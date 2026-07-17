@@ -459,14 +459,6 @@
                   >
                     Resend code
                   </button>
-                  <button
-                    hlmBtn
-                    (click)="verifyCode()"
-                    [disabled]="otpCode().length !== 6 || isVerifyingCode()"
-                    class="flex-1 cursor-pointer bg-primary-main text-white text-xs"
-                  >
-                    Verify Email
-                  </button>
                 </div>
               </div>
             } @else {

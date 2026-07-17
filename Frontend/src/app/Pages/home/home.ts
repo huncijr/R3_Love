@@ -95,6 +95,7 @@ export class Home implements OnInit {
   private readonly ROMANTIC_SONGS_KEY = 'romanticSongs';
 
   currentUser = this.userContext.currentUser;
+
   quizData = signal<any>(null);
   daysTogether = signal(0);
   daysUntilBirthday = signal(0);
@@ -123,6 +124,10 @@ export class Home implements OnInit {
 
   randomGift = signal<GiftRecommendation | null>(null);
   partnerName = computed(() => this.quizData()?.partnerName || '');
+
+  characters = ['Lucy', 'Dani'];
+  currentIndex = signal(0);
+  direction = signal<'left' | 'right' | null>(null);
 
   giftMapUrl = computed<SafeResourceUrl | null>(() => {
     const gift = this.randomGift();
@@ -530,5 +535,25 @@ export class Home implements OnInit {
       `You've shared approximately ${(days * 3).toLocaleString()} meals together!`,
     ];
     return facts[days % facts.length];
+  }
+
+  currentCharacter(): string {
+    return this.characters[this.currentIndex()];
+  }
+
+  Prev() {
+    if (this.currentIndex() > 0) {
+      this.direction.set('left');
+      setTimeout(() => this.currentIndex.set(this.currentIndex() - 1), 50);
+      setTimeout(() => this.direction.set(null), 600);
+    }
+  }
+
+  Next() {
+    if (this.currentIndex() < this.characters.length - 1) {
+      this.direction.set('right');
+      setTimeout(() => this.currentIndex.set(this.currentIndex() + 1), 50);
+      setTimeout(() => this.direction.set(null), 600);
+    }
   }
 }

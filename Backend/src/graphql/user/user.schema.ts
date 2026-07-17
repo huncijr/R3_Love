@@ -178,10 +178,11 @@ export const userSchema = `
     disconnectSpotify: Boolean!
     googleAuth(credential: String!): AuthPayload!     
     updateUserGender(gender: String!): User!
-    sendVerificationEmail: Boolean!
+    sendVerificationEmail(email: String!): Boolean!
     verifyEmail(code: String!,email: String!): AuthPayload!
   }
 `;
+
 export const spotifyTypeDefs = `#graphql
 type Song {
   title: String!
