@@ -551,7 +551,7 @@
 }
 
 .nav-btn.disabled {
-  opacity: 0.25s;
+  opacity: 0.25;
   cursor: not-allowed;
   border-color: #d1d5db;
   color: #9ca3af;
@@ -567,6 +567,24 @@
   background: linear-gradient(180deg, #fff5f7 0%, #fbcfe8 100%);
 }
 
+.stage-platform {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 32px;
+  border-radius: 50%;
+  background: #facc15;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+.platform {
+  transform: translateX(-50%) scale(0.55);
+  bottom: -10px;
+}
+
 .character {
   position: absolute;
   left: 50%;
@@ -575,7 +593,7 @@
   height: 280px;
   transform: translateX(-50%);
   transform-style: preserve-3d;
-  animation: breathe 2.4s ease-in-out;
+  animation: breathe 2.4s ease-in-out infinite;
   transition: transform 0.4s ease;
   z-index: 2;
 }
@@ -588,7 +606,10 @@
 .shadow {
   position: absolute;
   bottom: -4px;
-  left: 50px;
+  left: 50%;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
   transform: translateX(-50%);
   width: 100px;
 }
@@ -607,9 +628,9 @@
   top: -65px;
   left: 70px;
   transform: translateX(-50%);
-  z-index: 15px;
+  z-index: 15;
   pointer-events: none;
-  animation: float3D es ease-in-out infinite;
+  animation: float3D 3s ease-in-out infinite;
   perspective: 400px;
 }
 
@@ -652,7 +673,7 @@
 
 .blush {
   position: absolute;
-  left: 38px;
+  top: 38px;
   width: 14px;
   height: 8px;
   border-radius: 50%;
@@ -687,4 +708,54 @@
   background: #5a3828;
   border-radius: 34px 34px 12px 12px;
   z-index: 5;
+}
+
+.body {
+  position: absolute;
+  top: 66px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 100px;
+  border-radius: 18px;
+  z-index: 2;
+}
+
+.arm {
+  position: absolute;
+  top: 78px;
+  width: 22px;
+  height: 80px;
+  border-radius: 12px;
+  background: #ffdbac;
+  transform-origin: top center;
+  transition: transform 0.4s ease;
+  z-index: 1;
+}
+
+.arm.left {
+  left: 18px;
+  transform: rotateZ(12deg);
+}
+
+.arm-right {
+  right: 18px;
+  transform: rotateZ(-12deg);
+}
+
+.leg {
+  position: absolute;
+  top: 158px;
+  width: 29px;
+  height: 110px;
+  border-radius: 14px;
+  z-index: 1;
+}
+
+.leg.left {
+  left: 32px;
+}
+
+.leg.right {
+  right: 32px;
 }
