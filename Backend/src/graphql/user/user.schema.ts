@@ -171,6 +171,7 @@ export const userSchema = `
     exchangeSpotifyCode(code: String!): Boolean
     generateDeepQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
     generatePracticalQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]!
+    generateGiftSpecificQuestions(answers: [QuizAnswerInput!]!): [AiQuestion!]
     getGiftRecommendations(answers: [QuizAnswerInput!]!): [GiftRecommendation!]!
     saveGiftRecommendations(input: SaveGiftRecommendationsInput!): SavedGiftRecommendations!
     deleteGiftRecommendations(id: ID!): Boolean!

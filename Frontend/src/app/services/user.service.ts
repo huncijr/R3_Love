@@ -395,6 +395,28 @@ export class UserService {
       .pipe(map((result) => result.data?.getGiftRecommendations ?? []));
   }
 
+  generateGiftSpecificQuestions(
+    answers: { questionId: string; questionText: string; value: string }[],
+  ) {
+    return this.apollo
+      .mutate<{ generateGiftSpecificQuestions: any[] }>({
+        mutation: gql`
+          mutation GenerateGiftSpecificQuestions($answers: [QuizAnswerInput!]!) {
+            generateGiftSpecificQuestions(answers: $answers) {
+              id
+              text
+              type
+              options
+              image
+              placeholder
+            }
+          }
+        `,
+        variables: { answers },
+      })
+      .pipe(map((result) => result.data?.generateGiftSpecificQuestions ?? []));
+  }
+
   generateDeepQuestions(answers: { questionId: string; questionText: string; value: string }[]) {
     return this.apollo
       .mutate<{ generateDeepQuestions: any[] }>({

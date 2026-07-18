@@ -294,6 +294,9 @@ export class GiftFinder implements OnInit {
 
   deepQuestions = signal<QuizQuestion[]>([]);
   practicalQuestions = signal<QuizQuestion[]>([]);
+  giftSpecificQuestions = signal<QuizQuestion[]>([]);
+
+  isGiftSpecificPhase = signal(false);
   isDeepPhase = signal(false);
   isPracticalPhase = signal(false);
 
@@ -378,7 +381,8 @@ export class GiftFinder implements OnInit {
   stepLabel = computed(() => {
     if (this.isDeepPhase()) return 'Extra Step +1';
     if (this.isPracticalPhase()) return 'Extra Step +2';
-    if (this.isFinalPhase() || this.isCompleted()) return 'Extra Step +3';
+    if (this.giftSpecificQuestions()) return 'Extra Step +3';
+    if (this.isFinalPhase() || this.isCompleted()) return 'Extra Step +4';
     return `Step ${this.currentSection() + 1} of 3`;
   });
 
@@ -448,6 +452,7 @@ export class GiftFinder implements OnInit {
   allCurrentQuestions = computed<QuizQuestion[]>(() => {
     if (this.isDeepPhase()) return this.deepQuestions();
     if (this.isPracticalPhase()) return this.practicalQuestions();
+    if (this.isGiftSpecificPhase()) return this.giftSpecificQuestions();
     return ALL_QUESTIONS.filter((q) => q.section === this.currentSection());
   });
 
@@ -501,7 +506,8 @@ export class GiftFinder implements OnInit {
     const totalStatic = 9;
     const totalDeep = 5;
     const totalPractical = 5;
-    const total = totalStatic + totalDeep + totalPractical;
+    const totalGiftSpecific = 5;
+    const total = totalStatic + totalDeep + totalPractical + totalGiftSpecific;
 
     if (this.isDeepPhase()) {
       return Math.round(((totalStatic + this.currentQuestionIndex() + 1) / total) * 100);
@@ -511,6 +517,13 @@ export class GiftFinder implements OnInit {
         ((totalStatic + totalDeep + this.currentQuestionIndex() + 1) / total) * 100,
       );
     }
+
+    if (this.isGiftSpecificPhase()) {
+      return Math.round(
+        ((totalStatic + totalDeep + this.currentQuestionIndex() + 1) / total) * 100,
+      );
+    }
+
     if (this.isCompleted()) return 100;
 
     const completedBefore = this.currentSection() * 3;
@@ -546,6 +559,7 @@ export class GiftFinder implements OnInit {
   sectionName = computed(() => {
     if (this.isDeepPhase()) return 'Deep Dive';
     if (this.isPracticalPhase()) return 'Practical Details';
+    if (this.isGiftSpecificPhase()) return 'Gift Preferences';
     if (this.isFinalPhase()) return 'Result';
     return SECTION_NAMES[this.currentSection()];
   });
@@ -569,6 +583,8 @@ export class GiftFinder implements OnInit {
       this.finishDeepPhase();
     } else if (this.isPracticalPhase()) {
       this.finishPracticalPhase();
+    } else if (this.isGiftSpecificPhase()) {
+      this.finishGiftSpecificPhase();
     } else if (this.currentSection() < 2) {
       this.currentSection.update((s) => s + 1);
       this.currentQuestionIndex.set(0);
@@ -634,7 +650,12 @@ export class GiftFinder implements OnInit {
     this.isLocationPhase.set(false);
     this.startLoading('Generating gift recommendations...', this.LOADING_MESSAGES_GIFTS);
 
-    const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions(), ...this.practicalQuestions()];
+    const allQuestions = [
+      ...ALL_QUESTIONS,
+      ...this.deepQuestions(),
+      ...this.practicalQuestions(),
+      ...this.giftSpecificQuestions(),
+    ];
     const allAnswers = this.answers().map((a) => {
       const q = allQuestions.find((q) => q.id === a.questionId);
       return { questionId: a.questionId, questionText: q?.text || a.questionId, value: a.value };
@@ -712,8 +733,34 @@ export class GiftFinder implements OnInit {
     });
   }
 
-  private finishPracticalPhase() {
+  private finishGiftSpecificPhase() {
     this.isLocationPhase.set(true);
+  }
+
+  private finishPracticalPhase() {
+    this.startLoading('Preparing gift preference questions...', this.LOADING_MESSAGES_QUESTIONS);
+    const allQuestions = [...ALL_QUESTIONS, ...this.deepQuestions(), ...this.practicalQuestions()];
+    const allAnswers = this.answers().map((a) => {
+      const q = allQuestions.find((q) => q.id === a.questionId);
+      return { questionId: a.questionId, questionText: q?.text || a.questionId, value: a.value };
+    });
+
+    this.userService.generateGiftSpecificQuestions(allAnswers).subscribe({
+      next: (questions) => {
+        this.stopLoading();
+        this.giftSpecificQuestions.set(questions);
+        this.isGiftSpecificPhase.set(true);
+        this.isPracticalPhase.set(false);
+        this.currentQuestionIndex.set(0);
+      },
+      error: (err) => {
+        this.stopLoading();
+        console.error(`Gift-specific questions failed`, err);
+        this.errorMessage.set(
+          'Failed to generate gift preference question. Please try again later',
+        );
+      },
+    });
   }
 
   getFlagEmoji(countryCode: string): string {
@@ -956,8 +1003,10 @@ export class GiftFinder implements OnInit {
     this.recommendations.set([]);
     this.isDeepPhase.set(false);
     this.isPracticalPhase.set(false);
+    this.isGiftSpecificPhase.set(false);
     this.deepQuestions.set([]);
     this.practicalQuestions.set([]);
+    this.giftSpecificQuestions.set([]);
     this.aiQuestions.set([]);
     this.isFinalPhase.set(false);
     this.errorMessage.set('');

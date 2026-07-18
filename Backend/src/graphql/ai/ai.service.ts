@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import {
   DEEP_QUESTIONS_PROMPT,
   PRACTICAL_QUESTIONS_PROMPT,
+  GIFT_SPECIFIC_QUESTIONS_PROMPT,
   RECOMMENDATION_SYSTEM_PROMPT,
   DAILY_INSIGHT_PROMPT,
 } from "./system_prompt.js";
@@ -148,7 +149,18 @@ export async function generatePracticalQuestionsFromAI(
   return extractJSON(content);
 }
 
-// Phase 3: Generates 5 personalized gift recommendations
+// Phase 3: Generates 5 personalized gift recommendations (color,material,style etc.)
+export async function generateGiftSpecificQuestionsFromAI(
+  answers: QuizAnswer[],
+): Promise<any[]> {
+  const content = await callAI(
+    GIFT_SPECIFIC_QUESTIONS_PROMPT,
+    buildUserContent(answers),
+  );
+  return extractJSON(content);
+}
+
+// Phase 4: Generates 5 personalized gift recommendations
 export async function getGiftRecommendationsFromAI(
   answers: QuizAnswer[],
 ): Promise<GiftRecommendation[]> {
@@ -160,7 +172,6 @@ export async function getGiftRecommendationsFromAI(
 }
 
 export async function generateDailyInsightFromAI(): Promise<DailyInsight> {
-  console.log("here");
   const content = await callAI(
     DAILY_INSIGHT_PROMPT,
     "Give me today's relationship insight",

@@ -542,18 +542,14 @@ export class Home implements OnInit {
   }
 
   Prev() {
-    if (this.currentIndex() > 0) {
-      this.direction.set('left');
-      setTimeout(() => this.currentIndex.set(this.currentIndex() - 1), 50);
-      setTimeout(() => this.direction.set(null), 600);
-    }
+    this.direction.set('left');
+    setTimeout(() => this.currentIndex.set(this.currentIndex() === 0 ? 1 : 0), 50);
+    setTimeout(() => this.direction.set(null), 600);
   }
 
   Next() {
-    if (this.currentIndex() < this.characters.length - 1) {
-      this.direction.set('right');
-      setTimeout(() => this.currentIndex.set(this.currentIndex() + 1), 50);
-      setTimeout(() => this.direction.set(null), 600);
-    }
+    this.direction.set('right');
+    setTimeout(() => this.currentIndex.set(this.currentIndex() === 0 ? 1 : 0), 50);
+    setTimeout(() => this.direction.set(null), 600);
   }
 }

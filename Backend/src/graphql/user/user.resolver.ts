@@ -18,6 +18,7 @@ import {
   generateDailyInsightFromAI,
   generateDeepQuestionsFromAI,
   generatePracticalQuestionsFromAI,
+  generateGiftSpecificQuestionsFromAI,
   getGiftRecommendationsFromAI,
   QuizAnswer,
 } from "../ai/ai.service.js";
@@ -491,6 +492,12 @@ export const userResolver = {
       { answers }: { answers: QuizAnswer[] },
     ) => {
       return await generatePracticalQuestionsFromAI(answers);
+    },
+    generateGiftSpecificQuestions: async (
+      _: any,
+      { answers }: { answers: QuizAnswer[] },
+    ) => {
+      return await generateGiftSpecificQuestionsFromAI(answers);
     },
     getGiftRecommendations: async (
       _: any,
