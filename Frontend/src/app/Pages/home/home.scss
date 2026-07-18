@@ -1007,3 +1007,73 @@
   opacity: 0.5;
   animation-delay: 3.5s;
 }
+
+.r3-landing::before {
+  content: '';
+  inset: 0;
+  position: absolute;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.18), transparent 18%),
+    radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.12), transparent 14%),
+    linear-gradient(135deg, #f4c9f5 0%, #e15fba 48%, #d84cad 100%);
+  z-index: -2;
+}
+
+.r3-twinkle {
+  font-size: clampe(2rem, 4vw, 3.6rem);
+  text-shadow:
+    0 3px 0 rgba(190, 24, 93, 0.18),
+    0 0 18px rgba(255, 255, 255, 0.45);
+  animation:
+    TwinkleIn 0.8s ease-out 1.1s forwards,
+    TwinklePulse 2.6s ease-in-out 2s infinite;
+}
+
+.orbit {
+  animation: OrbitIn 1.1s ease-out 0.25s forwards;
+}
+
+@keyframes TwinkleIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes TwinklePulse {
+  0%,
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
+  50% {
+    scale: 1.13;
+    rotate: 9deg;
+  }
+}
+
+@keyframes OrbitIn {
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.twinkle-one {
+  left: 25%;
+  top: 17%;
+  transform: rotate(-14deg);
+}
+
+.twinkle-two {
+  right: 27%;
+  top: 16%;
+  transform: rotate(16deg);
+  animation-delay: 1.35s, 2.15s;
+}
+
+.twinkle-three {
+  left: 71%;
+  top: 42%;
+  font-size: clamp(1.45rem, 3vw, 2.3rem);
+  animation-delay: 1.55s 2.35s;
+}

@@ -413,12 +413,21 @@
       </section>
     </div>
   } @else {
-    <div class="text-center py-20 animate-fade-in-up">
-      <h1 class="text-3xl font-bold text-primary mb-4">Welcome to R_Love!</h1>
-      <p class="text-muted">Your personal relationship</p>
-    </div>
+    <section
+      class="relative r3-landing min-h-screen inset-0 overflow-hidden isolate"
+      aria-label="R3 Love landing page"
+    >
+      <div
+        class="orbit absolute left-1/2 top-[29%] -translate-x-1/2 -translate-y-1/2 scale-95 w-[min(68vw,720px)] h-[min(36vw,360px)] rounded-full border-2 border-dashed border-white/80 opacity-0"
+      ></div>
+
+      <div class="twinkle absolute z-7 text-[#fff45f] leading-none opacity-0 twinkle-one">✦</div>
+      <div class="twinkle absolute z-7 text-[#fff45f] leading-none twinkle-two"></div>
+      <div class="twinkle absolute z-7 text-[#fff45f] leading-none twinkle-three"></div>
+    </section>
   }
 </div>
+
 @if (showMusicBar()) {
   <div
     class="music-bar z-50 w-[calc(100%-2rem)] max-w-md rounded-2xl border border-green-500/60 bg-gray-900/95 px-4 py-3 shadow-2xl shadow-green-500/20 backdrop-blur-md"

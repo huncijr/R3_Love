@@ -136,10 +136,11 @@ const ALL_QUESTIONS: QuizQuestion[] = [
   {
     id: 'i2',
     section: 1,
-    text: 'Do they prefer experiences or physical gifts?',
-    type: 'radio',
-    options: ['Experiences', 'Physical gifts', 'Both equally'],
+    text: 'How do they like to relax after a long day>',
+    type: 'text_with_options',
+    options: ['Watching shows', 'Cooking/baking', 'Gaming', 'Going for a walk'],
     image: 'Gift',
+    placeholder: 'e.g Reading a book',
   },
   {
     id: 'i3',
@@ -214,11 +215,11 @@ const ALL_QUESTIONS: QuizQuestion[] = [
   {
     id: 'd5',
     section: 2,
-    text: "What would make them say 'wow'?",
+    text: "What's something they've always wanted to try but haven't yet",
     type: 'text_with_options',
-    options: ['Personalized gift', 'Experience', 'Handmade item', 'Surprise trip'],
+    options: ['A new hobby', 'Travel somewhere', 'Learn a skill', 'Try a new cuisine'],
     image: 'Star',
-    placeholder: 'e.g. Personalized jewelry',
+    placeholder: 'e.g. Pottery class, skydiving',
   },
 ];
 
