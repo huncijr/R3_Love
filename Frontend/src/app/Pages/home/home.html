@@ -413,17 +413,44 @@
       </section>
     </div>
   } @else {
-    <section
-      class="relative r3-landing min-h-screen inset-0 overflow-hidden isolate"
-      aria-label="R3 Love landing page"
-    >
+    <section class="relative landing min-h-screen inset-0" aria-label="R3 Love landing page">
+      <div
+        class="bg-image absolute inset-0 bg-cover bg-center"
+        style="background-image: url('/Images/R3_Love.png')"
+      ></div>
+
       <div
         class="orbit absolute left-1/2 top-[29%] -translate-x-1/2 -translate-y-1/2 scale-95 w-[min(68vw,720px)] h-[min(36vw,360px)] rounded-full border-2 border-dashed border-white/80 opacity-0"
       ></div>
 
-      <div class="twinkle absolute z-7 text-[#fff45f] leading-none opacity-0 twinkle-one">✦</div>
-      <div class="twinkle absolute z-7 text-[#fff45f] leading-none twinkle-two"></div>
-      <div class="twinkle absolute z-7 text-[#fff45f] leading-none twinkle-three"></div>
+      <div class="twinkle absolute z-10 text-[#fff45f] leading-none opacity-0 twinkle-one">✦</div>
+      <div class="twinkle absolute z-10 text-[#fff45f] leading-none twinkle-two">✦</div>
+      <div class="twinkle absolute z-10 text-[#fff45f] leading-none twinkle-three">✦</div>
+
+      <div class="soft-heart absolute z-6 opacity-0 soft-heart-one"></div>
+      <div class="soft-heart absolute z-6 opacity-0 soft-heart-two"></div>
+      <div class="soft-heart absolute z-6 opacity-0 soft-heart-three"></div>
+
+      <div
+        class="center-gift absolute left-1/2 top-[53%] -translate-x-1/2 -translate-y-1/2 rotete-[-5deg] scale-70 w-[70px] h-[66px] z-14 opacity-0"
+        aria-hidden="true"
+      >
+        <span class="gift-lid"></span>
+        <span class="gift-box"></span>
+        <span class="gift-ribbon-v"></span>
+        <span class="gift-ribbon-h"></span>
+      </div>
+
+      <div class="hanging-bow bow-one absolute top-[-105px] w-[70px] h-[160px] z-8 origin-top">
+        <span class="bow-string"></span>
+        <span class="bow-shape"><i></i></span>
+      </div>
+
+      <div class="hot-balloon corner-balloon cb-left absolute w-[102px] h-174px z-11 opacity-0">
+        <span class="hb-top pink"></span>
+        <span class="hb-ropes"></span>
+        <span class="hb-basket"></span>
+      </div>
     </section>
   }
 </div>
