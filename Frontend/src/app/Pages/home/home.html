@@ -1,4 +1,4 @@
-<div class="min-h-screen flex flex-col gap-5">
+<div class="min-h-screen flex items-center justify-center flex-col gap-5">
   @if (isLoggedIn()) {
     <div
       class="w-full max-w-5xl grid grid-cols-10 md:grid-cols-10 gap-4 animate-fade-in-up auto-rows-[170px] md:auto-rows-[180px]"
@@ -413,102 +413,123 @@
       </section>
     </div>
   } @else {
-    <section class="relative landing w-full min-h-screen inset-0" aria-label="R3 Love landing page">
+    <section
+      class="r3-landing fixed inset-0 z-[10] pointer-events-none overflow-hidden isolate flex items-center justify-center"
+      aria-label="R3 Love landing page"
+    >
       <div
-        class="bg-image absolute inset-0 bg-cover bg-center"
-        style="
-          background-image: url('/Images/R3_Love.png');
-          background-repeat: no-repeat;
-          background-size: min(70vw, 620px) auto;
-          background-position: center;
-        "
+        class="r3-orbit absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 scale-95 w-[min(68vw,720px)] h-[min(36vw,360px)] rounded-full border-2 border-dashed border-white/86 opacity-0 z-[9]"
       ></div>
 
-      <div
-        class="orbit absolute left-1/2 top-[29%] -translate-x-1/2 -translate-y-1/2 scale-95 w-[min(68vw,720px)] h-[min(36vw,360px)] rounded-full border-2 border-dashed border-white/80 opacity-0"
-      ></div>
-
-      <div class="twinkle absolute z-10 text-[#fff45f] leading-none opacity-0 twinkle-one">✦</div>
-      <div class="twinkle absolute z-10 text-[#fff45f] leading-none twinkle-two">✦</div>
-      <div class="twinkle absolute z-10 text-[#fff45f] leading-none twinkle-three">✦</div>
-
-      <div class="soft-heart absolute z-6 opacity-0 soft-heart-one"></div>
-      <div class="soft-heart absolute z-6 opacity-0 soft-heart-two"></div>
-      <div class="soft-heart absolute z-6 opacity-0 soft-heart-three"></div>
-
-      <div
-        class="center-gift absolute left-1/2 top-[53%] -translate-x-1/2 -translate-y-1/2 rotate-[-5deg] scale-[0.70] w-[70px] h-[66px] z-[14] opacity-0"
-        aria-hidden="true"
-      >
-        <span class="gift-lid"></span>
-        <span class="gift-box"></span>
-        <span class="gift-ribbon-v"></span>
-        <span class="gift-ribbon-h"></span>
+      <div class="r3-twinkle absolute z-[7] text-[#fff45f] leading-none opacity-0 twinkle-one">
+        ✦
+      </div>
+      <div class="r3-twinkle absolute z-[7] text-[#fff45f] leading-none opacity-0 twinkle-two">
+        ✧
+      </div>
+      <div class="r3-twinkle absolute z-[7] text-[#fff45f] leading-none opacity-0 twinkle-three">
+        ✦
       </div>
 
-      <div class="hanging-bow bow-one absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top">
+      <div class="r3-soft-heart absolute z-[6] opacity-0 soft-heart-one"></div>
+      <div class="r3-soft-heart absolute z-[6] opacity-0 soft-heart-two"></div>
+      <div class="r3-soft-heart absolute z-[6] opacity-0 soft-heart-three"></div>
+
+      <div class="r3-gift r3-gift-left" aria-hidden="true">
+        <span class="gift-lid"></span><span class="gift-box"></span>
+        <span class="gift-ribbon-v"></span><span class="gift-ribbon-h"></span>
+      </div>
+
+      <div class="r3-gift r3-gift-right" aria-hidden="true">
+        <span class="gift-lid"></span><span class="gift-box"></span>
+        <span class="gift-ribbon-v"></span><span class="gift-ribbon-h"></span>
+      </div>
+
+      <div class="r3-hanging-bow bow-one absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top">
+        <span class="bow-string"></span>
+        <span class="bow-shape"><i></i></span>
+      </div>
+      <div class="r3-hanging-bow bow-two absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top">
+        <span class="bow-string"></span>
+        <span class="bow-shape"><i></i></span>
+      </div>
+      <div
+        class="r3-hanging-bow bow-three absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top"
+      >
         <span class="bow-string"></span>
         <span class="bow-shape"><i></i></span>
       </div>
 
-      <div class="hot-balloon corner-balloon cb-left absolute w-[102px] h-[174px] z-[11] opacity-0">
+      <div
+        class="r3-hot-balloon corner-balloon cb-left absolute w-[102px] h-[174px] z-[11] opacity-0"
+      >
         <span class="hb-top pink"></span>
         <span class="hb-ropes"></span>
         <span class="hb-basket"></span>
       </div>
-      <div class="hot-balloon corner-balloon cb-right absolute w-[102px] h-[173px] z-11 opacity-0">
+      <div
+        class="r3-hot-balloon corner-balloon cb-right absolute w-[102px] h-[174px] z-[11] opacity-0"
+      >
         <span class="hb-top sunny"></span>
         <span class="hb-ropes"></span>
         <span class="hb-basket"></span>
       </div>
+
       <div
-        class="hot-balloon falling-balloon fb-one absolute top-[-210px] w-[102px] h-[174px] z-11 opacity-0"
+        class="r3-hot-balloon falling-balloon fb-one absolute top-[-210px] w-[102px] h-[174px] z-[11] opacity-0"
       >
         <span class="hb-top lavender"></span>
         <span class="hb-ropes"></span>
         <span class="hb-basket"></span>
       </div>
       <div
-        class="hot-balloon falling-balloon fb-two absolute top-[-210px] w-[102[x h-[174px] z-11 opacity-0"
+        class="r3-hot-balloon falling-balloon fb-two absolute top-[-210px] w-[102px] h-[174px] z-[11] opacity-0"
       >
         <span class="hb-top coral"></span>
         <span class="hb-ropes"></span>
         <span class="hb-basket"></span>
       </div>
-
       <div
-        class="hot-balloon falling-balloon fb-three absolute top-[-210px] w-[102px] h-[174px] z-11 opacity-0"
+        class="r3-hot-balloon falling-balloon fb-three absolute top-[-210px] w-[102px] h-[174px] z-[11] opacity-0"
       >
         <span class="hb-top mint"></span>
         <span class="hb-ropes"></span>
         <span class="hb-basket"></span>
       </div>
 
-      <div class="bottom-balloons absolute left-[2px] bottom-[1%] w-[280px] h-[250px] z-12">
-        <div
-          class="party-balloon pb-one absolute w-[64px] h-[84px] rounded-[50%_50%_46%_46%]"
-        ></div>
-        <div
-          class="party-balloon pb-two absolute w-[64px] h-[84px] rounded-[50%_50%_46%_46%]"
-        ></div>
-        <div
-          class="party-balloon pb-three absolute w-[64px] h-[84px] rounded-[50%_50%_46%_46%]"
-        ></div>
+      <div class="r3-bottom-balloons absolute left-[2%] bottom-[1%] w-[280px] h-[250px] z-[12]">
+        <div class="r3-party-balloon pb-one absolute w-[64px] h-[84px] rounded-[50%_50%_46%_46%]">
+          <span></span>
+        </div>
+        <div class="r3-party-balloon pb-two absolute w-[64px] h-[84px] rounded-[50%_50%_46%_46%]">
+          <span></span>
+        </div>
+        <div class="r3-party-balloon pb-three absolute w-[64px] h-[84px] rounded-[50%_50%_46%_46%]">
+          <span></span>
+        </div>
+        <div class="r3-party-balloon pb-four absolute w-[64px] h-[84px] rounded-[50%_50%_46%_46%]">
+          <span></span>
+        </div>
       </div>
 
       <div
-        class="hero-copy absolute left-1/2 top-[29%] -translate-x-1/2 -translate-y-1/2 scale-96 w-[min(92vw,620px)] text-center z-20 opacity-0"
-      ></div>
-      <p class="kicker m-0 text-white font-extrabold -mt-3">Understand where you stand</p>
-      <h1 class="m-1 text-[#f7a8ac] text-white font-extrabold">Love isn't a guessing game</h1>
-      <a
-        hlmBtn
-        routerLink="/account"
-        class="start-btn inline-block mt-5 rounded-full px-6 py-2.5 text-white opacity-0 translate-y-2"
-        >Start your story</a
+        class="r3-hero-copy absolute left-1/2 top-top-1/2 -translate-x-1/2 -translate-y-1/2 scale-96 w-[min(92vw,620px)] text-center z-[20] opacity-0"
       >
-
-      <div></div>
+        <div class="r3-logo-mark inline-flex items-baseline justify-center gap-1 mb-1 leading-none">
+          <span>R3</span><em>Love</em>
+        </div>
+        <p class="r3-kicker m-0 text-white font-extrabold -mt-3">Understand where you stand.</p>
+        <h1 class="m-1 text-[#7f2a8c] font-black leading-tight">Love isn't a guessing game.</h1>
+        <p class="r3-subtitle m-0 text-white font-extrabold">
+          Show up with the right gesture, every time
+        </p>
+        <a
+          hlmBtn
+          routerLink="/account"
+          class="r3-start-btn inline-block mt-5 rounded-full px-6 py-2.5 text-white opacity-0 translate-y-2"
+          >Start your story</a
+        >
+      </div>
     </section>
   }
 </div>
