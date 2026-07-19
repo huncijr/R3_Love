@@ -1,4 +1,4 @@
-<div class="min-h-screen flex flex-col items-center gap-5 pt-10 px-4">
+<div class="min-h-screen flex flex-col gap-5">
   @if (isLoggedIn()) {
     <div
       class="w-full max-w-5xl grid grid-cols-10 md:grid-cols-10 gap-4 animate-fade-in-up auto-rows-[170px] md:auto-rows-[180px]"
@@ -413,10 +413,15 @@
       </section>
     </div>
   } @else {
-    <section class="relative landing min-h-screen inset-0" aria-label="R3 Love landing page">
+    <section class="relative landing w-full min-h-screen inset-0" aria-label="R3 Love landing page">
       <div
         class="bg-image absolute inset-0 bg-cover bg-center"
-        style="background-image: url('/Images/R3_Love.png')"
+        style="
+          background-image: url('/Images/R3_Love.png');
+          background-repeat: no-repeat;
+          background-size: min(70vw, 620px) auto;
+          background-position: center;
+        "
       ></div>
 
       <div
@@ -432,7 +437,7 @@
       <div class="soft-heart absolute z-6 opacity-0 soft-heart-three"></div>
 
       <div
-        class="center-gift absolute left-1/2 top-[53%] -translate-x-1/2 -translate-y-1/2 rotete-[-5deg] scale-70 w-[70px] h-[66px] z-14 opacity-0"
+        class="center-gift absolute left-1/2 top-[53%] -translate-x-1/2 -translate-y-1/2 rotate-[-5deg] scale-[0.70] w-[70px] h-[66px] z-[14] opacity-0"
         aria-hidden="true"
       >
         <span class="gift-lid"></span>
@@ -441,12 +446,12 @@
         <span class="gift-ribbon-h"></span>
       </div>
 
-      <div class="hanging-bow bow-one absolute top-[-105px] w-[70px] h-[160px] z-8 origin-top">
+      <div class="hanging-bow bow-one absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top">
         <span class="bow-string"></span>
         <span class="bow-shape"><i></i></span>
       </div>
 
-      <div class="hot-balloon corner-balloon cb-left absolute w-[102px] h-174px z-11 opacity-0">
+      <div class="hot-balloon corner-balloon cb-left absolute w-[102px] h-[174px] z-[11] opacity-0">
         <span class="hb-top pink"></span>
         <span class="hb-ropes"></span>
         <span class="hb-basket"></span>
