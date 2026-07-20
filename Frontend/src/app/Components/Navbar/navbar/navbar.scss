@@ -1,3 +1,7 @@
+.nav {
+  z-index: 50;
+}
+
 .popup-enter {
   animation: popupIn 0.4s ease-out forwards;
 }

@@ -174,8 +174,6 @@ export class Home implements OnInit {
     this.route.queryParams.subscribe((params) => {
       const code = params['code'];
 
-      console.log('code', code);
-
       if (code) {
         this.userService.exchangeSpotifyCode(code).subscribe({
           next: () => {
@@ -204,11 +202,10 @@ export class Home implements OnInit {
         });
       }
     });
-
-    this.loadDailyInsight();
-    this.loadRomanticSongs();
-    this.loadRandomGift();
     if (this.userContext.isLoggedIn()) {
+      this.loadDailyInsight();
+      this.loadRomanticSongs();
+      this.loadRandomGift();
       this.userService.getCalendarQuiz().subscribe({
         next: (quiz) => {
           this.quizData.set(quiz);

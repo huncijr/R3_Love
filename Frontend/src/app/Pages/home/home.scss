@@ -1180,9 +1180,11 @@
 .soft-heart-two::before {
   top: -24px;
 }
+
 .soft-heart-two::after {
   left: 24px;
 }
+
 .soft-heart-three {
   left: 8%;
   top: 40%;
@@ -1318,7 +1320,7 @@
 .bow-string {
   position: absolute;
   left: 50%;
-  top: 0;
+  top: 42px;
   width: 2px;
   height: 88px;
   background: rgba(255, 255, 255, 0.95);
@@ -1326,7 +1328,7 @@
 .bow-shape {
   position: absolute;
   left: 50%;
-  top: 80px;
+  top: 120px;
   width: 40px;
   height: 40px;
   transform: translateX(-50%);
@@ -1575,6 +1577,7 @@
 
 .r3-party-balloon {
   position: absolute;
+  isolation: isolate;
   width: 64px;
   height: 84px;
   border-radius: 50% 50% 46% 46%;
@@ -1584,8 +1587,9 @@
     0 10px 20px rgba(92, 13, 75, 0.16);
 }
 
-.r3-party-ballon > span {
+.r3-party-balloon > span {
   position: absolute;
+  z-index: 8;
   left: 50%;
   bottom: -7px;
   width: 12px;
@@ -1595,17 +1599,35 @@
   background: rgba(120, 25, 90, 0.9);
 }
 
+.r3-party-balloon > span::before {
+  content: none;
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 18px;
+  height: 12px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: inherit;
+  z-index: 9;
+}
+
 .r3-party-balloon::before {
   content: '';
+  z-index: 7;
   position: absolute;
   left: 16px;
+  bottom: -2px;
   top: 10px;
   width: 16px;
   height: 24px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.45);
+  transform-origin: top center;
 }
+
 .r3-party-balloon::after {
+  z-index: -1;
   content: '';
   position: absolute;
   left: 50%;
@@ -1615,30 +1637,96 @@
   background: rgba(20, 20, 20, 0.85);
   transform: translateX(-50%);
 }
+
+.r3-hand {
+  position: absolute;
+  left: var(--grip-x);
+  top: var(--grip-y);
+  width: 84px;
+  height: 32px;
+  border-radius: 14px 14px 10px 10px;
+  background: linear-gradient(135deg, #ffd8bf, #f4b18b);
+  box-shadow:
+    inset -3px -3px 0 rgba(120, 70, 40, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.16);
+  transform: translate(-50%, -50%) rotate(-6deg);
+  z-index: 20;
+}
 .pb-one {
-  left: -24px;
-  bottom: 75px;
+  left: 34px;
+  bottom: 105px;
   transform: rotate(40deg);
   background: linear-gradient(135deg, #f472b6, #be185d);
 }
+
+.pb-one::after {
+  height: 40px;
+  transform: translateX(-50%) rotate(18deg);
+}
+
 .pb-two {
-  left: 30px;
-  bottom: 65px;
+  left: 3px;
+  bottom: 105px;
   transform: rotate(30deg);
   background: linear-gradient(135deg, #fff45f, #f97316);
 }
+.pb-two::after {
+  height: 52px;
+  transform: translateX(-50%) rotate(8deg);
+}
+
 .pb-three {
-  left: 120px;
-  bottom: 32px;
+  left: 105px;
+  bottom: 62px;
   transform: rotate(30deg);
+  background: transparent;
+  width: 0 !important;
+  --lift-x: -26px;
+  --lift-y: -58px;
+}
+
+.pb-three > span {
+  transform: translateX(-50%) translate(var(--lift-x), var(--lift-y));
+}
+
+.pb-three::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 64px;
+  height: 84px;
+  border-radius: 50% 50% 46% 46%;
   background: linear-gradient(135deg, #c084fc, #7e22ce);
+  box-shadow:
+    inset -10px -13px 0 rgba(100, 13, 82, 0.13),
+    0 10px 20px rgba(92, 14, 75, 0.16);
+  transform: translateY(-68px) translateX(-47px);
+  z-index: 6;
+}
+
+.pb-three::after {
+  content: '';
+  position: absolute;
+  left: -43px;
+  bottom: -70px;
+  width: 2px;
+  height: 200px;
+  background: rgba(20, 20, 20, 0.85);
+  transform: rotate(30deg);
+  z-index: 1;
 }
 
 .pb-four {
-  left: 80px;
-  bottom: 45px;
-  transform: rotate(30deg);
+  left: 10px;
+  bottom: 80px;
+  transform: rotate(80deg);
   background: linear-gradient(135deg, #699c1d, #617810);
+}
+
+.pb-four::after {
+  height: 50px;
+  transform: translateX(-50%) rotate(0deg);
 }
 
 .r3-bottom-balloons {
@@ -1652,6 +1740,9 @@
   animation:
     r3BottomBalloonsIn 1.65s ease-out 1.25s forwards,
     r3BottomBalloonsSway 4s ease-in-out 4.6s infinite;
+
+  --grip-x: -10px;
+  --grip-y: 160px;
 }
 
 .r3-orbit {
@@ -1702,7 +1793,7 @@
 }
 
 .r3-hero-copy::before,
-.re-hero-copy::after {
+.r3-hero-copy::after {
   border-radius: 0;
 }
 
@@ -1924,14 +2015,25 @@
   }
 
   .twinkle-one {
-    left: 35% !important;
-    top: 25% !important;
+    left: 25% !important;
+    top: 40% !important;
   }
   .twinkle-two {
     left: 68% !important;
   }
   .twinkle-three {
     left: 63% !important;
-    top: 70% !important;
+    top: 60% !important;
+  }
+
+  .bow-one {
+    left: 30% !important;
+  }
+  .bow-two {
+    display: none !important;
+  }
+
+  .bow-three {
+    left: 80% !important;
   }
 }
