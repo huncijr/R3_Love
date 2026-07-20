@@ -1,4 +1,12 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 import {
   CalendarDays,
@@ -22,6 +30,7 @@ import {
   Square,
   X,
   Gift,
+  CalendarCheck2,
 } from 'lucide-angular';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
@@ -67,6 +76,7 @@ export type RomanticSong = {
         Square,
         X,
         Gift,
+        CalendarCheck2,
       }),
       multi: true,
     },
@@ -75,6 +85,7 @@ export type RomanticSong = {
   styleUrl: './home.scss',
 })
 export class Home implements OnInit {
+  private el = inject(ElementRef);
   private sanitizer = inject(DomSanitizer);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -129,6 +140,8 @@ export class Home implements OnInit {
   currentIndex = signal(0);
   direction = signal<'left' | 'right' | null>(null);
 
+  private scrollObserver?: IntersectionObserver;
+
   giftMapUrl = computed<SafeResourceUrl | null>(() => {
     const gift = this.randomGift();
     if (!gift) return null;
@@ -167,6 +180,51 @@ export class Home implements OnInit {
       return u.hostname.replace(/^www\./, '');
     } catch {
       return url.length > 25 ? url.slice(0, 25) + '...' : url;
+    }
+  }
+
+  ngAfterViewInit() {
+    if (this.isLoggedIn()) return;
+
+    const landing = this.el.nativeElement.querySelector('.r3-landing-scroll');
+    if (!landing) return;
+
+    const cards = landing.querySelectorAll('.r3-scroll-card');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' },
+    );
+
+    cards.forEach((card: Element) => observer.observe(card));
+    this.scrollObserver = observer;
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (this.isLoggedIn()) return;
+
+    const landing = this.el.nativeElement.querySelector('.r3-landing-scroll') as HTMLElement | null;
+    if (!landing) return;
+
+    const rect = landing.getBoundingClientRect();
+    const totalHeight = landing.offsetHeight || 4500;
+    const scrolled = -rect.top;
+    const viewportH = window.innerHeight;
+    const maxScroll = totalHeight - viewportH;
+    const progress = Math.min(1, Math.max(0, scrolled / maxScroll));
+
+    const path = landing.querySelector('.r3-scroll-path-line') as SVGPathElement | null;
+    if (path) {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = `${length}`;
+      path.style.strokeDashoffset = `${length * (1 - progress * 1.05)}`;
     }
   }
 

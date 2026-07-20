@@ -1013,17 +1013,6 @@
   animation-delay: 3.5s;
 }
 
-.r3-landing::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.18), transparent 18%),
-    radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.12), transparent 14%),
-    linear-gradient(135deg, #f4c9f5 0%, #e15fba 48%, #d84cad 100%);
-  z-index: -2;
-}
-
 .r3-logo-mark span {
   font-family: 'Licorice', cursive;
   font-size: clamp(4rem, 9vw, 7.3rem);
@@ -2036,4 +2025,56 @@
   .bow-three {
     left: 80% !important;
   }
+}
+
+.r3-landing-scroll {
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.18), transparent 18%),
+    radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.12), transparent 14%),
+    linear-gradient(135deg, #f4c9f5 0%, #e15fba 48%, #d84cad 100%);
+}
+
+.r3-landing-scroll::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  z-index: -2;
+}
+
+.r3-hero-bg {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(255, 255, 255, 0.15) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(212, 76, 173, 0.3) 0%, transparent 80%);
+}
+
+.r3-scroll-path-line {
+  transition: stroke-dashoffset 0.15s linear;
+}
+
+.r3-scroll-card {
+  opacity: 0;
+  filter: brightness(0.35);
+  transform: translateY(40px);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, filter, transform;
+}
+
+.r3-scroll-card.revealed {
+  opacity: 1;
+  filter: brightness(1);
+  transform: translateY(0);
+}
+
+.r3-card-icon {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.r3-bottom-cta a:hover {
+  filter: brightness(1.1);
+  transform: scale(1.03);
+  transition: all 0.2s ease;
 }
