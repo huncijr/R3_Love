@@ -2012,7 +2012,7 @@
   }
 
   .r3-gift-left {
-    left: 24% !important;
+    left: 14% !important;
     top: 70% !important;
   }
   .r3-gift-right {
@@ -2049,6 +2049,30 @@
     radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.18), transparent 18%),
     radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.12), transparent 14%),
     linear-gradient(135deg, #f4c9f5 0%, #e15fba 48%, #d84cad 100%);
+
+  --card-1-top: 135vh;
+  --card-2-top: 185vh;
+  --card-3-top: 230vh;
+  --card-4-top: 290vh;
+  //start-btn
+  --cta-top: 310vh;
+  //scroll
+  --spacer-h: 300vh;
+  //arrow down
+  --hint-top: 72vh;
+  --path-offset: 0;
+
+  --card-1-left: auto;
+  --card-1-right: 5%;
+
+  --card-2-left: 5%;
+  --card-2-right: auto;
+
+  --card-3-left: 5%;
+  --card-3-right: auto;
+
+  --card-4-left: auto;
+  --card-4-right: 5%;
 }
 
 .r3-landing-scroll::before {
@@ -2067,6 +2091,10 @@
 
 .r3-scroll-path-line {
   transition: stroke-dashoffset 0.15s linear;
+}
+
+.r3-scroll-path {
+  transform: translateY(var(--path-offset));
 }
 
 .r3-scroll-card {
@@ -2109,18 +2137,93 @@
 @media (min-width: 768px) {
   .r3-landing-scroll {
     --card-1-top: 140vh;
-    --hint-top: 80vh;
+    --card-2-top: 200vh;
+    --card-3-top: 230vh;
+    --card-4-top: 290vh;
+    --cta-top: 310vh;
+    --hint-top: 72vh;
+    --spacer-h: 300vh;
   }
 }
 
-@media (min-width: 1500px) {
+@media (min-width: 1024px) {
   .r3-landing-scroll {
-    --card-1-top: 105vh;
-    --card-2-top: 160vh;
-    --card-3-top: 220vh;
-    --card-4-top: 275vh;
-    --cta-top: 210vh;
-    --spacer-h: 250vh;
-    --hint-top: 50vh;
+    --card-1-top: 150vh;
+    --card-2-top: 220vh;
+    --card-3-top: 240vh;
+    --card-4-top: 260vh;
+    --cta-top: 310vh;
+    --hint-top: 80vh;
+    --spacer-h: 290vh;
+    --path-offset: 10vh;
+  }
+}
+
+@media (min-width: 1280px) {
+  .r3-landing-scroll {
+    --card-1-top: 150vh;
+    --card-2-top: 200vh;
+    --card-3-top: 240vh;
+    --card-4-top: 290vh;
+    --cta-top: 310vh;
+    --hint-top: 80vh;
+    --spacer-h: 290vh;
+    --path-offset: 10vh;
+  }
+}
+
+@media (min-width: 1536px) {
+  .r3-landing-scroll {
+    --card-1-top: 165vh;
+    --card-2-top: 230vh;
+    --card-3-top: 270vh;
+    --card-4-top: 345vh;
+    --cta-top: 365vh;
+    --hint-top: 78vh;
+    --spacer-h: 330vh;
+    --path-offset: -10vh;
+  }
+}
+
+@media (min-width: 1920px) {
+  .r3-landing-scroll {
+    --card-1-top: 165vh;
+    --card-2-top: 250vh;
+    --card-3-top: 300vh;
+    --card-4-top: 345vh;
+    --card-4-left: 5%;
+    --card-4-right: auto;
+    --cta-top: 405vh;
+    --hint-top: 82vh;
+    --spacer-h: 330vh;
+    --path-offset: -30vh;
+  }
+}
+
+@media (min-width: 2080px) {
+  .r3-landing-scroll {
+    --card-1-top: 135vh;
+    --card-2-top: 250vh;
+    --card-3-top: 300vh;
+    --card-4-top: 345vh;
+    --cta-top: 405vh;
+    --hint-top: 76vh;
+    --spacer-h: 330vh;
+    --path-offset: -40vh;
+  }
+}
+
+@media (min-width: 2560px) {
+  .r3-landing-scroll {
+    --card-1-top: 135vh;
+    --card-2-top: 200vh;
+    --card-3-top: 300vh;
+    --card-2-right: 5%;
+    --card-2-left: auto;
+    --card-4-top: 345vh;
+    --cta-top: 365vh;
+    --hint-top: 80vh;
+    --spacer-h: 330vh;
+    --path-offset: -70vh;
   }
 }

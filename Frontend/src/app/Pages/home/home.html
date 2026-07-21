@@ -420,40 +420,36 @@
     <section
       class="r3-landing-scroll relative w-full pointer-events-auto"
       aria-label="R3 Love landing page"
-      style="
-        --card-1-top: 125vh;
-        --card-2-top: 190vh;
-        --card-3-top: 258vh;
-        --card-4-top: 325vh;
-        --cta-top: 315vh;
-        --spacer-h: 330vh;
-        --hint-top: 73vh;
-      "
     >
-      <svg
-        class="r3-scroll-path absolute inset-0 w-full pointer-events-none z-[6]"
-        viewBox="0 0 1000 4200"
-        preserveAspectRatio="xMidYMin slice"
-        style="height: 100%"
+      <div
+        class="r3-scroll-path-wrap absolute inset-0 pointer-events-none z-[6]"
+        style="padding-top: var(--path-offset)"
       >
-        <path
-          class="r3-scroll-path-bg"
-          d="M 500 800 C 500 900, 320 1050, 220 1400 C 120 1750, 620 1700, 750 2000 C 880 2300, 840 2500, 720 2700 C 580 2850, 380 3000, 250 3200"
-          fill="none"
-          stroke="rgba(255,255,255,0.25)"
-          stroke-width="2.5"
-          stroke-dasharray="8 6"
-          stroke-linecap="round"
-        ></path>
-        <path
-          class="r3-scroll-path-line"
-          d="M 500 800 C 500 900, 320 1050, 220 1400 C 120 1750, 620 1700, 750 2000 C 880 2300, 840 2500, 720 2700 C 580 2850, 380 3000, 250 3200"
-          fill="none"
-          stroke="rgba(255,255,255,0.9)"
-          stroke-width="2.5"
-          stroke-linecap="round"
-        ></path>
-      </svg>
+        <svg
+          class="r3-scroll-path absolute inset-0 w-full pointer-events-none z-[6]"
+          viewBox="0 0 1000 4200"
+          preserveAspectRatio="xMidYMin slice"
+          style="height: 100%"
+        >
+          <path
+            class="r3-scroll-path-bg"
+            d="M 500 800 C 500 900, 320 1050, 220 1400 C 120 1750, 620 1700, 750 2000 C 880 2300, 840 2500, 720 2700 C 580 2850, 380 3000, 250 3200"
+            fill="none"
+            stroke="rgba(255,255,255,0.25)"
+            stroke-width="2.5"
+            stroke-dasharray="8 6"
+            stroke-linecap="round"
+          ></path>
+          <path
+            class="r3-scroll-path-line"
+            d="M 500 800 C 500 900, 320 1050, 220 1400 C 120 1750, 620 1700, 750 2000 C 880 2300, 840 2500, 720 2700 C 580 2850, 380 3000, 250 3200"
+            fill="none"
+            stroke="rgba(255,255,255,0.9)"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      </div>
 
       <div
         class="r3-hero-section sticky top-0 overflow-hidden flex items-center justify-center"
@@ -463,7 +459,8 @@
           class="r3-scroll-hint absolute left-1/2 z-[25] flex flex-col items-center pointer-events-none"
           style="top: var(--hint-top); transform: translateX(-50%)"
         >
-          <span class="r3-scroll-arrow text-ring text-xs font-semibold tracking-wider uppercase"
+          <span
+            class="r3-scroll-arrow text-ring text-xs text-center font-semibold tracking-wider uppercase"
             >Scroll down to get a full view</span
           >
           <lucide-icon name="chevrons-down" class="r3-scroll-arrow text-ring"></lucide-icon>
@@ -615,25 +612,18 @@
 
       <div
         class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
-        style="top: var(--card-1-top); left: 5%"
+        style="top: var(--card-1-top); left: var(--card-1-left); right: var(--card-1-right)"
       >
         <div
-          class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
+          class="r3-card-shell relative flex items-start gap-4 p-6 rounded-[22px] overflow-hidden transition-[background,transform,box-shadow] duration-400 ease-out max-sm:p-4 max:gap-3 max-sm:rounded-[18px] lg:gap-[18px] xl:p-7 xl:gap-5 2xl:p-8 2xl:gap-6 2xl:rounded-[24px] 3xl:p-9 3xl:gap-7 4xl:p-10 4xl:gap-8 4xl:rounded-[28px]"
         >
-          <lucide-icon name="calendar-check-2" class="w-5 h-5 text-white"></lucide-icon>
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <h3 class="text-white font-bold text-lg leading-tight">Never Miss a Date</h3>
-          <p class="text-white/80 text-sm leading-relaxed">
-            Birthdays, anniversaries, Valentine's, Girlfriend Day — we track every moment that
-            matters and count down the days for you. So you show up prepared, every time.
-          </p>
+          <div class="r3-card-glow"></div>
         </div>
       </div>
 
       <div
         class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
-        style="top: var(--card-2-top); right: 5%"
+        style="top: var(--card-2-top); left: var(--card-2-left); right: var(--card-2-right)"
       >
         <div
           class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
@@ -651,7 +641,7 @@
 
       <div
         class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
-        style="top: var(--card-3-top); right: 5%"
+        style="top: var(--card-3-top); left: var(--card-3-left); right: var(--card-3-right)"
       >
         <div
           class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
@@ -669,7 +659,7 @@
 
       <div
         class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
-        style="top: var(--card-4-top); left: 5%"
+        style="top: var(--card-4-top); left: var(--card-4-left); right: var(--card-4-right)"
       >
         <div
           class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
