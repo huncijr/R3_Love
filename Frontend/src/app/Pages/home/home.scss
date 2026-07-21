@@ -2051,9 +2051,9 @@
     linear-gradient(135deg, #f4c9f5 0%, #e15fba 48%, #d84cad 100%);
 
   --card-1-top: 135vh;
-  --card-2-top: 185vh;
-  --card-3-top: 230vh;
-  --card-4-top: 290vh;
+  --card-2-top: 200vh;
+  --card-3-top: 220vh;
+  --card-4-top: 240vh;
   //start-btn
   --cta-top: 310vh;
   //scroll
@@ -2071,8 +2071,8 @@
   --card-3-left: 5%;
   --card-3-right: auto;
 
-  --card-4-left: auto;
-  --card-4-right: 5%;
+  --card-4-left: 5%;
+  --card-4-right: auto%;
 }
 
 .r3-landing-scroll::before {
@@ -2134,28 +2134,166 @@
   transition: all 0.2s ease;
 }
 
+.r3-card-shell {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.66) inset,
+    0 8px 32px rgba(190, 24, 93, 0.1);
+}
+
+.r3-card-shell:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(236, 72, 153, 0.15) inset,
+    0 20px 56px rgba(190, 24, 93, 0.28),
+    0 0 80px rgba(236, 72, 153, 0.1);
+}
+
+.r3-card-shell::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.25) 20%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.25) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  transform: background 0.4s ease;
+}
+
+.r3-card-shell:hover::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(236, 72, 153, 0.5) 20%,
+    rgba(251, 207, 153, 0.7) 50%,
+    rgba(236, 72, 153, 0.5) 80%,
+    transparent 100%
+  );
+}
+
+.r3-card-shell::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: 40px;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.4), transparent);
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 0.5;
+  transition:
+    opacity 0.3s ease,
+    width 0.4s ease;
+}
+
+.r3-card-shell:hover::before {
+  opacity: 1;
+  width: 50px;
+}
+
+.r3-card-glow {
+  position: absolute;
+  top: -50%;
+  right: -35%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.15), transparent 70%);
+  pointer-events: none;
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s ease;
+}
+
+.r3-card-shell:hover .r3-card-glow {
+  opacity: 1.4;
+  transform: scale(1.15);
+}
+
+.r3-card-shine {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 35%,
+    transparent 65%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+}
+
+.r3-card-icon-ring {
+  background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+  box-shadow:
+    0 4px 20px rgba(236, 82, 153, 0.4),
+    0 0 0 3px rgba(236, 72, 153, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.r3-scroll-card {
+  opacity: 0;
+  transform: translateY(50px) scale(0.94);
+  filter: blur(6px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+
+.r3-scroll-card.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.r3-scroll-card {
+  @apply max-w-[320px];
+}
+
 @media (min-width: 768px) {
   .r3-landing-scroll {
     --card-1-top: 140vh;
     --card-2-top: 200vh;
     --card-3-top: 230vh;
     --card-4-top: 290vh;
+    --card-4-right: 5%;
+    --card-4-left: auto;
     --cta-top: 310vh;
     --hint-top: 72vh;
     --spacer-h: 300vh;
+  }
+  .r3-scroll-card {
+    max-width: 380px;
   }
 }
 
 @media (min-width: 1024px) {
   .r3-landing-scroll {
     --card-1-top: 150vh;
-    --card-2-top: 220vh;
-    --card-3-top: 240vh;
+    --card-2-top: 200vh;
+    --card-3-top: 230vh;
     --card-4-top: 260vh;
+    --card-4-left: 5%;
+    --card-4-right: auto;
     --cta-top: 310vh;
     --hint-top: 80vh;
     --spacer-h: 290vh;
     --path-offset: 10vh;
+  }
+  .r3-scroll-card {
+    max-width: 540px;
   }
 }
 
@@ -2165,10 +2303,15 @@
     --card-2-top: 200vh;
     --card-3-top: 240vh;
     --card-4-top: 290vh;
+    --card-4-right: 5%;
+    --card-4-left: auto;
     --cta-top: 310vh;
     --hint-top: 80vh;
     --spacer-h: 290vh;
     --path-offset: 10vh;
+  }
+  .r3-scroll-card {
+    max-width: 500px;
   }
 }
 
@@ -2177,11 +2320,14 @@
     --card-1-top: 165vh;
     --card-2-top: 230vh;
     --card-3-top: 270vh;
-    --card-4-top: 345vh;
+    --card-4-top: 325vh;
     --cta-top: 365vh;
     --hint-top: 78vh;
     --spacer-h: 330vh;
     --path-offset: -10vh;
+  }
+  .r3-scroll-card {
+    max-width: 840px;
   }
 }
 
@@ -2198,6 +2344,10 @@
     --spacer-h: 330vh;
     --path-offset: -30vh;
   }
+
+  .r3-scroll-card {
+    max-width: 980px;
+  }
 }
 
 @media (min-width: 2080px) {
@@ -2210,6 +2360,9 @@
     --hint-top: 76vh;
     --spacer-h: 330vh;
     --path-offset: -40vh;
+  }
+  .r3-scroll-card {
+    max-width: 1200px;
   }
 }
 
@@ -2225,5 +2378,8 @@
     --hint-top: 80vh;
     --spacer-h: 330vh;
     --path-offset: -70vh;
+  }
+  .r3-scroll-card {
+    max-width: 1240px;
   }
 }
