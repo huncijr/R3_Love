@@ -420,6 +420,15 @@
     <section
       class="r3-landing-scroll relative w-full pointer-events-auto"
       aria-label="R3 Love landing page"
+      style="
+        --card-1-top: 125vh;
+        --card-2-top: 190vh;
+        --card-3-top: 258vh;
+        --card-4-top: 325vh;
+        --cta-top: 315vh;
+        --spacer-h: 330vh;
+        --hint-top: 73vh;
+      "
     >
       <svg
         class="r3-scroll-path absolute inset-0 w-full pointer-events-none z-[6]"
@@ -429,7 +438,7 @@
       >
         <path
           class="r3-scroll-path-bg"
-          d="M 500 850 C 500 850, 320 1000, 220 1400 C 120 1800, 620 1750, 750 2050 C 880 2350, 840 2550, 720 2750 C 580 3000, 380 3150, 250 3450 C 120 3750, 390 4000, 500 4150"
+          d="M 500 800 C 500 900, 320 1050, 220 1400 C 120 1750, 620 1700, 750 2000 C 880 2300, 840 2500, 720 2700 C 580 2850, 380 3000, 250 3200"
           fill="none"
           stroke="rgba(255,255,255,0.25)"
           stroke-width="2.5"
@@ -438,12 +447,10 @@
         ></path>
         <path
           class="r3-scroll-path-line"
-          d="M 500 850 C 500 850, 320 1000, 220 1400 C 120 1800, 620 1750, 750 2050 C 880 2350, 840 2550, 720 2750 C 580 3000, 380 3150, 250 3450 C 120 3750, 390 4000, 500 4150"
+          d="M 500 800 C 500 900, 320 1050, 220 1400 C 120 1750, 620 1700, 750 2000 C 880 2300, 840 2500, 720 2700 C 580 2850, 380 3000, 250 3200"
           fill="none"
           stroke="rgba(255,255,255,0.9)"
           stroke-width="2.5"
-          stroke-dasharray="8000"
-          stroke-dashoffset="8000"
           stroke-linecap="round"
         ></path>
       </svg>
@@ -452,6 +459,16 @@
         class="r3-hero-section sticky top-0 overflow-hidden flex items-center justify-center"
         style="height: 100vh"
       >
+        <div
+          class="r3-scroll-hint absolute left-1/2 z-[25] flex flex-col items-center pointer-events-none"
+          style="top: var(--hint-top); transform: translateX(-50%)"
+        >
+          <span class="r3-scroll-arrow text-ring text-xs font-semibold tracking-wider uppercase"
+            >Scroll down to get a full view</span
+          >
+          <lucide-icon name="chevrons-down" class="r3-scroll-arrow text-ring"></lucide-icon>
+        </div>
+
         <div class="r3-hero-bg absolute inset-0 -z-10"></div>
         <div
           class="r3-orbit absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 scale-95 w-[min(68vw,720px)] h-[min(36vw,360px)] rounded-full border-2 border-dashed border-white/86 opacity-0 z-[9]"
@@ -598,7 +615,7 @@
 
       <div
         class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
-        style="top: 125vh; left: 5%"
+        style="top: var(--card-1-top); left: 5%"
       >
         <div
           class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
@@ -616,7 +633,7 @@
 
       <div
         class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
-        style="top: 190vh; right: 5%"
+        style="top: var(--card-2-top); right: 5%"
       >
         <div
           class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
@@ -634,7 +651,7 @@
 
       <div
         class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
-        style="top: 258vh; right: 5%"
+        style="top: var(--card-3-top); right: 5%"
       >
         <div
           class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
@@ -652,7 +669,7 @@
 
       <div
         class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
-        style="top: 325vh; left: 5%"
+        style="top: var(--card-4-top); left: 5%"
       >
         <div
           class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
@@ -668,7 +685,7 @@
         </div>
       </div>
 
-      <div class="absolute left-1/2 -translate-x-1/2 z-[20]" style="top: 395vh">
+      <div class="absolute left-1/2 -translate-x-1/2 z-[20]" style="top: var(--cta-top)">
         <a
           hlmBtn
           routerLink="/account"
@@ -678,7 +695,7 @@
         >
       </div>
 
-      <div style="height: 420vh" aria-hidden="true"></div>
+      <div style="height: var(--spacer-h)" aria-hidden="true"></div>
     </section>
   }
 </div>

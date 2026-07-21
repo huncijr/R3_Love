@@ -31,6 +31,7 @@ import {
   X,
   Gift,
   CalendarCheck2,
+  ChevronsDown,
 } from 'lucide-angular';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
@@ -77,6 +78,7 @@ export type RomanticSong = {
         X,
         Gift,
         CalendarCheck2,
+        ChevronsDown,
       }),
       multi: true,
     },
@@ -204,6 +206,13 @@ export class Home implements OnInit {
 
     cards.forEach((card: Element) => observer.observe(card));
     this.scrollObserver = observer;
+
+    const path = landing.querySelector('.r3-scroll-path-line') as SVGPathElement | null;
+    if (path) {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = `${length}`;
+      path.style.strokeDashoffset = `${length}`;
+    }
   }
 
   @HostListener('window:scroll')

@@ -1958,6 +1958,21 @@
   }
 }
 
+@keyframes r3ArrowBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+@keyframes r3HintFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes r3DashFlow {
   to {
     --dash-angle: -360deg;
@@ -2071,6 +2086,16 @@
   transform: translateY(0);
 }
 
+.r3-scroll-hint {
+  animation: r3HintFadeIn 1.2s ease-out 2.5s forwards;
+  opacity: 0;
+}
+
+.r3-scroll-arrow {
+  animation: r3ArrowBounce 1.6s ease-in-out 3s infinite;
+  display: inline-block;
+}
+
 .r3-card-icon {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
@@ -2079,4 +2104,23 @@
   filter: brightness(1.1);
   transform: scale(1.03);
   transition: all 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .r3-landing-scroll {
+    --card-1-top: 140vh;
+    --hint-top: 80vh;
+  }
+}
+
+@media (min-width: 1500px) {
+  .r3-landing-scroll {
+    --card-1-top: 105vh;
+    --card-2-top: 160vh;
+    --card-3-top: 220vh;
+    --card-4-top: 275vh;
+    --cta-top: 210vh;
+    --spacer-h: 250vh;
+    --hint-top: 50vh;
+  }
 }
