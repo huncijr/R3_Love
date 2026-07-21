@@ -32,6 +32,7 @@ import {
   Gift,
   CalendarCheck2,
   ChevronsDown,
+  LogIn,
 } from 'lucide-angular';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
@@ -79,6 +80,7 @@ export type RomanticSong = {
         Gift,
         CalendarCheck2,
         ChevronsDown,
+        LogIn,
       }),
       multi: true,
     },

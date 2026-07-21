@@ -2233,6 +2233,48 @@
   );
 }
 
+.r3-cta-wrap {
+  left: 10%;
+  right: 10%;
+}
+
+.r3-cta-btn {
+  background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 4px 24px rgba(236, 82, 153, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 1px 0 rgba(255, 255, 255, 0.15) inset;
+}
+
+.r3-cta-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.08) 48%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.08) 52%,
+    transparent 70%
+  );
+  transform: translateX(-110%);
+  transition: transform 0.5s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.r3-cta-btn:hover::before {
+  transform: translateX(110%);
+}
+
+.r3-cta-btn:hover .r3-cta-arrow {
+  transform: translateX(4px);
+}
+
 .r3-card-icon-ring {
   background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
   box-shadow:
