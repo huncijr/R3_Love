@@ -418,7 +418,7 @@
     </div>
   } @else {
     <section
-      class="min-h-screen r3-landing-scroll fixed inset-0 z-[10] pointer-events-auto overflow-y-auto overflow-x-hidden isolate"
+      class="r3-landing-scroll relative w-full pointer-events-auto"
       aria-label="R3 Love landing page"
     >
       <svg
@@ -438,7 +438,7 @@
         ></path>
         <path
           class="r3-scroll-path-line"
-          d="M 500 520 C 500 750, 320 900, 220 1300 C 120 1700, 620 1650, 750 1950 C 880 2250, 840 2450, 720 2650 C 580 2900, 380 3050, 250 3350 C 120 3650, 390 3900, 500 4050"
+          d="M 500 850 C 500 850, 320 1000, 220 1400 C 120 1800, 620 1750, 750 2050 C 880 2350, 840 2550, 720 2750 C 580 3000, 380 3150, 250 3450 C 120 3750, 390 4000, 500 4150"
           fill="none"
           stroke="rgba(255,255,255,0.9)"
           stroke-width="2.5"
@@ -448,8 +448,11 @@
         ></path>
       </svg>
 
-      <div class="r3-hero-section sticky top-0 min-h-screen">
-        <div class="r3-hero-bg absolute inset-0 z-10"></div>
+      <div
+        class="r3-hero-section sticky top-0 overflow-hidden flex items-center justify-center"
+        style="height: 100vh"
+      >
+        <div class="r3-hero-bg absolute inset-0 -z-10"></div>
         <div
           class="r3-orbit absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 scale-95 w-[min(68vw,720px)] h-[min(36vw,360px)] rounded-full border-2 border-dashed border-white/86 opacity-0 z-[9]"
         ></div>
@@ -483,7 +486,6 @@
           <span class="gift-lid"></span><span class="gift-box"></span>
           <span class="gift-ribbon-v"></span><span class="gift-ribbon-h"></span>
         </div>
-
         <div class="r3-gift r3-gift-right" aria-hidden="true">
           <span class="gift-lid"></span><span class="gift-box"></span>
           <span class="gift-ribbon-v"></span><span class="gift-ribbon-h"></span>
@@ -492,80 +494,46 @@
         <div
           class="r3-hanging-bow bow-one absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top"
         >
-          <span class="bow-string"></span>
-          <span class="bow-shape"><i></i></span>
+          <span class="bow-string"></span><span class="bow-shape"><i></i></span>
         </div>
         <div
           class="r3-hanging-bow bow-two absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top"
         >
-          <span class="bow-string"></span>
-          <span class="bow-shape"><i></i></span>
+          <span class="bow-string"></span><span class="bow-shape"><i></i></span>
         </div>
         <div
           class="r3-hanging-bow bow-three absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top"
         >
-          <span class="bow-string"></span>
-          <span class="bow-shape"><i></i></span>
+          <span class="bow-string"></span><span class="bow-shape"><i></i></span>
         </div>
-
         <div
           class="r3-hanging-bow bow-four absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top"
         >
-          <span class="bow-string"></span>
-          <span class="bow-shape"><i></i></span>
+          <span class="bow-string"></span><span class="bow-shape"><i></i></span>
         </div>
-
         <div
           class="r3-hanging-bow bow-five absolute top-[-105px] w-[70px] h-[160px] z-[8] origin-top"
         >
-          <span class="bow-string"></span>
-          <span class="bow-shape"><i></i></span>
+          <span class="bow-string"></span><span class="bow-shape"><i></i></span>
         </div>
 
         <div
           class="r3-hot-balloon corner-balloon cb-left absolute w-[102px] h-[174px] z-[11] opacity-0"
         >
-          <span class="hb-top pink"></span>
-          <span class="hb-ropes"></span>
-          <span class="hb-basket"></span>
+          <span class="hb-top pink"></span><span class="hb-ropes"></span
+          ><span class="hb-basket"></span>
         </div>
-
         <div
           class="r3-hot-balloon corner-balloon cb-right absolute w-[102px] h-[174px] z-[11] opacity-0"
         >
-          <span class="hb-top sunny"></span>
-          <span class="hb-ropes"></span>
-          <span class="hb-basket"></span>
-        </div>
-
-        <div
-          class="r3-hot-ballon corner-balloon cb-down absolute w-[102px] h-[174px] z-[11] opacity-0"
-        >
-          <span class="hb-top rainbow"></span>
-          <span class="hb-ropes"></span>
-          <span class="hb-basket"></span>
-        </div>
-
-        <div
-          class="r3-hot-balloon falling-balloon fb-one absolute top-[-210px] w-[102px] h-[174px] z-[11] opacity-0"
-        >
-          <span class="hb-top lavender"></span>
-          <span class="hb-ropes"></span>
-          <span class="hb-basket"></span>
+          <span class="hb-top sunny"></span><span class="hb-ropes"></span
+          ><span class="hb-basket"></span>
         </div>
         <div
-          class="r3-hot-balloon falling-balloon fb-two absolute top-[-210px] w-[102px] h-[174px] z-[11] opacity-0"
+          class="r3-hot-balloon corner-balloon cb-down absolute w-[102px] h-[174px] z-[11] opacity-0"
         >
-          <span class="hb-top coral"></span>
-          <span class="hb-ropes"></span>
-          <span class="hb-basket"></span>
-        </div>
-        <div
-          class="r3-hot-balloon falling-balloon fb-three absolute top-[-210px] w-[102px] h-[174px] z-[11] opacity-0"
-        >
-          <span class="hb-top mint"></span>
-          <span class="hb-ropes"></span>
-          <span class="hb-basket"></span>
+          <span class="hb-top rainbow"></span><span class="hb-ropes"></span
+          ><span class="hb-basket"></span>
         </div>
 
         <div class="r3-bottom-balloons absolute left-[2%] bottom-[1%] w-[280px] h-[250px] z-[12]">
@@ -595,7 +563,7 @@
           <div
             class="r3-logo-mark inline-flex items-baseline justify-center gap-1 mb-2 leading-none"
           >
-            <span>Real</span><em>Love</em>
+            <span>R3</span><em>Love</em>
           </div>
           <p class="r3-subtitle m-0 text-white font-extrabold">
             Show up with the right gesture,every time
@@ -607,76 +575,110 @@
             >Start your story</a
           >
         </div>
+      </div>
 
+      <div
+        class="r3-hot-balloon falling-balloon fb-one absolute top-[-210px] w-[102px] h-[174px] z-[11]"
+      >
+        <span class="hb-top lavender"></span><span class="hb-ropes"></span
+        ><span class="hb-basket"></span>
+      </div>
+      <div
+        class="r3-hot-balloon falling-balloon fb-two absolute top-[-210px] w-[102px] h-[174px] z-[11]"
+      >
+        <span class="hb-top coral"></span><span class="hb-ropes"></span
+        ><span class="hb-basket"></span>
+      </div>
+      <div
+        class="r3-hot-balloon falling-balloon fb-three absolute top-[-210px] w-[102px] h-[174px] z-[11]"
+      >
+        <span class="hb-top mint"></span><span class="hb-ropes"></span
+        ><span class="hb-basket"></span>
+      </div>
+
+      <div
+        class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
+        style="top: 125vh; left: 5%"
+      >
         <div
-          class="r3-scroll-card r3-card-left absolute flex items-start gap-4 max-w-[420px] z-10"
-          style="top: 125vh; left: 5%"
+          class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
         >
-          <div
-            class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
-          >
-            <lucide-icon name="calendar-check-2" class="w-5 h-5 text-white"></lucide-icon>
-          </div>
-
-          <div class="flex flex-col gap-1.5">
-            <h3 class="text-white font-bold text-lg leading-tight">Never miss a Date</h3>
-            <p class="text-white/80 text-sm leading-relaxed">
-              Birthdays, anniversaries, Valentine's, Girlfriend Day... we track every moment that
-              matters and count down the days for you. So you show up prepared, every time.
-            </p>
-          </div>
-
-          <div
-            class="r3-scroll-card r3-card-right absolute flex items-start gap-4 max-w-[420px] z-[10]"
-          >
-            <div
-              class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
-            >
-              <lucide-icon name="gift" class="w-5 h-5 text-white"></lucide-icon>
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <h3 class="flex flex-col gap-1.5">Find the Perfect gift</h3>
-              <p class="text-white/80 text-sm leading-relaxed">
-                Answer a few questions about your partner. Our AI figures out what they'd actually
-                love, with stores and prices nearby. No more guessing, no more last-minute panic
-                buys
-              </p>
-            </div>
-          </div>
-          <div
-            class="r3-scroll-card r3-card-right absolute flex items-start gap-4 max-w-[420px] z-[10]"
-            style="top: 258vh right: 5%"
-          >
-            <div
-              class="r3-card-icon shrin-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
-            >
-              <lucide-icon name="audio-lines" class="w-5 h-5 text-white"></lucide-icon>
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-              <h3 class="text-white font-bold text-lg leading-tight">Soundtrack your Moment</h3>
-              <p class="text-white/80 text-sm leading-relaxed">A curated list of romantic songs</p>
-            </div>
-          </div>
-          <div
-            class="r3-scroll-card r3-card-left absolute flex items-start gap-4 max-w-[420px] z-[10]"
-            style="top: 325vh; left: 5%"
-          >
-            <div
-              class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
-            >
-              <lucide-icon name="sparkles" class="w-5 h-5"></lucide-icon>
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <h3 class="text-white font-bold text-lg leading-tight">A Daily Spark</h3>
-              <p class="text-white/80 text-sm leading-relaxed">
-                Fresh relationship insight everyday. A tip, a fact, a nudge to show up better
-                tomorrow than you did today.
-              </p>
-            </div>
-          </div>
+          <lucide-icon name="calendar-check-2" class="w-5 h-5 text-white"></lucide-icon>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <h3 class="text-white font-bold text-lg leading-tight">Never Miss a Date</h3>
+          <p class="text-white/80 text-sm leading-relaxed">
+            Birthdays, anniversaries, Valentine's, Girlfriend Day — we track every moment that
+            matters and count down the days for you. So you show up prepared, every time.
+          </p>
         </div>
       </div>
+
+      <div
+        class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
+        style="top: 190vh; right: 5%"
+      >
+        <div
+          class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
+        >
+          <lucide-icon name="gift" class="w-5 h-5 text-white"></lucide-icon>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <h3 class="text-white font-bold text-lg leading-tight">Find the Perfect Gift</h3>
+          <p class="text-white/80 text-sm leading-relaxed">
+            Answer a few questions about your partner. Our AI figures out what they'd actually love,
+            with stores and prices nearby. No more guessing, no more last-minute panic buys.
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
+        style="top: 258vh; right: 5%"
+      >
+        <div
+          class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
+        >
+          <lucide-icon name="audio-lines" class="w-5 h-5 text-white"></lucide-icon>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <h3 class="text-white font-bold text-lg leading-tight">Soundtrack Your Moment</h3>
+          <p class="text-white/80 text-sm leading-relaxed">
+            A curated list of romantic songs, ready to play. Hit one button and the mood is set — no
+            playlist hunting, no awkward silences.
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="r3-scroll-card absolute flex items-start gap-4 max-w-[420px] z-[10]"
+        style="top: 325vh; left: 5%"
+      >
+        <div
+          class="r3-card-icon shrink-0 w-11 h-11 rounded-lg bg-black flex items-center justify-center"
+        >
+          <lucide-icon name="sparkles" class="w-5 h-5 text-white"></lucide-icon>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <h3 class="text-white font-bold text-lg leading-tight">A Daily Spark</h3>
+          <p class="text-white/80 text-sm leading-relaxed">
+            Fresh relationship insight every day. A tip, a fact, a nudge to show up better tomorrow
+            than you did today.
+          </p>
+        </div>
+      </div>
+
+      <div class="absolute left-1/2 -translate-x-1/2 z-[20]" style="top: 395vh">
+        <a
+          hlmBtn
+          routerLink="/account"
+          class="inline-block rounded-full px-8 py-3 text-white font-bold text-base shadow-lg"
+          style="background: linear-gradient(135deg, #ec4899, #be185d)"
+          >Start now...</a
+        >
+      </div>
+
+      <div style="height: 420vh" aria-hidden="true"></div>
     </section>
   }
 </div>
