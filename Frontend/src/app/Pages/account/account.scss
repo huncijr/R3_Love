@@ -619,6 +619,118 @@
   }
 }
 
+/* GitHub promo — bottom center bar, brown, slides up */
+.github-promo-wrap {
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 1rem 1.25rem;
+  margin-top: auto;
+  pointer-events: none;
+}
+
+.github-promo {
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(56px);
+  animation: githubSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+  text-decoration: none;
+  color: inherit;
+}
+
+.github-promo-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-width: 220px;
+  max-width: 340px;
+  padding: 0.7rem 1.25rem;
+  border-radius: 999px;
+  border: 1.5px solid #8b6914;
+  background: linear-gradient(135deg, #5c4033 0%, #6b4423 45%, #4a3728 100%);
+  color: #f5e6c8;
+  box-shadow:
+    0 8px 24px rgba(60, 40, 20, 0.35),
+    inset 0 1px 0 rgba(255, 230, 180, 0.12);
+  animation: githubIdle 3s ease-in-out 1.2s infinite;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
+}
+
+.github-promo:hover .github-promo-card {
+  animation-play-state: paused;
+  transform: translateY(-4px) scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 0 12px 28px rgba(60, 40, 20, 0.45);
+}
+
+.github-promo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(245, 230, 200, 0.12);
+  color: #f5e6c8;
+  animation: githubIconPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s both;
+}
+
+.github-promo-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: #f5e6c8;
+}
+
+.github-promo-arrow {
+  color: #e8d5a8;
+  transition: transform 0.25s ease;
+}
+
+.github-promo:hover .github-promo-arrow {
+  transform: translateX(4px);
+}
+
+@keyframes githubSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(56px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes githubIdle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes githubIconPop {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .heart-group,
   .sparkle,
@@ -626,7 +738,15 @@
   .account-card,
   .heart-svg,
   .left-panel::before,
-  .left-panel::after {
+  .left-panel::after,
+  .github-promo,
+  .github-promo-card,
+  .github-promo-icon {
     animation: none !important;
+  }
+
+  .github-promo {
+    opacity: 1;
+    transform: none;
   }
 }

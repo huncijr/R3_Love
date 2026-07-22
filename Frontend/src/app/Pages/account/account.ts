@@ -11,6 +11,7 @@ import {
   MailCheck,
   Pen,
   Unplug,
+  Github,
 } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { HlmInput } from '@spartan-ng/helm/input';
@@ -103,6 +104,7 @@ declare global {
         Pen,
         Mail,
         MailCheck,
+        Github,
       }),
     },
   ],
