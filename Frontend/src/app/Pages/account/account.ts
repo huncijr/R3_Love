@@ -453,7 +453,7 @@ export class Account implements OnInit, AfterViewInit {
         this.syncGiftRecommendation();
       },
       error: (err) => {
-        this.toastr.error(err.message || 'Google sign-in failed', 'Error');
+        this.toastr.error('Could not sing in with Google. Please try again.', 'Error');
       },
     });
   }
@@ -485,7 +485,7 @@ export class Account implements OnInit, AfterViewInit {
         )
         .subscribe({
           next: (response) => {
-            console.log('Create user response, token', JSON.stringify(response.token));
+            // console.log('Create user response, token', JSON.stringify(response.token));
             this.isLoading.set(false);
 
             if (response.user?.emailVerified) {
@@ -503,16 +503,16 @@ export class Account implements OnInit, AfterViewInit {
           error: () => {
             this.isLoading.set(false);
             this.isSubmited.set(false);
-            const errorMessage = 'Something went wrong';
+            const errorMessage = 'Something went wrong, Please try again.';
             this.toastr.error(errorMessage, 'Error');
           },
         });
 
-      console.log('Account created:', {
-        username: this.username(),
-        password: this.password(),
-        gender: this.gender(),
-      });
+      // console.log('Account created:', {
+      //   username: this.username(),
+      //   password: this.password(),
+      //   gender: this.gender(),
+      // });
     }
   }
 
@@ -525,13 +525,13 @@ export class Account implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.isSendingCode.set(false);
-        this.toastr.error(err.message || 'Failed to send code', 'Error');
+        this.toastr.error('Failed to send code. Please try again.', 'Error');
       },
     });
   }
 
   verifyCode() {
-    console.log('Code', this.otpCode());
+    // console.log('Code', this.otpCode());
     const code = this.otpCode();
     if (code.length !== 6) return;
     this.isVerifyingCode.set(true);
@@ -546,7 +546,7 @@ export class Account implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.isVerifyingCode.set(false);
-        this.toastr.error(err.message);
+        this.toastr.error('The code is incorrect or has expired. Please try again.');
       },
     });
   }
@@ -605,7 +605,7 @@ export class Account implements OnInit, AfterViewInit {
         this.logout();
       },
       error: (err) => {
-        const errorMessage = err.message || 'Failed to delete account';
+        const errorMessage = 'Could not delete your account. Please try again ';
         this.toastr.error(errorMessage, 'Error');
         console.error('Delete account error', err);
       },
@@ -647,7 +647,7 @@ export class Account implements OnInit, AfterViewInit {
       error: (err) => {
         this.isLoading.set(false);
         this.isSubmited.set(false);
-        const errorMessage = err.message || 'Login failed';
+        const errorMessage = 'Login failed. Please try again ';
         this.toastr.error(errorMessage, 'Error');
         console.error('Login error', err);
       },

@@ -41,33 +41,67 @@ async function callAI(
   systemPrompt: string,
   userContent: string,
 ): Promise<string> {
-  const apiKey = process.env.AI_API_KEY;
   const endpoint = process.env.AI_ENDPOINT;
-  if (!apiKey || !endpoint) {
+
+  if (!endpoint) {
     throw new Error("AI_API_KEY or AI_ENDPOINT is not configured");
   }
-  console.log(userContent);
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "minimax/minimax-m3",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userContent },
-      ],
-    }),
-  });
-  console.log(response);
-  if (!response.ok) {
-    throw new Error(`AI API error: ${response.status} ${response.statusText}`);
+
+  const keys = [process.env.AI_API_KEY, process.env.AI_API_KEY2].filter(
+    (k): k is string => !!k,
+  );
+
+  if (keys.length === 0) {
+    throw new Error("AI_API_KEY is not configured");
   }
 
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || "";
+  let lastError: Error | null = null;
+
+  for (const apiKey of keys) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "minimax/minimax-m3",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userContent },
+          ],
+        }),
+      });
+
+      console.log(response);
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || "";
+      }
+
+      if (response.status === 402) {
+        lastError = new Error(
+          `AI API error: ${response.status} ${response.statusText}`,
+        );
+        console.warn(
+          `AI_API_KEY returned 402 (payment required), falling back to AI_API_KEY2...`,
+        );
+        continue;
+      }
+      throw new Error(
+        `AI API error: ${response.status} ${response.statusText}`,
+      );
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith("AI API error")) {
+        lastError = error;
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw lastError || new Error("All AI API keys failed");
 }
 
 function cleanAIContent(content: string): string {

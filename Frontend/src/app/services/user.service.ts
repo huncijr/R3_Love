@@ -180,7 +180,7 @@ export class UserService {
     gender: string,
     turnstileToken: string,
   ): Observable<CreateUserResponse> {
-    console.log(turnstileToken);
+    // console.log(turnstileToken);
     return this.apollo
       .mutate<{ createUser: CreateUserResponse }>({
         mutation: CREATE_USER,
@@ -515,7 +515,6 @@ export class UserService {
   }
 
   getRomanticSongs() {
-    console.log('aaa');
     return this.apollo.query<{
       getRomanticSongs: {
         title: string;

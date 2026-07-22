@@ -52,7 +52,7 @@ export class Navbar {
 
   constructor(private elementRef: ElementRef) {
     const menuSaved = localStorage.getItem('menuOpen');
-    console.log('User from context:', this.currentUser());
+    // console.log('User from context:', this.currentUser());
 
     const gameSaved = localStorage.getItem('gamesOpen');
     // console.log('menuOpen from storage:', menuSaved);

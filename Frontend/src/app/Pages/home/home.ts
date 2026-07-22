@@ -279,7 +279,7 @@ export class Home implements OnInit {
       this.userService.getCalendarQuiz().subscribe({
         next: (quiz) => {
           this.quizData.set(quiz);
-          console.log(quiz);
+          // console.log(quiz);
           if (quiz && !quiz.isSingle && quiz.datingDate) {
             this.calculateDaysTogether(quiz.datingDate);
             this.calculateUpcomingDates(quiz.datingDate, quiz.partnerBirthday);
@@ -366,7 +366,7 @@ export class Home implements OnInit {
 
   private loadDailyInsight() {
     const saved = sessionStorage.getItem(this.DAILY_INSIGHT_KEY);
-    console.log('saved', saved);
+    // console.log('saved', saved);
     if (saved) {
       try {
         this.dailyInsight.set(JSON.parse(saved));
@@ -422,7 +422,7 @@ export class Home implements OnInit {
     this.userService.getRomanticSongs().subscribe({
       next: (result) => {
         const songs = result.data?.getRomanticSongs ?? null;
-        console.log(result);
+        // console.log(result);
         this.romanticSongs.set(songs);
         if (songs) {
           sessionStorage.setItem(this.ROMANTIC_SONGS_KEY, JSON.stringify(songs));
@@ -557,7 +557,7 @@ export class Home implements OnInit {
     this.userService.getSpotifyAuthUrl().subscribe({
       next: (url) => {
         if (url) {
-          console.log('Spotify auth URL received:', url);
+          // console.log('Spotify auth URL received:', url);
           window.location.href = url;
         }
       },

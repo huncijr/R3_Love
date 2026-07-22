@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ./Backend
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Frontend
+      args:
+        GRAPHQL_URI: ${GRAPHQL_URI:-/graphql}
+        GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

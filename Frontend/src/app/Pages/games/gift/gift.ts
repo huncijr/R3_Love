@@ -362,13 +362,13 @@ export class GiftFinder implements OnInit {
 
   hasLocationData = computed(() => {
     const rec = this.currentRecommendation();
-    console.log(rec);
+    // console.log(rec);
     return !!rec?.stores && rec.stores.length > 0;
   });
 
   hasOnlineLinks = computed(() => {
     const rec = this.currentRecommendation();
-    console.log(rec);
+    // console.log(rec);
     return !!rec?.onlineLinks && rec.onlineLinks.length > 0;
   });
 
@@ -673,7 +673,7 @@ export class GiftFinder implements OnInit {
         value: `${cityPart}${selectedCountryName}`,
       });
       if (this.userContext.isLoggedIn()) {
-        console.log(selectedCountryName);
+        // console.log(selectedCountryName);
         this.userService.updateUserCountry(selectedCountryName).subscribe({
           next: (updatedUser: any) => {
             this.userContext.login(updatedUser, this.authService.getToken()!);
@@ -694,7 +694,7 @@ export class GiftFinder implements OnInit {
     this.userService.getGiftRecommendations(allAnswers).subscribe({
       next: (recs) => {
         this.stopLoading();
-        console.log(recs);
+        // console.log(recs);
         this.currentRecIndex.set(0);
         this.recommendations.set(recs);
         this.isCompleted.set(true);
@@ -1029,7 +1029,7 @@ export class GiftFinder implements OnInit {
 
   loadHistory() {
     this.isHistoryLoading.set(true);
-    console.log('loadHistory called, recommendations length:', this.recommendations().length);
+    // console.log('loadHistory called, recommendations length:', this.recommendations().length);
 
     this.userService.getGiftRecommendationsHistory().subscribe({
       next: (res) => {
@@ -1043,7 +1043,7 @@ export class GiftFinder implements OnInit {
           this.showGuestBlur.set(false);
         } else if (this.recommendations().length === 0) {
           const latest = history[0];
-          console.log('loading latest session:', latest);
+          // console.log('loading latest session:', latest);
           this.finalAnswers.set(latest.answers);
           this.answers.set(latest.answers);
           this.recommendations.set(latest.recommendations);
