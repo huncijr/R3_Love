@@ -271,6 +271,7 @@ export class Home implements OnInit {
         });
       }
     });
+
     if (this.userContext.isLoggedIn()) {
       this.loadDailyInsight();
       this.loadRomanticSongs();

@@ -2,10 +2,93 @@
   class="flex flex-col gap-5"
   [class.items-center]="isLoggedIn()"
   [class.justify-center]="isLoggedIn()"
+  [class.min-h-screen]="isLoggedIn()"
 >
   @if (isLoggedIn()) {
+    <div class="r3-clouds-row r3-clouds-top" aria-hidden="true">
+      <!-- md+ (7 clouds) -->
+      <svg class="r3-cloud r3-c1 md:block" viewBox="0 0 300 130">
+        <ellipse cx="80" cy="85" rx="55" ry="35" fill="url(#cg1)" />
+        <ellipse cx="120" cy="55" rx="65" ry="42" fill="url(#cg1)" />
+        <ellipse cx="175" cy="65" rx="55" ry="35" fill="url(#cg1)" />
+        <ellipse cx="230" cy="80" rx="45" ry="28" fill="url(#cg1)" />
+        <ellipse cx="130" cy="95" rx="85" ry="30" fill="url(#cg1)" opacity="0.9" />
+      </svg>
+      <svg class="r3-cloud r3-c2 md:block" viewBox="0 0 220 110">
+        <ellipse cx="70" cy="72" rx="50" ry="30" fill="url(#cg2)" />
+        <ellipse cx="110" cy="48" rx="58" ry="38" fill="url(#cg2)" />
+        <ellipse cx="155" cy="65" rx="42" ry="28" fill="url(#cg2)" />
+        <ellipse cx="100" cy="85" rx="65" ry="22" fill="url(#cg2)" opacity="0.85" />
+      </svg>
+      <svg class="r3-cloud r3-c3 md:block" viewBox="0 0 180 100">
+        <ellipse cx="55" cy="65" rx="40" ry="26" fill="url(#cg3)" />
+        <ellipse cx="95" cy="42" rx="52" ry="34" fill="url(#cg3)" />
+        <ellipse cx="140" cy="58" rx="35" ry="24" fill="url(#cg3)" />
+      </svg>
+      <svg class="r3-cloud r3-c4 md:block" viewBox="0 0 260 120">
+        <ellipse cx="75" cy="75" rx="55" ry="32" fill="url(#cg4)" />
+        <ellipse cx="130" cy="48" rx="70" ry="42" fill="url(#cg4)" />
+        <ellipse cx="195" cy="68" rx="50" ry="30" fill="url(#cg4)" />
+        <ellipse cx="120" cy="92" rx="80" ry="26" fill="url(#cg4)" opacity="0.88" />
+      </svg>
+      <svg class="r3-cloud r3-c5 md:block" viewBox="0 0 200 95">
+        <ellipse cx="60" cy="62" rx="42" ry="28" fill="url(#cg5)" />
+        <ellipse cx="105" cy="40" rx="55" ry="36" fill="url(#cg5)" />
+        <ellipse cx="150" cy="55" rx="40" ry="26" fill="url(#cg5)" />
+      </svg>
+      <svg class="r3-cloud r3-c6 md:block" viewBox="0 0 240 115">
+        <ellipse cx="80" cy="72" rx="52" ry="30" fill="url(#cg6)" />
+        <ellipse cx="125" cy="48" rx="62" ry="40" fill="url(#cg6)" />
+        <ellipse cx="180" cy="62" rx="48" ry="30" fill="url(#cg6)" />
+        <ellipse cx="115" cy="88" rx="70" ry="24" fill="url(#cg6)" opacity="0.87" />
+      </svg>
+      <svg class="r3-cloud r3-c7 md:block" viewBox="0 0 170 90">
+        <ellipse cx="50" cy="58" rx="38" ry="24" fill="url(#cg7)" />
+        <ellipse cx="90" cy="38" rx="50" ry="32" fill="url(#cg7)" />
+        <ellipse cx="130" cy="52" rx="36" ry="22" fill="url(#cg7)" />
+      </svg>
+      <!-- xl+ (3 extra = 10 total) -->
+      <svg class="r3-cloud r3-c8 hidden xl:block" viewBox="0 0 210 105">
+        <ellipse cx="65" cy="68" rx="48" ry="30" fill="url(#cg1)" />
+        <ellipse cx="110" cy="44" rx="58" ry="38" fill="url(#cg1)" />
+        <ellipse cx="160" cy="60" rx="42" ry="26" fill="url(#cg1)" />
+      </svg>
+      <svg class="r3-cloud r3-c9 hidden xl:block" viewBox="0 0 190 100">
+        <ellipse cx="55" cy="65" rx="42" ry="28" fill="url(#cg4)" />
+        <ellipse cx="100" cy="40" rx="55" ry="36" fill="url(#cg4)" />
+        <ellipse cx="145" cy="55" rx="38" ry="24" fill="url(#cg4)" />
+      </svg>
+      <svg class="r3-cloud r3-c10 hidden xl:block" viewBox="0 0 280 125">
+        <ellipse cx="85" cy="78" rx="58" ry="34" fill="url(#cg2)" />
+        <ellipse cx="140" cy="50" rx="72" ry="44" fill="url(#cg2)" />
+        <ellipse cx="210" cy="70" rx="52" ry="30" fill="url(#cg2)" />
+        <ellipse cx="135" cy="95" rx="88" ry="28" fill="url(#cg2)" opacity="0.88" />
+      </svg>
+      <!-- 3xl+ (4 extra = 14 total) -->
+      <svg class="r3-cloud r3-c11 hidden 3xl:block" viewBox="0 0 230 110">
+        <ellipse cx="70" cy="70" rx="54" ry="32" fill="url(#cg5)" />
+        <ellipse cx="120" cy="44" rx="62" ry="40" fill="url(#cg5)" />
+        <ellipse cx="180" cy="62" rx="48" ry="28" fill="url(#cg5)" />
+      </svg>
+      <svg class="r3-cloud r3-c12 hidden 3xl:block" viewBox="0 0 200 100">
+        <ellipse cx="60" cy="62" rx="44" ry="28" fill="url(#cg6)" />
+        <ellipse cx="105" cy="38" rx="56" ry="36" fill="url(#cg6)" />
+        <ellipse cx="150" cy="54" rx="40" ry="24" fill="url(#cg6)" />
+      </svg>
+      <svg class="r3-cloud r3-c13 hidden 3xl:block" viewBox="0 0 250 120">
+        <ellipse cx="80" cy="74" rx="56" ry="34" fill="url(#cg3)" />
+        <ellipse cx="140" cy="46" rx="68" ry="42" fill="url(#cg3)" />
+        <ellipse cx="200" cy="66" rx="50" ry="30" fill="url(#cg3)" />
+      </svg>
+      <svg class="r3-cloud r3-c14 hidden 3xl:block" viewBox="0 0 180 95">
+        <ellipse cx="55" cy="60" rx="40" ry="26" fill="url(#cg7)" />
+        <ellipse cx="95" cy="38" rx="52" ry="34" fill="url(#cg7)" />
+        <ellipse cx="135" cy="52" rx="36" ry="22" fill="url(#cg7)" />
+      </svg>
+    </div>
+
     <div
-      class="py-10 w-full max-w-5xl grid grid-cols-10 md:grid-cols-10 gap-4 animate-fade-in-up auto-rows-[170px] md:auto-rows-[180px]"
+      class="py-10 mx-auto max-w-5xl grid grid-cols-10 md:grid-cols-10 gap-4 animate-fade-in-up auto-rows-[170px] md:auto-rows-[180px]"
     >
       <section
         hlmCard
@@ -416,6 +499,98 @@
         </div>
       </section>
     </div>
+    <div class="r3-clouds-row r3-clouds-bottom" aria-hidden="true">
+      <svg class="r3-cloud r3-cb1 md:block" viewBox="0 0 260 120">
+        <ellipse cx="80" cy="78" rx="60" ry="34" fill="url(#cg4)" />
+        <ellipse cx="135" cy="50" rx="68" ry="42" fill="url(#cg4)" />
+        <ellipse cx="195" cy="70" rx="52" ry="30" fill="url(#cg4)" />
+      </svg>
+      <svg class="r3-cloud r3-cb2 md:block" viewBox="0 0 200 100">
+        <ellipse cx="60" cy="64" rx="44" ry="28" fill="url(#cg6)" />
+        <ellipse cx="105" cy="42" rx="56" ry="36" fill="url(#cg6)" />
+        <ellipse cx="150" cy="58" rx="40" ry="24" fill="url(#cg6)" />
+      </svg>
+      <svg class="r3-cloud r3-cb3 md:block" viewBox="0 0 230 110">
+        <ellipse cx="70" cy="72" rx="50" ry="30" fill="url(#cg2)" />
+        <ellipse cx="120" cy="46" rx="62" ry="40" fill="url(#cg2)" />
+        <ellipse cx="175" cy="64" rx="46" ry="28" fill="url(#cg2)" />
+      </svg>
+      <svg class="r3-cloud r3-cb4 md:block" viewBox="0 0 180 95">
+        <ellipse cx="55" cy="60" rx="38" ry="26" fill="url(#cg1)" />
+        <ellipse cx="95" cy="38" rx="52" ry="34" fill="url(#cg1)" />
+        <ellipse cx="135" cy="52" rx="35" ry="22" fill="url(#cg1)" />
+      </svg>
+      <svg class="r3-cloud r3-cb5 md:block" viewBox="0 0 250 115">
+        <ellipse cx="75" cy="72" rx="54" ry="32" fill="url(#cg3)" />
+        <ellipse cx="130" cy="46" rx="66" ry="42" fill="url(#cg3)" />
+        <ellipse cx="190" cy="64" rx="50" ry="28" fill="url(#cg3)" />
+      </svg>
+      <svg class="r3-cloud r3-cb6 hidden xl:block" viewBox="0 0 210 105">
+        <ellipse cx="65" cy="68" rx="48" ry="30" fill="url(#cg5)" />
+        <ellipse cx="110" cy="42" rx="58" ry="38" fill="url(#cg5)" />
+        <ellipse cx="160" cy="58" rx="42" ry="26" fill="url(#cg5)" />
+      </svg>
+      <svg class="r3-cloud r3-cb7 hidden xl:block" viewBox="0 0 190 100">
+        <ellipse cx="58" cy="64" rx="42" ry="28" fill="url(#cg7)" />
+        <ellipse cx="100" cy="40" rx="54" ry="36" fill="url(#cg7)" />
+        <ellipse cx="145" cy="54" rx="38" ry="24" fill="url(#cg7)" />
+      </svg>
+      <svg class="r3-cloud r3-cb8 hidden 3xl:block" viewBox="0 0 240 115">
+        <ellipse cx="75" cy="70" rx="52" ry="32" fill="url(#cg4)" />
+        <ellipse cx="130" cy="44" rx="64" ry="42" fill="url(#cg4)" />
+        <ellipse cx="185" cy="62" rx="50" ry="28" fill="url(#cg4)" />
+      </svg>
+      <svg class="r3-cloud r3-cb9 hidden 3xl:block" viewBox="0 0 200 100">
+        <ellipse cx="60" cy="62" rx="44" ry="28" fill="url(#cg2)" />
+        <ellipse cx="105" cy="38" rx="56" ry="36" fill="url(#cg2)" />
+        <ellipse cx="150" cy="54" rx="40" ry="24" fill="url(#cg2)" />
+      </svg>
+      <svg class="r3-cloud r3-cb10 hidden 3xl:block" viewBox="0 0 220 110">
+        <ellipse cx="68" cy="70" rx="50" ry="30" fill="url(#cg1)" />
+        <ellipse cx="115" cy="44" rx="60" ry="40" fill="url(#cg1)" />
+        <ellipse cx="170" cy="62" rx="46" ry="28" fill="url(#cg1)" />
+      </svg>
+    </div>
+
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <linearGradient id="cg1" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.95" />
+          <stop offset="50%" stop-color="#fff" stop-opacity="0.78" />
+          <stop offset="100%" stop-color="#fce4ec" stop-opacity="0.55" />
+        </linearGradient>
+        <linearGradient id="cg2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.9" />
+          <stop offset="60%" stop-color="#f8bbd0" stop-opacity="0.5" />
+          <stop offset="100%" stop-color="#f48fb1" stop-opacity="0.3" />
+        </linearGradient>
+        <linearGradient id="cg3" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.85" />
+          <stop offset="50%" stop-color="#fce4ec" stop-opacity="0.6" />
+          <stop offset="100%" stop-color="#fff" stop-opacity="0.45" />
+        </linearGradient>
+        <linearGradient id="cg4" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.92" />
+          <stop offset="40%" stop-color="#fff" stop-opacity="0.7" />
+          <stop offset="100%" stop-color="#f8bbd0" stop-opacity="0.4" />
+        </linearGradient>
+        <linearGradient id="cg5" x1="50%" y1="0%" x2="50%" y2="100%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.88" />
+          <stop offset="70%" stop-color="#fce4ec" stop-opacity="0.5" />
+          <stop offset="100%" stop-color="#f48fb1" stop-opacity="0.25" />
+        </linearGradient>
+        <linearGradient id="cg6" x1="100%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stop-color="#f8bbd0" stop-opacity="0.35" />
+          <stop offset="40%" stop-color="#fff" stop-opacity="0.75" />
+          <stop offset="100%" stop-color="#fff" stop-opacity="0.9" />
+        </linearGradient>
+        <linearGradient id="cg7" x1="0%" y1="50%" x2="100%" y2="50%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.8" />
+          <stop offset="50%" stop-color="#fce4ec" stop-opacity="0.55" />
+          <stop offset="100%" stop-color="#fff" stop-opacity="0.7" />
+        </linearGradient>
+      </defs>
+    </svg>
   } @else {
     <section
       class="r3-landing-scroll relative w-full pointer-events-auto"

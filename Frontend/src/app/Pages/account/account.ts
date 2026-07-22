@@ -325,55 +325,57 @@ export class Account implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.loadProgress();
+    if (this.userContext.isLoggedIn()) {
+      this.loadProgress();
 
-    (window as any).handleGoogleCredential = (response: any) => {
-      this.handleGoogleCredential(response);
-    };
+      (window as any).handleGoogleCredential = (response: any) => {
+        this.handleGoogleCredential(response);
+      };
 
-    const savedSpotifyName = sessionStorage.getItem('spotifyDisplayName');
-    if (savedSpotifyName) {
-      this.spotifyDisplayName.set(savedSpotifyName);
+      const savedSpotifyName = sessionStorage.getItem('spotifyDisplayName');
+      if (savedSpotifyName) {
+        this.spotifyDisplayName.set(savedSpotifyName);
+      }
+      this.userService.getCalendarQuiz().subscribe({
+        next: (quiz) => {
+          this.calendarQuiz.set(quiz);
+        },
+        error: (err) => console.error('Failed to load calendar quiz', err),
+      });
+      this.userService.getUserProgress().subscribe({
+        next: (progress) => this.userProgress.set(progress),
+
+        error: (err) => console.error('Failed to load progress', err),
+      });
+
+      this.userService.isSpotifyConnected().subscribe({
+        next: (connected) => {
+          this.spotifyConnected.set(connected);
+          if (connected) {
+            this.userService.getSpotifyProfile().subscribe({
+              next: (profile) => {
+                const name = profile?.displayName ?? null;
+                if (name) {
+                  sessionStorage.setItem('spotifyDisplayName', name);
+                } else {
+                  sessionStorage.removeItem('spotifyDisplayName');
+                }
+              },
+              error: (err) => console.error('Failed to load Spotify profile', err),
+            });
+          } else {
+            this.spotifyDisplayName.set(null);
+            sessionStorage.removeItem('spotifyDisplayName');
+          }
+        },
+        error: (err) => {
+          console.error('Failed to check Spotify status', err);
+        },
+      });
+
+      const user = this.currentUser();
+      this.emailVerified.set(!!(user as any)?.emailVerified);
     }
-    this.userService.getCalendarQuiz().subscribe({
-      next: (quiz) => {
-        this.calendarQuiz.set(quiz);
-      },
-      error: (err) => console.error('Failed to load calendar quiz', err),
-    });
-    this.userService.getUserProgress().subscribe({
-      next: (progress) => this.userProgress.set(progress),
-
-      error: (err) => console.error('Failed to load progress', err),
-    });
-
-    this.userService.isSpotifyConnected().subscribe({
-      next: (connected) => {
-        this.spotifyConnected.set(connected);
-        if (connected) {
-          this.userService.getSpotifyProfile().subscribe({
-            next: (profile) => {
-              const name = profile?.displayName ?? null;
-              if (name) {
-                sessionStorage.setItem('spotifyDisplayName', name);
-              } else {
-                sessionStorage.removeItem('spotifyDisplayName');
-              }
-            },
-            error: (err) => console.error('Failed to load Spotify profile', err),
-          });
-        } else {
-          this.spotifyDisplayName.set(null);
-          sessionStorage.removeItem('spotifyDisplayName');
-        }
-      },
-      error: (err) => {
-        console.error('Failed to check Spotify status', err);
-      },
-    });
-
-    const user = this.currentUser();
-    this.emailVerified.set(!!(user as any)?.emailVerified);
   }
 
   Setgender(value: string) {
@@ -399,7 +401,7 @@ export class Account implements OnInit, AfterViewInit {
     if (errors.length > 0) {
       this.toastr.error(errors.join(' '), 'Password Error');
     }
-    return true;
+    return errors.length === 0;
   }
 
   private loadProgress(): void {
@@ -424,7 +426,7 @@ export class Account implements OnInit, AfterViewInit {
     if (errors.length > 0) {
       this.toastr.error(errors.join(' '), 'Password Error');
     }
-    return true;
+    return errors.length === 0;
   }
 
   // Ensures password and confirmation fields match
@@ -486,10 +488,6 @@ export class Account implements OnInit, AfterViewInit {
             console.log('Create user response, token', JSON.stringify(response.token));
             this.isLoading.set(false);
 
-            if (response.user) {
-              this.userContext.login(response.user, response.token);
-            }
-
             if (response.user?.emailVerified) {
               this.userContext.login(response.user, response.token);
               this.toastr.success('Account created!', 'Success');
@@ -509,8 +507,6 @@ export class Account implements OnInit, AfterViewInit {
             this.toastr.error(errorMessage, 'Error');
           },
         });
-
-      this.isSubmited.set(true);
 
       console.log('Account created:', {
         username: this.username(),
