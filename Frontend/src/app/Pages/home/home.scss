@@ -1998,12 +1998,7 @@
   border-radius: 28px;
   pointer-events: none;
   z-index: -1;
-  border-image: repeating-conic-gradient(
-      from var(--dash-angle, 0deg),
-      rgba(255, 255, 255, 0.95) 0deg 8deg,
-      rgba(255, 255, 255, 0) 8deg 16deg
-    )
-    1 round;
+
   animation: r3DashFlow 14s linear infinite;
 }
 
