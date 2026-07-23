@@ -1993,29 +1993,35 @@
 .r3-hero-copy::before {
   content: '';
   position: absolute;
-  inset: -18px -22px;
-  border: 2px solid transparent;
-  border-radius: 28px;
+  inset: -4px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 32px;
   pointer-events: none;
   z-index: -1;
-
-  animation: r3DashFlow 14s linear infinite;
+  animation: r3DashPulse 2s ease-in-out infinite;
 }
 
 .r3-hero-copy::after {
   content: '';
   position: absolute;
-  inset: -18px -22px;
-  border-radius: 28px;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.15),
-    0 0 24px rgba(255, 255, 255, 0.18);
+  inset: -10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 36px;
+  pointer-events: none;
   z-index: -2;
+  animation: r3DashPulse 2s ease-in-out 0.5s infinite;
 }
 
-.r3-hero-copy::before,
-.r3-hero-copy::after {
-  border-radius: 0;
+@keyframes r3DashPulse {
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.08);
+  }
+  50% {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 32px rgba(255, 255, 255, 0.18);
+  }
 }
 
 @keyframes r3HeroIn {
