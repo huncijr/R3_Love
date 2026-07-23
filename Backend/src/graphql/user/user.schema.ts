@@ -165,6 +165,7 @@ export const userSchema = `
       partnerBirthday: String
     ): CalendarQuiz!
 
+    deleteUser: Boolean!
     updateUserCountry(country: String!): User!
     saveCalendarEvent(event: EventInput!): CalendarEvent!
     deleteCalendarEvent(id: ID!): Boolean!

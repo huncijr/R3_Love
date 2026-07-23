@@ -243,45 +243,54 @@
               <lucide-icon name="audio-lines" class="text-white"></lucide-icon>
             </div>
             <div class="mb-2 h-px bg-gray-400"></div>
-
-            <ul class="flex-1 max-h-[260px] md:max-h-[220px] space-y-2 overflow-y-auto p-2">
-              @for (song of romanticSongs(); track song.url) {
-                <li
-                  class="group flex items-center gap-3 rounded-lg border border-gray-700 bg-gray-700 p-2 transition hover:border-gray-600 cursor-pointer"
-                  (click)="openCurrentSong($event)"
-                >
-                  <img
-                    [src]="song.imageUrl"
-                    alt="Song cover"
-                    class="h-10 w-10 shrink-0 rounded-md object-cover"
-                  />
-
-                  <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-semibold text-white">{{ song.title }}</p>
-                    <p class="truncate text-xs text-gray-400">{{ song.artist }}</p>
-                  </div>
-
-                  <button
-                    (click)="playSong(song, $event)"
-                    class="cursor-pointer shrink-0 rounded-full px-3 py-1 text-xs font-medium transition flex items-center gap-1"
-                    [class.bg-red-500]="currentSong()?.uri === song.uri && isPlaying()"
-                    [class.text-white]="currentSong()?.uri === song.uri && isPlaying()"
-                    [class.hover:bg-red-400]="currentSong()?.uri === song.uri && isPlaying()"
-                    [class.bg-green-500]="!(currentSong()?.uri === song.uri && isPlaying())"
-                    [class.text-gray-900]="!(currentSong()?.uri === song.uri && isPlaying())"
-                    [class.hover:bg-green-400]="!(currentSong()?.uri === song.uri && isPlaying())"
+            @if (loadingRomanticSongs()) {
+              <div class="flex flex-1 flex-col items-center justify-center gap-3 py-10">
+                <lucide-icon name="loader-circle" class="h-10 w-10 text-green-500 animate-spin">
+                  <span class="text-sm font-medium text-green-400/90">
+                    Loading Spotify songs...
+                  </span>
+                </lucide-icon>
+              </div>
+            } @else if (romanticSongs()?.length) {
+              <ul class="flex-1 max-h-[260px] md:max-h-[220px] space-y-2 overflow-y-auto p-2">
+                @for (song of romanticSongs(); track song.url) {
+                  <li
+                    class="group flex items-center gap-3 rounded-lg border border-gray-700 bg-gray-700 p-2 transition hover:border-gray-600 cursor-pointer"
+                    (click)="openCurrentSong($event)"
                   >
-                    @if (currentSong()?.uri === song.uri && isPlaying()) {
-                      <lucide-icon name="square" class="w-3 h-3"></lucide-icon>
-                      <span>Stop</span>
-                    } @else {
-                      <lucide-icon name="play" class="w-3 h-3"></lucide-icon>
-                      <span>Play</span>
-                    }
-                  </button>
-                </li>
-              }
-            </ul>
+                    <img
+                      [src]="song.imageUrl"
+                      alt="Song cover"
+                      class="h-10 w-10 shrink-0 rounded-md object-cover"
+                    />
+
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate text-sm font-semibold text-white">{{ song.title }}</p>
+                      <p class="truncate text-xs text-gray-400">{{ song.artist }}</p>
+                    </div>
+
+                    <button
+                      (click)="playSong(song, $event)"
+                      class="cursor-pointer shrink-0 rounded-full px-3 py-1 text-xs font-medium transition flex items-center gap-1"
+                      [class.bg-red-500]="currentSong()?.uri === song.uri && isPlaying()"
+                      [class.text-white]="currentSong()?.uri === song.uri && isPlaying()"
+                      [class.hover:bg-red-400]="currentSong()?.uri === song.uri && isPlaying()"
+                      [class.bg-green-500]="!(currentSong()?.uri === song.uri && isPlaying())"
+                      [class.text-gray-900]="!(currentSong()?.uri === song.uri && isPlaying())"
+                      [class.hover:bg-green-400]="!(currentSong()?.uri === song.uri && isPlaying())"
+                    >
+                      @if (currentSong()?.uri === song.uri && isPlaying()) {
+                        <lucide-icon name="square" class="w-3 h-3"></lucide-icon>
+                        <span>Stop</span>
+                      } @else {
+                        <lucide-icon name="play" class="w-3 h-3"></lucide-icon>
+                        <span>Play</span>
+                      }
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
           </section>
         }
       </section>

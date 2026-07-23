@@ -302,17 +302,23 @@ export class Calendar implements OnInit, OnDestroy {
   // Validates and saves edited quiz data, then exits edit mode
   updateQuiz() {
     if (!this.quizIsSingle()) {
-      const name = this.quizPartnerBirthday().trim();
-      const birthday = this.quizPartnerBirthday().trim();
-      const datingDate = this.quizDatingDate().trim();
+      const name = (this.quizPartnerName() ?? '').trim();
+      const birthday = (this.quizPartnerBirthday() ?? '').trim();
+      const datingDate = (this.quizDatingDate() ?? '').trim();
+
       if (!name || !birthday || !datingDate) {
         this.toastr.error('Please fill in all partner fields', 'Password Error');
 
         return;
       }
-      this.saveQuiz();
-      this.isEditingQuiz.set(false);
+    } else {
+      this.quizPartnerName.set('');
+      this.quizPartnerBirthday.set('');
+      this.quizDatingDate.set('');
     }
+
+    this.saveQuiz();
+    this.isEditingQuiz.set(false);
   }
 
   // Resets quiz state to allow retaking the calendar setup

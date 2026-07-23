@@ -33,6 +33,7 @@ import {
   CalendarCheck2,
   ChevronsDown,
   LogIn,
+  LoaderCircle,
 } from 'lucide-angular';
 import { UserService } from '../../services/user.service';
 import { UserContext } from '../../services/UserContext/user-context';
@@ -81,6 +82,7 @@ export type RomanticSong = {
         CalendarCheck2,
         ChevronsDown,
         LogIn,
+        LoaderCircle,
       }),
       multi: true,
     },
@@ -128,6 +130,7 @@ export class Home implements OnInit {
 
   romanticSongs = signal<RomanticSong[] | null>(null);
   currentSong = signal<RomanticSong | null>(null);
+  loadingRomanticSongs = signal(false);
   isPlaying = signal(false);
   currentProgress = signal(0);
   trackDuration = signal(0);
@@ -413,12 +416,14 @@ export class Home implements OnInit {
     if (saved) {
       try {
         this.romanticSongs.set(JSON.parse(saved));
+        this.loadingRomanticSongs.set(false);
         return;
       } catch {
         sessionStorage.removeItem(this.ROMANTIC_SONGS_KEY);
       }
     }
 
+    this.loadingRomanticSongs.set(true);
     this.userService.getRomanticSongs().subscribe({
       next: (result) => {
         const songs = result.data?.getRomanticSongs ?? null;
@@ -427,9 +432,11 @@ export class Home implements OnInit {
         if (songs) {
           sessionStorage.setItem(this.ROMANTIC_SONGS_KEY, JSON.stringify(songs));
         }
+        this.loadingRomanticSongs.set(false);
       },
       error: (err) => {
         console.error('Failed to load romantic songs', err);
+        this.loadingRomanticSongs.set(false);
         sessionStorage.removeItem(this.ROMANTIC_SONGS_KEY);
       },
     });

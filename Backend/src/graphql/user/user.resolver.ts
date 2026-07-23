@@ -245,6 +245,21 @@ export const userResolver = {
       }
     },
 
+    deleteUser: async (
+      _parent: unknown,
+      _args: unknown,
+      context: { token: string },
+    ) => {
+      try {
+        const userId = await getUserIdFromContext(context.token);
+        await db.delete(user).where(eq(user.id, userId));
+        return true;
+      } catch (error) {
+        errorHandler(error);
+        return false;
+      }
+    },
+
     sendVerificationEmail: async (
       _: any,
       args: { email: string },

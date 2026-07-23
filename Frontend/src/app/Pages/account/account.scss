@@ -621,7 +621,7 @@
 
 /* GitHub promo — bottom center bar, brown, slides up */
 .github-promo-wrap {
-  position: sticky;
+  position: fixed;
   bottom: 0;
   z-index: 15;
   display: flex;

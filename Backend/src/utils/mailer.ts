@@ -10,7 +10,7 @@ export async function sendVerificationCode(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: ` ${process.env.RESEND_API_KEY}`,
+        Authorization: toEmail,
       },
       body: JSON.stringify({
         from: "R3_Love <onboarding@resend.dev>",

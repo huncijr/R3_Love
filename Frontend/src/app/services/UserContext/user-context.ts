@@ -1,7 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { AuthService } from '../Auth/auth';
-import { count, Observable, map } from 'rxjs';
-import { Apollo, gql } from 'apollo-angular';
 
 // Basic user data shape used across the application
 export interface User {
@@ -42,10 +40,17 @@ export class UserContext {
     this.currentUser.set(null);
   }
 
-  updateUser(updatedUser: any) {
+  updateUser(partial: Partial<User>) {
     const current = this.currentUser();
     if (current) {
-      this.currentUser.set({ ...current, ...updatedUser });
+      const merged = {
+        ...current,
+        ...Object.fromEntries(
+          Object.entries(partial).filter(([, v]) => v !== null && v !== undefined),
+        ),
+      };
+      this.currentUser.set(merged);
+      this.authService.setUser(merged);
     }
   }
 }
