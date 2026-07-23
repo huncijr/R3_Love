@@ -20,7 +20,7 @@ services:
         GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
         TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}
     ports:
-      - "80:80"
+      - "127.0.0.1:8080:80"
     depends_on:
       - backend
     restart: unless-stopped

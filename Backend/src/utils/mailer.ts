@@ -10,11 +10,11 @@ export async function sendVerificationCode(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: toEmail,
+        Authorization: "Bearer " + process.env.RESEND_API_KEY,
       },
       body: JSON.stringify({
-        from: "R3_Love <onboarding@resend.dev>",
-        to: [process.env.TEST_MAIL as string],
+        from: "R3_Love <noreply@reallove.dev>",
+        to: [toEmail],
         subject: "Your verification code",
         html: `
          <div style="text-align:center; font-family:sans-serif; padding:30px">

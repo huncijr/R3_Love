@@ -90,3 +90,9 @@
     color: var(--foreground);
   }
 }
+
+@property --dash-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
