@@ -16,7 +16,7 @@ RUN printf '%s\n' \
   'export const environment = {' \
   '  production: true,' \
   "  graphqlUri: '${GRAPHQL_URI}'," \
-  "  googleMapsApiKey: '${GOOGLE_MAPS_API_KEY}'," \
+  "  GOOGLE_MAPS_API_KEY: '${GOOGLE_MAPS_API_KEY}'," \
   "  turnstileSiteKey: '${TURNSTILE_SITE_KEY}'," \
   "  googleClientId: '${GOOGLE_CLIENT_ID}'," \
   '};' \

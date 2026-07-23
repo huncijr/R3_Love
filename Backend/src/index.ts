@@ -32,7 +32,9 @@ function parseCookies(cookieHeader: string): Record<string, string> {
 
 // CORS configuration allowing local development and production origins
 const corsOption = {
-  origin: isDevelopment ? ["http://localhost:4200", "*"] : ["https://..."],
+  origin: isDevelopment
+    ? ["http://localhost:4200", "*"]
+    : process.env.SITE_DOMAIN,
   credentials: true,
 };
 
