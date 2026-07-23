@@ -2207,6 +2207,8 @@
 
 .r3-hero-section {
   overflow: hidden;
+  height: 100vh;
+  min-height: 100vh;
 }
 
 @media (min-width: 1024px) {
