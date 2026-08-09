@@ -1,48 +1,53 @@
 <p>
-    <img src="Frontend/public/Images/R3_Love.png" alt="R3 Love" width="40" align="left" />&nbsp; Real Love
+  <img src="Frontend/public/Images/R3_Love.png" alt="R3 Love" width="40" align="left" />&nbsp; Real Love
 </p>
 
 ## Real Love
 
-Real Love (R3_Love) is a relationship product , for people who care, but don't always remember the perfect moment, gift or song.
+Real Love (R_3_Love) is a web app where you can keep a log of events involving your partner or easily search for gifts for your partner. You can also set reminders for specific days so you won't forget anything important.
 
 ## 🎬 Live Demo
 
-🚀 [Visit_the_website](https://reallove.dev)
+🚀 [Visit the website](https://reallove.dev)
 
 ![R3 Love Demo](Videos/R3_Demo.gif)
 
-## 💕 Made for
+## Who was it made for?
 
-- Couples who want small, consistent gestures
-- Anyone who forgets dates (and hates that feeling)
-- Partners looking for gift or playlist inspiration
+For people who don't want to forget any special moments with their partner and who tend to leave important events to the last minute.
 
 ## 🎯 What You can do
 
-| Feature                      | Description                                                                                          |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 🗓️ **Smart Calendar**        | Track birthdays, anniversaries, Valentine's,Girlfriend Day                                           |
-| 🎁 **Gift Finder**           | Answer questions about your partner and we recommend personalized gift ideas with store links & maps |
-| 🎵 **Romantic Playlist**     | Every day a fresh relationship song                                                                  |
-| 💋 **Kiss game**             | A playful mini-game to spice things up                                                               |
-| ❤️ **Days-Together Counter** | The app counts live how many days you've been together                                               |
+| Feature                  | Description                                                                                          |
+| ------------------------ | ---------------------------------------------------------------------------------------------------- |
+| 🗓️ Smart Calendar        | Track birthdays, anniversaries, Valentine's, Girlfriend Day                                          |
+| 🎁 Gift Finder           | Answer questions about your partner and we recommend personalized gift ideas with store links & maps |
+| 🎵 Romantic Playlist     | Every day a fresh relationship song                                                                  |
+| 💋 Kiss game             | A playful mini-game to spice things up                                                               |
+| ❤️ Days-Together Counter | The app counts live how many days you've been together                                               |
 
-## 🛠️ Tech Stack
+## Run it locally
 
-<br/>
+Docker is the easy way. You need a `.env` file in the project root with your keys: the database URL, Google OAuth, Resend, and the maps API key.
 
-<br/>
+```bash
+git clone https://github.com/huncijr/R_Love.git
+cd R_Love
+docker compose up --build
+```
 
-|                                                                                             |                                                                                                                   |                                                                                                                 |                                                                                                              |
-| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [![Angular](https://img.shields.io/badge/Angular-21-red?logo=angular)](https://angular.dev) | [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org) | [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com) | [![GraphQL](https://img.shields.io/badge/GraphQL-Apollo-ff69b4?logo=graphql)](https://www.apollographql.com) |
-| [![Node.js](https://img.shields.io/badge/Node-20-green?logo=node.js)](https://nodejs.org)   | [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169e1?logo=postgresql)](https://www.postgresql.org)       | [![Drizzle ORM](https://img.shields.io/badge/Drizzle-ORM-ffca28?logo=drizzle)](https://orm.drizzle.team)        | [![Docker](https://img.shields.io/badge/Docker-ready-blue?logo=docker)](https://docker.com)                  |
+The frontend comes up on `localhost:8080`, the backend on `localhost:4000`. That's it.
 
-## 📄 License
+If you'd rather run it without Docker, install the dependencies in both the `backend` and `frontend` folders, keep the same `.env`, then start the dev servers:
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+```bash
+# backend
+cd backend
+npm install
+npm run dev
 
-MIT License - see [LICENSE](LICENSE).
-
-Made with ❤️ by **Abro** , © 2026
+# frontend
+cd frontend
+npm install
+npm start
+```
