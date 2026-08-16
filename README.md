@@ -16,19 +16,16 @@ Real Love (R_3_Love) is a web app where you can keep a log of events involving y
 
 For people who don't want to forget any special moments with their partner and who tend to leave important events to the last minute.
 
-## 🎯 What You can do
+## Features
 
-| Feature                  | Description                                                                                          |
-| ------------------------ | ---------------------------------------------------------------------------------------------------- |
-| 🗓️ Smart Calendar        | Track birthdays, anniversaries, Valentine's, Girlfriend Day                                          |
-| 🎁 Gift Finder           | Answer questions about your partner and we recommend personalized gift ideas with store links & maps |
-| 🎵 Romantic Playlist     | Every day a fresh relationship song                                                                  |
-| 💋 Kiss game             | A playful mini-game to spice things up                                                               |
-| ❤️ Days-Together Counter | The app counts live how many days you've been together                                               |
+- Track birthdays, anniversaries, Valentine's, Girlfriend Day
+- Answer questions about your partner and we recommend personalized gift ideas with store links & maps
+- The app counts live how many days you've been together
+- Get interesting information about your partner
 
 ## Run it locally
 
-Docker is the easy way. You need a `.env` file in the project root with your keys: the database URL, Google OAuth, Resend, and the maps API key.
+You need a `.env` file in the project root with your following keys: the database URL, Google OAuth, Resend, and the maps API key.
 
 ```bash
 git clone https://github.com/huncijr/R_Love.git
@@ -36,7 +33,7 @@ cd R_Love
 docker compose up --build
 ```
 
-The frontend comes up on `localhost:8080`, the backend on `localhost:4000`. That's it.
+The frontend will be on `localhost:8080`, the backend will be `localhost:4000`.
 
 If you'd rather run it without Docker, install the dependencies in both the `backend` and `frontend` folders, keep the same `.env`, then start the dev servers:
 
